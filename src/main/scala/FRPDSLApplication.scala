@@ -1,6 +1,6 @@
 
 trait FRPDSLApplication extends FRPDSL {
-  def main()
+  def main(args: Array[String])
 }
 
 trait FRPDSLApplicationRunner extends FRPDSLImpl
