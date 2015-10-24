@@ -5,27 +5,27 @@ trait myFirstApp extends FRPDSLApplication {
 
     // PRINT CASE 1
     val t1 : Event[Int] = TimerEvent(5) // every 5 sec
-    val n1 = t1.map[String]( ((i:Int) => i.toString) )
-    val n2 = t1.map[String]( ((i:Int) => i.toString) )
-    val n3 = t1.map[String]( ((i:Int) => i.toString) )
+    val n1 = t1.map[String]( (i:Int) => i.toString )
+    val n2 = t1.map[String]( (i:Int) => i.toString )
+    val n3 = t1.map[String]( (i:Int) => i.toString )
     val out = n1.merge(n2,n3)
 
-    println
+    println()
     println(print(out))
 
     // PRINT CASE 2
     val a : Event[Int] = TimerEvent(10)
     val b : Event[Int] = TimerEvent(10)
 
-    val c = a.filter( ((i:Int) => true) )
+    val c = a.filter( (i: Int) => true )
     val d = a.merge(b)
     val e = c.map[String] ((i:Int)=>i.toString)
     val f = d.merge(c)
 
-    println
+    println()
     println(printEvent(e))
     println(printEvent(f))
-    println
+    println()
   }
 }
 

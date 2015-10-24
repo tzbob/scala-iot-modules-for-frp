@@ -39,7 +39,7 @@ trait EventOpsImpl extends EventOps {
     //val childEvents: List[EventNode[B,A]] = _ // immutable so build from bottom to top! NEEDED?
     // val rank // Used for topological order --> glitch prevention
     def pulse(x: A): Unit = {
-      val update = updateFunc(x)
+      //val update = updateFunc(x)
       //TODO: implement
     }
   }
