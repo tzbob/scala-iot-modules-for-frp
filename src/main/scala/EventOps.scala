@@ -31,17 +31,19 @@ trait EventOpsImpl extends EventOps {
     }
   }
 
-  override def TimerEvent(i: Int) = new InputEvent[Int](5)
+  override def TimerEvent(i: Int) = new InputEvent[Int](i)  // only conceptual
 
   abstract class EventNode[A,B] extends EventImpl[B] {
-    val updateFunc: A => B //TODO: should be Rep[A=>B], replaced because of pulse function
+    val updateFunc: A => B //TODO: should become Rep[A=>B]
     val parentEvents: List[Event[A]]
-    //val childEvents: List[EventNode[B,A]] = _ // immutable so build from bottom to top! NEEDED?
-    // val rank // Used for topological order --> glitch prevention
-    def pulse(x: A): Unit = {
-      //val update = updateFunc(x)
-      //TODO: implement
-    }
+    // val rank // Use for topological order --> glitch prevention
+
+    /* NOT NEEDED:
+     * pulse needs childEvents, but we don't need them since function-composition at staging time bottom-up
+     *
+     * val childEvents: List[EventNode[B,A]] = _ // immutable so build from bottom to top! NEEDED?
+     * def pulse(x: A): Unit
+     */
   }
 
   case class InputEvent[A] (i: A) extends EventNode[A,A] with BaseExp {

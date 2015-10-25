@@ -1,5 +1,8 @@
 
-trait myFirstApp extends FRPDSLApplication {
+/*
+ * Trait that contains the user program
+ */
+trait MyFirstApp extends FRPDSLApplication {
   override def main(args: Array[String]) {
     println("My first application")
 
@@ -29,4 +32,7 @@ trait myFirstApp extends FRPDSLApplication {
   }
 }
 
-object MyFirstAppRunner extends FRPDSLApplicationRunner with myFirstApp
+/*
+ * Object responsible for directing the staged execution of the DSL application
+ */
+object MyFirstAppRunner extends FRPDSLApplicationRunner with MyFirstApp
