@@ -14,7 +14,7 @@ trait MyFirstApp extends FRPDSLApplication {
     val out = n1.merge(n2,n3)
 
     println()
-    println(print(out))
+    println(printEvent(out))
 
     // PRINT CASE 2
     val a : Event[Int] = TimerEvent(10)
