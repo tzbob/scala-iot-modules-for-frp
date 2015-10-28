@@ -1,3 +1,5 @@
+package be.kuleuven.FRP_EMBEDDED
+
 
 /*
  * Trait that contains the user program

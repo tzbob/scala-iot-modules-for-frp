@@ -1,3 +1,5 @@
+package be.kuleuven.FRP_EMBEDDED
+
 
 /*
  * trait provided by the DSL that defines the DSL interface

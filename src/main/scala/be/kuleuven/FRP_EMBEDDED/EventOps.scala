@@ -1,19 +1,25 @@
-import scala.lms.common.{BaseExp, LiftAll, Base}
+package be.kuleuven.FRP_EMBEDDED
+
+import scala.lms.common.{Base, BaseExp, LiftAll}
 
 trait EventOps {
+  behavior: BehaviorOps =>
+
   trait Event[A] extends Base with LiftAll {
     def constant[B] (c: B): Event[B]
     def map[B] (f: A => B): Event[B]
     def filter (f: A => Boolean): Event[A]
     def merge (e: Event[A]*): Event[A]
+
+    def startsWith(i: Rep[A]): Behavior[A]
   }
 
   def TimerEvent(i: Int): Event[Int]
-
   def printEvent[A](e: Event[A]): String
 }
 
 trait EventOpsImpl extends EventOps {
+  behavior: BehaviorOpsImpl =>
 
   override def printEvent[A](e: Event[A]) = {
     def printParents[B](l: List[Event[B]]): String = {
@@ -72,5 +78,7 @@ trait EventOpsImpl extends EventOps {
     override def map[B](f: (A) => B): Event[B] = new MapEvent[A,B](this, f)
     override def filter(f: (A) => Boolean): Event[A] = new FilterEvent[A](this, f)
     override def merge(e: Event[A]*) = new MergeEvent[A](this :: e.toList)
+
+    override def startsWith(i: Rep[A]): Behavior[A] = ???
   }
 }
