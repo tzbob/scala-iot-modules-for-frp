@@ -12,6 +12,7 @@ trait EventOps {
     def merge (e: Event[A]*): Event[A]
 
     def startsWith(i: Rep[A]): Behavior[A]
+    def foldp[B]( fun:((A,B) => B), init:B): Behavior[B]
   }
 
   def TimerEvent(i: Int): Event[Int]
@@ -19,7 +20,7 @@ trait EventOps {
 }
 
 trait EventOpsImpl extends EventOps {
-  behavior: BehaviorOpsImpl =>
+  behaviorImpl: BehaviorOpsImpl =>
 
   override def printEvent[A](e: Event[A]) = {
     def printParents[B](l: List[Event[B]]): String = {
@@ -80,5 +81,6 @@ trait EventOpsImpl extends EventOps {
     override def merge(e: Event[A]*) = new MergeEvent[A](this :: e.toList)
 
     override def startsWith(i: Rep[A]): Behavior[A] = ???
+    override def foldp[B](fun: (A, B) => B, init: B): Behavior[B] = ???
   }
 }
