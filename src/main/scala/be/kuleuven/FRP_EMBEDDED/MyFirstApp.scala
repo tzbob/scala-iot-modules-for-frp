@@ -5,7 +5,7 @@ package be.kuleuven.FRP_EMBEDDED
  * Trait that contains the user program
  */
 trait MyFirstApp extends FRPDSLApplication {
-  override def main(args: Array[String]) {
+
     System.out.println("My first application")
 
     // PRINT CASE 1
@@ -31,10 +31,14 @@ trait MyFirstApp extends FRPDSLApplication {
     System.out.println(printEvent(e))
     System.out.println(printEvent(f))
     System.out.println()
-  }
+
 }
 
 /*
  * Object responsible for directing the staged execution of the DSL application
  */
-object MyFirstAppRunner extends FRPDSLApplicationRunner with MyFirstApp
+object MyFirstAppRunner {
+  def main(args: Array[String]): Unit = {
+    new MyFirstApp with FRPDSLApplicationRunner
+  }
+}
