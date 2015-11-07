@@ -6,7 +6,7 @@ package be.kuleuven.FRP_EMBEDDED
  */
 trait MyFirstApp extends FRPDSLApplication {
   override def main(args: Array[String]) {
-    println("My first application")
+    System.out.println("My first application")
 
     // PRINT CASE 1
     val t1 : Event[Int] = TimerEvent(5) // every 5 sec
@@ -15,8 +15,8 @@ trait MyFirstApp extends FRPDSLApplication {
     val n3 = t1.map[String]( (i:Int) => i.toString )
     val out = n1.merge(n2,n3)
 
-    println()
-    println(printEvent(out))
+    System.out.println()
+    System.out.println(printEvent(out))
 
     // PRINT CASE 2
     val a : Event[Int] = TimerEvent(10)
@@ -27,10 +27,10 @@ trait MyFirstApp extends FRPDSLApplication {
     val e = c.map[String] ((i:Int)=>i.toString)
     val f = d.merge(c)
 
-    println()
-    println(printEvent(e))
-    println(printEvent(f))
-    println()
+    System.out.println()
+    System.out.println(printEvent(e))
+    System.out.println(printEvent(f))
+    System.out.println()
   }
 }
 
