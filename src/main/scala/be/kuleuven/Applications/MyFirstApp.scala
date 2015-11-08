@@ -1,5 +1,6 @@
-package be.kuleuven.FRP_EMBEDDED
+package be.kuleuven.Applications
 
+import be.kuleuven.FRP_EMBEDDED.{CFRPDSLImpl, FRPDSLApplication}
 
 /*
  * Trait that contains the user program
@@ -10,9 +11,9 @@ trait MyFirstApp extends FRPDSLApplication {
 
     // PRINT CASE 1
     val t1 : Event[Int] = TimerEvent(5) // every 5 sec
-    val n1 = t1.map[String]( (i:Int) => i.toString )
-    val n2 = t1.map[String]( (i:Int) => i.toString )
-    val n3 = t1.map[String]( (i:Int) => i.toString )
+    val n1 = t1.map[String]( (i:Rep[Int]) => i.toString )
+    val n2 = t1.map[String]( (i:Rep[Int]) => i.toString )
+    val n3 = t1.map[String]( (i:Rep[Int]) => i.toString )
     val out = n1.merge(n2,n3)
 
     System.out.println()
@@ -22,9 +23,9 @@ trait MyFirstApp extends FRPDSLApplication {
     val a : Event[Int] = TimerEvent(10)
     val b : Event[Int] = TimerEvent(10)
 
-    val c = a.filter( (i: Int) => true )
+    val c = a.map[Int]( (i: Rep[Int]) => i.hashCode() )
     val d = a.merge(b)
-    val e = c.map[String] ((i:Int)=>i.toString)
+    val e = c.map[String] ( (i:Rep[Int]) => i.toString)
     val f = d.merge(c)
 
     System.out.println()

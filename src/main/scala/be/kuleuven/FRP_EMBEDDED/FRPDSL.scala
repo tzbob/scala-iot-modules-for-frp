@@ -4,7 +4,8 @@ import java.io.PrintWriter
 
 import scala.lms.common._
 
-trait FRPDSL extends ScalaOpsPkg with TupledFunctions with UncheckedOps with LiftPrimitives with LiftString with LiftVariables
+trait FRPDSL
+    extends ScalaOpsPkg with TupledFunctions with UncheckedOps with LiftPrimitives with LiftString with LiftVariables with LiftBoolean
     with EventOps with BehaviorOps {
 
   // keep track of top level functions

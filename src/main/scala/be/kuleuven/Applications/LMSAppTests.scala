@@ -1,5 +1,6 @@
-package be.kuleuven.FRP_EMBEDDED
+package be.kuleuven.Applications
 
+import be.kuleuven.FRP_EMBEDDED._
 
 trait LMSAppTest1 extends FRPDSLApplication {
 
@@ -30,9 +31,9 @@ trait LMSAppTest2 extends FRPDSLApplication {
 
 trait LMSAppTest3 extends FRPDSLApplication {
 
-  val main = toplevel("main") { x: Rep[Int] =>
-    printf("Hello, world: main\n")
-    test1(x)
+  val test2 = toplevel("test2") { x: Rep[Int] =>
+    printf("Hello, world: test2\n")
+    x
   }
 
   val test1 = toplevel("test1") { x: Rep[Int] =>
@@ -40,12 +41,13 @@ trait LMSAppTest3 extends FRPDSLApplication {
     test2(x)
   }
 
-  val test2 = toplevel("test2") { x: Rep[Int] =>
-    printf("Hello, world: test2\n")
-    x
+  val main = toplevel("main") { x: Rep[Int] =>
+    printf("Hello, world: main\n")
+    test1(x)
   }
 
 }
+
 
 
 import OutputGenerator.withOutFile
