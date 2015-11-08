@@ -54,13 +54,13 @@ object LMSAppTestsRunner {
 
   def main(args: Array[String]): Unit = {
     withOutFile("LMStest1.c") {
-      new LMSAppTest1 with FRPDSLApplicationRunner
+      new LMSAppTest1 with CFRPDSLApplicationRunner
     }
     withOutFile("LMStest2.c") {
-      new LMSAppTest2 with FRPDSLApplicationRunner
+      new LMSAppTest2 with CFRPDSLApplicationRunner
     }
     withOutFile("LMStest3.c") {
-      new LMSAppTest3 with FRPDSLApplicationRunner
+      new LMSAppTest3 with CFRPDSLApplicationRunner
     }
   }
 }

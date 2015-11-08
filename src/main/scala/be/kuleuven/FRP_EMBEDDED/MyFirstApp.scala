@@ -39,6 +39,6 @@ trait MyFirstApp extends FRPDSLApplication {
  */
 object MyFirstAppRunner {
   def main(args: Array[String]): Unit = {
-    new MyFirstApp with FRPDSLApplicationRunner
+    new MyFirstApp with CFRPDSLImpl
   }
 }
