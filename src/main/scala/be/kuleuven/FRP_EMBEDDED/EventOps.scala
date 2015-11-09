@@ -1,6 +1,6 @@
 package be.kuleuven.FRP_EMBEDDED
 
-import scala.lms.common.{Base, BaseExp, LiftAll}
+import scala.lms.common.Base
 
 trait EventOps extends Base {
   behavior: BehaviorOps =>
@@ -16,27 +16,11 @@ trait EventOps extends Base {
   }
 
   def TimerEvent(i: Rep[Int]): Event[Int]
-  def printEvent[A](e: Event[A]): String
+
 }
 
 trait EventOpsImpl extends EventOps {
   behaviorImpl: BehaviorOpsImpl =>
-
-  override def printEvent[A](e: Event[A]) = {
-    def printParents[B](l: List[Event[B]]): String = {
-      val x = for(p <- l) yield printEvent(p)
-      x.mkString(",")
-    }
-
-    e match {
-      case i @ InputEvent(_) => "InputEvent@"+ Integer.toHexString(System.identityHashCode(i))
-      case c @ ConstantEvent(_,_) => "ConstantEvent@"+ Integer.toHexString(System.identityHashCode(c)) + "(" + printParents(c.parentEvents) + ")"
-      case m @ MapEvent(_,_) => "MapEvent@" + Integer.toHexString(System.identityHashCode(m)) + "(" + printParents(m.parentEvents) + ")"
-      case f @ FilterEvent(_,_) => "FilterEvent@" + Integer.toHexString(System.identityHashCode(f)) + "(" + printParents(f.parentEvents) + ")"
-      case m @ MergeEvent(_) => "MergeEvent@" + Integer.toHexString(System.identityHashCode(m)) + "(" + printParents(m.parentEvents) + ")"
-      case _ => "other"
-    }
-  }
 
   override def TimerEvent(i: Rep[Int]) = new InputEvent[Int](i)  // only conceptual
 
@@ -67,7 +51,7 @@ trait EventOpsImpl extends EventOps {
   }
   case class FilterEvent[A](parent: Event[A], f: Rep[A] => Rep[Boolean]) extends EventNode[A,A] {
     override val parentEvents: List[Event[A]] = List(parent)
-    override val updateFunc: Rep[A]=>Rep[A] = ???
+    override val updateFunc: Rep[A]=>Rep[A] = ??? // TODO: how to use Rep version of ifthenelse
   }
   case class MergeEvent[A](parents: List[Event[A]]) extends EventNode[A,A] {
     override val parentEvents: List[Event[A]] = parents
@@ -80,7 +64,7 @@ trait EventOpsImpl extends EventOps {
     override def filter(f: Rep[A] => Rep[Boolean]): Event[A] = new FilterEvent[A](this, f)
     override def merge(e: Event[A]*) = new MergeEvent[A](this :: e.toList)
 
-    override def startsWith(i: Rep[A]): Behavior[A] = ???
-    override def foldp[B](fun: (A, B) => B, init: B): Behavior[B] = ???
+    override def startsWith(i: Rep[A]): Behavior[A] = ??? // TODO: implement
+    override def foldp[B](fun: (A, B) => B, init: B): Behavior[B] = ??? // TODO: implement
   }
 }

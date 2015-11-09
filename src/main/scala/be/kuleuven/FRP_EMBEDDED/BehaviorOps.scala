@@ -1,11 +1,11 @@
 package be.kuleuven.FRP_EMBEDDED
 
-import scala.lms.common.{BaseExp, Base}
+import scala.lms.common.{Base}
 
-trait BehaviorOps {
+trait BehaviorOps extends Base{
   event: EventOps =>
 
-  trait Behavior[A] extends Base {
+  trait Behavior[A] {
     def valueNow (): A
 
     def delay (t: Rep[Int]): Behavior[A]
@@ -41,7 +41,7 @@ trait BehaviorOpsImpl extends BehaviorOps {
     override def valueNow(): A = value
   }
 
-  case class ConstantBehavior[A](value: A) extends BehaviorNode[A] with BaseExp
+  case class ConstantBehavior[A](value: A) extends BehaviorNode[A]
 
   trait BehaviorImpl[A] extends Behavior[A] {
     override def delay(t: Rep[Int]): Behavior[A] = ???

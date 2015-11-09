@@ -1,12 +1,15 @@
 package be.kuleuven.FRP_EMBEDDED
 
-import java.io.PrintWriter
-
 import scala.lms.common._
+import java.lang.{Integer => JInteger}
 
 trait FRPDSL
     extends ScalaOpsPkg with TupledFunctions with UncheckedOps with LiftPrimitives with LiftString with LiftVariables with LiftBoolean
     with EventOps with BehaviorOps {
+
+  def printEvent[A](e: Event[A]): String
+
+  def generateEventFunctions[A:Typ](e: Event[A]): Unit
 
   // keep track of top level functions
   case class TopLevel[A,B](name: String, mA: Typ[A], mB:Typ[B], f: Rep[A] => Rep[B])
@@ -15,5 +18,36 @@ trait FRPDSL
     val g = (x: Rep[A]) => unchecked[B](name,"(",x,")")
     rec.getOrElseUpdate(name, TopLevel(name, typ[A], typ[B], f))
     g
+  }
+}
+
+trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
+
+  override def printEvent[A](e: Event[A]) = {
+    def printParents[B](l: List[Event[B]]): String = {
+      val x = for(p <- l) yield printEvent(p)
+      x.mkString(",")
+    }
+
+    e match {
+      case i @ InputEvent(_) => "InputEvent@"+ JInteger.toHexString(System.identityHashCode(i))
+      case c @ ConstantEvent(_,_) => "ConstantEvent@"+ JInteger.toHexString(System.identityHashCode(c)) + "(" + printParents(c.parentEvents) + ")"
+      case m @ MapEvent(_,_) => "MapEvent@" + JInteger.toHexString(System.identityHashCode(m)) + "(" + printParents(m.parentEvents) + ")"
+      case f @ FilterEvent(_,_) => "FilterEvent@" + JInteger.toHexString(System.identityHashCode(f)) + "(" + printParents(f.parentEvents) + ")"
+      case m @ MergeEvent(_) => "MergeEvent@" + JInteger.toHexString(System.identityHashCode(m)) + "(" + printParents(m.parentEvents) + ")"
+      case _ => "other"
+    }
+  }
+
+  override def generateEventFunctions[A:Typ](e: Event[A]): Unit = {
+    ???
+    /*e match {
+      case i @ InputEvent(_)      => toplevel("inputfun") {i.updateFunc}
+      case c @ ConstantEvent(_,_) => toplevel("constantfun") {c.updateFunc}
+      case m @ MapEvent(_,_)      => toplevel("mapfun") {m.updateFunc}
+      case f @ FilterEvent(_,_)   => toplevel("filterfun") {f.updateFunc}
+      case m @ MergeEvent(_)      => toplevel("mergefun") {m.updateFunc}
+      case _                      => ()
+    }*/
   }
 }

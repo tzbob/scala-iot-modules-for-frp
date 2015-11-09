@@ -5,7 +5,7 @@ import java.io.{FileOutputStream, PrintStream, File}
 object OutputGenerator {
 
   def withOutFile(name: String)(func: => Unit): Unit = {
-    val home = "/home/ben/thesis/FRP_embedded/generated/"
+    val home = "/home/ben/thesis/FRP_embedded/generated/" // TODO: remove hard coding
 
     val file = new File(home+name)
     file.getParentFile.mkdirs()

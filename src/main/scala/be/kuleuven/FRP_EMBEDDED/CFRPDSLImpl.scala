@@ -8,9 +8,8 @@ import scala.lms.common._
 /*
  * Implementation of the FRP DSL to generate C code
  */
-trait CFRPDSLImpl
-    extends FRPDSL with ScalaOpsPkgExp with TupledFunctionsRecursiveExp with UncheckedOpsExp
-    with EventOpsImpl with BehaviorOpsImpl { self =>
+trait CFRPDSLImpl extends FRPDSLImpl
+    with ScalaOpsPkgExp with TupledFunctionsRecursiveExp with UncheckedOpsExp { self =>
 
   val codegen = new CCodeGenPkg with CGenVariables with CGenTupledFunctions with CGenUncheckedOps { val IR: self.type = self }
 
