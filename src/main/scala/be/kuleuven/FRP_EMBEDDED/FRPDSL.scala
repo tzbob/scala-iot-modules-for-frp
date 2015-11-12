@@ -9,7 +9,7 @@ trait FRPDSL
 
   def printEvent[A](e: Event[A]): String
 
-  def generateEventFunctions[A:Typ](e: Event[A]): Unit
+  def generateEventFunctions[A](e: Event[A]): Unit
 
   // keep track of top level functions
   case class TopLevel[A,B](name: String, mA: Typ[A], mB:Typ[B], f: Rep[A] => Rep[B])
@@ -39,15 +39,15 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     }
   }
 
-  override def generateEventFunctions[A:Typ](e: Event[A]): Unit = {
-    ???
-    /*e match {
-      case i @ InputEvent(_)      => toplevel("inputfun") {i.updateFunc}
-      case c @ ConstantEvent(_,_) => toplevel("constantfun") {c.updateFunc}
-      case m @ MapEvent(_,_)      => toplevel("mapfun") {m.updateFunc}
-      case f @ FilterEvent(_,_)   => toplevel("filterfun") {f.updateFunc}
-      case m @ MergeEvent(_)      => toplevel("mergefun") {m.updateFunc}
+  override def generateEventFunctions[A](e: Event[A]): Unit = {
+
+    e match {
+      case i @ InputEvent(_)      => toplevel("inputfun")(i.updateFunc)(i.typIn,i.typOut)
+      case c @ ConstantEvent(_,_) => toplevel("constantfun")(c.updateFunc)(c.typIn,c.typOut)
+      case m @ MapEvent(_,_)      => toplevel("mapfun")(m.updateFunc)(m.typIn,m.typOut)
+      case f @ FilterEvent(_,_)   => toplevel("filterfun")(f.updateFunc)(f.typIn,f.typOut)
+      case m @ MergeEvent(_)      => toplevel("mergefun")(m.updateFunc)(m.typIn,m.typOut)
       case _                      => ()
-    }*/
+    }
   }
 }
