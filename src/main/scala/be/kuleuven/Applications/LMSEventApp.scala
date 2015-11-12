@@ -24,7 +24,7 @@ trait LMSEventAppReal extends FRPDSLApplication {
 
   val t1 : Event[Int] = TimerEvent(5) // every 5 sec
   val n1 = t1.map[Int]( (i:Rep[Int]) => 2*i )
-  val n2 = t1.map[Int]( (i:Rep[Int]) => i+3 )
+  val n2 = n1.map[Int]( (i:Rep[Int]) => i+3 )
 
   generateEventFunctions(n2)
 }
