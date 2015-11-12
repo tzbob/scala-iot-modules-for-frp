@@ -23,9 +23,10 @@ trait LMSEventApp extends FRPDSLApplication {
 trait LMSEventAppReal extends FRPDSLApplication {
 
   val t1 : Event[Int] = TimerEvent(5) // every 5 sec
-  val n1 = t1.map[String]( (i:Rep[Int]) => i.toString )
+  val n1 = t1.map[Int]( (i:Rep[Int]) => 2*i )
+  val n2 = t1.map[Int]( (i:Rep[Int]) => i+3 )
 
-  generateEventFunctions(n1)
+  generateEventFunctions(n2)
 }
 
 
@@ -34,14 +35,12 @@ import OutputGenerator.withOutFile
 object LMSEventAppRunner {
 
   def main(args: Array[String]): Unit = {
-    withOutFile("LMSEventApp.c") {
+    /*withOutFile("LMSEventApp.c") {
       new LMSEventApp with CFRPDSLApplicationRunner
-    }
+    }*/
 
-    /* TODO: enable test when generateEventFunctions is implemented
-    withOutFile("LMSEventAppReal.c") {
+    //withOutFile("LMSEventAppReal.c") {
       new LMSEventAppReal with CFRPDSLApplicationRunner
-    }
-    */
+    //}
   }
 }
