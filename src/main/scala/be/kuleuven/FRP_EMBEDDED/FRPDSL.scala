@@ -41,13 +41,31 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
   override def generateEventFunctions[A](e: Event[A]): Unit = {
 
-    e match {
-      case i @ InputEvent(_)      => toplevel("inputfun")(i.updateFunc)(i.typIn,i.typOut)
-      case c @ ConstantEvent(_,_) => toplevel("constantfun")(c.updateFunc)(c.typIn,c.typOut)
-      case m @ MapEvent(_,_)      => toplevel("mapfun")(m.updateFunc)(m.typIn,m.typOut)
-      case f @ FilterEvent(_,_)   => toplevel("filterfun")(f.updateFunc)(f.typIn,f.typOut)
-      case m @ MergeEvent(_)      => toplevel("mergefun")(m.updateFunc)(m.typIn,m.typOut)
-      case _                      => ()
+    def generateEventFunction[B](ev: Event[B]): Unit = {
+      ev match {
+        case en @ InputEvent(_)      => toplevel("inputfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
+                                        for(p <- en.parentEvents)
+                                          generateEventFunction(p)
+
+        case en @ ConstantEvent(_,_) => toplevel("constantfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
+                                        for(p <- en.parentEvents)
+                                          generateEventFunction(p)
+
+        case en @ MapEvent(_,_)      => toplevel("mapfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
+                                        for(p <- en.parentEvents)
+                                          generateEventFunction(p)
+
+        case en @ FilterEvent(_,_)   => toplevel("filterfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
+                                        for(p <- en.parentEvents)
+                                          generateEventFunction(p)
+
+        case en @ MergeEvent(_)      => toplevel("mergefun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
+                                        for(p <- en.parentEvents)
+                                          generateEventFunction(p)
+        case _                      => ()
+      }
     }
+
+    generateEventFunction(e)
   }
 }
