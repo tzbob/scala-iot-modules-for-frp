@@ -7,7 +7,7 @@ trait EventOps extends Base {
 
   trait Event[A] {
     type In
-    type Out
+    type Out = A
     val typIn: Typ[In]
     val typOut: Typ[Out]
 
@@ -31,10 +31,9 @@ trait EventOpsImpl extends EventOps {
 
   abstract class EventNode[A,B] extends EventImpl[B] {
     val id = EventNode.nextid
-    val updateFunc: Rep[A] => Rep[B]
-    val parentEvents: List[Event[A]]
     override type In = A
-    override type Out = B
+    val updateFunc: Rep[In] => Rep[Out]
+    val parentEvents: List[Event[In]]
 
     // val rank // Use for topological order --> glitch prevention
 
@@ -52,33 +51,33 @@ trait EventOpsImpl extends EventOps {
 
   case class InputEvent[A] (i: Rep[A]) (implicit tA:Typ[A]) extends EventNode[A,A] {
     override val parentEvents: List[EventNode[A, A]] = Nil //TODO: implement
-    override val updateFunc: Rep[A] => Rep[A] = _ => i
-    override val typIn: Typ[A] = tA
-    override val typOut: Typ[A] = tA
+    override val updateFunc: Rep[In] => Rep[Out] = _ => i
+    override val typIn: Typ[In] = tA
+    override val typOut: Typ[Out] = tA
   }
   case class ConstantEvent[A,B](parent: Event[A], c : Rep[B])(implicit tB:Typ[B]) extends EventNode[A,B] {
-    override val parentEvents: List[Event[A]] = List(parent)
-    override val updateFunc: Rep[A]=>Rep[B] = _ => c
-    override val typIn: Typ[A] = parent.typOut.asInstanceOf[Typ[A]] //TODO: fix cast
-    override val typOut: Typ[B] = tB
+    override val parentEvents: List[Event[In]] = List(parent)
+    override val updateFunc: Rep[In]=>Rep[Out] = _ => c
+    override val typIn: Typ[In] = parent.typOut
+    override val typOut: Typ[Out] = tB
   }
   case class MapEvent[A,B](parent: Event[A], f: Rep[A] => Rep[B])(implicit tB:Typ[B]) extends EventNode[A,B] {
-    override val parentEvents: List[Event[A]] = List(parent)
-    override val updateFunc: Rep[A]=>Rep[B] = f
-    override val typIn: Typ[A] = parent.typOut.asInstanceOf[Typ[A]] //TODO: fix cast
-    override val typOut: Typ[B] = tB
+    override val parentEvents: List[Event[In]] = List(parent)
+    override val updateFunc: Rep[In]=>Rep[Out] = f
+    override val typIn: Typ[In] = parent.typOut
+    override val typOut: Typ[Out] = tB
   }
   case class FilterEvent[A](parent: Event[A], f: Rep[A] => Rep[Boolean]) extends EventNode[A,A] {
-    override val parentEvents: List[Event[A]] = List(parent)
-    override val updateFunc: Rep[A]=>Rep[A] = ??? //TODO: how to use Rep version of ifthenelse
-    override val typIn: Typ[A] = parent.typOut.asInstanceOf[Typ[A]] //TODO: fix cast
-    override val typOut: Typ[A] = parent.typOut.asInstanceOf[Typ[A]] //TODO: fix cast
+    override val parentEvents: List[Event[In]] = List(parent)
+    override val updateFunc: Rep[In]=>Rep[Out] = ??? //TODO: how to use Rep version of ifthenelse
+    override val typIn: Typ[In] = parent.typOut
+    override val typOut: Typ[Out] = parent.typOut
   }
   case class MergeEvent[A](parents: List[Event[A]]) extends EventNode[A,A] {
-    override val parentEvents: List[Event[A]] = parents
-    override val updateFunc: Rep[A] => Rep[A] = null //TODO: implement
-    override val typIn: Typ[A] = parents(0).typOut.asInstanceOf[Typ[A]] //TODO: fix if different typed Events can be merged
-    override val typOut: Typ[A] = parents(0).typOut.asInstanceOf[Typ[A]] //TODO: fix cast
+    override val parentEvents: List[Event[In]] = parents
+    override val updateFunc: Rep[In] => Rep[Out] = null //TODO: implement
+    override val typIn: Typ[In] = parents(0).typOut //TODO: fix if different typed Events can be merged
+    override val typOut: Typ[Out] = parents(0).typOut
   }
 
   trait EventImpl[A] extends Event[A] {
