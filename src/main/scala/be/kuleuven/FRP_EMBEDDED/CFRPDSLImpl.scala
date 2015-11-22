@@ -28,5 +28,5 @@ trait CFRPDSLImpl extends FRPDSLImpl
 
     //System.out.println(source.toString)
   }
-  emitAll()
+  //emitAll()
 }
