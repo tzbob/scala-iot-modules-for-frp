@@ -44,11 +44,11 @@ object LMSEventAppRunner {
       new LMSEventApp with CFRPDSLApplicationRunner
     }*/
 
-    withOutFile("LMSEventAppReal.c") {
+    //withOutFile("LMSEventAppReal.c") {
       new LMSEventAppReal with CFRPDSLApplicationRunner {
         createMainFun
         emitAll()
       }
-    }
+    //}
   }
 }
