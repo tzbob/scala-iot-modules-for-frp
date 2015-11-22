@@ -10,8 +10,10 @@ trait FRPDSL
   def printEvent[A](e: Event[A]): String
 
   def generateEventFunctions[A](e: Event[A]): Unit
+  def generator[A](e: Event[A]): Unit
 
   // keep track of top level functions
+  // TODO: can be removed eventually, user won't need to define them
   def toplevel[A:Typ,B:Typ](name: String)(f: Rep[A] => Rep[B]): Rep[A] => Rep[B]
 }
 
@@ -61,6 +63,41 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     }
 
     generateEventFunction(e)
+  }
+
+  override def generator[X](e: Event[X]): Unit = {
+    /*def generate[C,D](ev: EventNode[C,D], s:String): Rep[C] => Rep[D] = {
+      toplevel(s+ev.id)(ev.updateFunc)(ev.typIn,ev.typOut)
+    }*/
+
+    def myComposeFunction[A,B,C,D](first:Rep[B] => Rep[A], second:Rep[C] => Rep[B]): Rep[C] => Rep[A]  = {
+      x:Rep[C] => val y = second(x);first(y)
+    }
+
+    def generateRec[EndType,B](e:Event[B], f:Rep[B]=>Rep[EndType], typEnd:Typ[EndType]): Unit = {
+      e match {
+        case en @ MapEvent(_,_) =>
+          val g: (Rep[en.In] => Rep[B]) = toplevel("mapfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
+          val x: (Rep[en.In]=>Rep[EndType]) = myComposeFunction(f,g)
+          generateRec[EndType,en.In](en.parent,x,typEnd)
+
+        case en @ InputEvent(_) =>
+          val g: (Rep[en.In] => Rep[B]) = toplevel("inputfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
+          val x: (Rep[en.In]=>Rep[EndType]) = myComposeFunction(f,g)
+          toplevel("top")(x)(en.typIn,typEnd)
+
+        case _ => ()
+      }
+    }
+
+    e match {
+      case en @ MapEvent(_,_) =>
+        val f: (Rep[en.In]=>Rep[en.Out]) = toplevel("mapfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
+        generateRec(en.parent, f, en.typOut)
+
+      case _ => ()
+    }
+
   }
 
 

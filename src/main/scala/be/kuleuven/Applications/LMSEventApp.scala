@@ -29,7 +29,8 @@ trait LMSEventAppReal extends FRPDSLApplication {
     val n1 = t1.map[Int]( (i:Rep[Int]) => 2*i )
     val n2 = n1.map[Int]( (i:Rep[Int]) => i+3 )
 
-    generateEventFunctions(n2)
+    //generateEventFunctions(n2)
+    generator(n2)
   }
 }
 
@@ -43,11 +44,11 @@ object LMSEventAppRunner {
       new LMSEventApp with CFRPDSLApplicationRunner
     }*/
 
-    //withOutFile("LMSEventAppReal.c") {
+    withOutFile("LMSEventAppReal.c") {
       new LMSEventAppReal with CFRPDSLApplicationRunner {
         createMainFun
         emitAll()
       }
-    //}
+    }
   }
 }
