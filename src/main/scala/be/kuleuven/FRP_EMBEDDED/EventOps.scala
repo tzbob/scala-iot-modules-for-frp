@@ -49,10 +49,10 @@ trait EventOpsImpl extends EventOps {
     private def nextid = {id += 1;id}
   }
 
-  case class InputEvent[A] (i: Rep[A]) (implicit tA:Typ[A]) extends EventNode[A,A] {
-    override val parentEvents: List[EventNode[A, A]] = Nil //TODO: implement
-    override val updateFunc: Rep[In] => Rep[Out] = _ => i
-    override val typIn: Typ[In] = tA
+  case class InputEvent[A] (i: Rep[A]) (implicit tA:Typ[A]) extends EventNode[Unit,A] {
+    override val parentEvents: List[Event[Unit]] = Nil //TODO: implement
+    override val updateFunc: Rep[In] => Rep[Out] = Unit => i // TODO: fix Unit
+    override val typIn: Typ[In] = typ[Unit]
     override val typOut: Typ[Out] = tA
   }
   case class ConstantEvent[A,B](parent: Event[A], c : Rep[B])(implicit tB:Typ[B]) extends EventNode[A,B] {
