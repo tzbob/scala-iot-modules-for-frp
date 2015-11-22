@@ -5,6 +5,8 @@ package be.kuleuven.FRP_EMBEDDED
  */
 trait FRPDSLApplication extends FRPDSL {
   //def main(args: Array[String])
+
+  def createMainFun
 }
 
 trait FRPDSLApplicationRunner extends FRPDSLImpl

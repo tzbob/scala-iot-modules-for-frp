@@ -7,14 +7,16 @@ import be.kuleuven.FRP_EMBEDDED.{CFRPDSLApplicationRunner, OutputGenerator, FRPD
  */
 trait LMSEventApp extends FRPDSLApplication {
 
-  val mapfun = toplevel("mapevent") { x: Rep[Int] =>
-    2*x
-  }
+  override def createMainFun {
+    val mapfun = toplevel("mapevent") { x: Rep[Int] =>
+      2 * x
+    }
 
-  toplevel("main") { x: Rep[Int] =>
-    printf("Result of mapping: %d\n", mapfun(x))
+    toplevel("main") { x: Rep[Int] =>
+      printf("Result of mapping: %d\n", mapfun(x))
+    }
+    ()
   }
-  ()
 }
 
 /*
@@ -22,7 +24,7 @@ trait LMSEventApp extends FRPDSLApplication {
  */
 trait LMSEventAppReal extends FRPDSLApplication {
 
-  def createMainFun: Unit = {
+  override def createMainFun {
     val t1: Event[Int] = TimerEvent(5) // every 5 sec
     val n1 = t1.map[Int]( (i:Rep[Int]) => 2*i )
     val n2 = n1.map[Int]( (i:Rep[Int]) => i+3 )
@@ -37,7 +39,7 @@ import OutputGenerator.withOutFile
 object LMSEventAppRunner {
 
   def main(args: Array[String]): Unit = {
-    /*withOutFile("LMSEventApp.c") {
+    /*withOutFile("LMSEventApp.c") {A
       new LMSEventApp with CFRPDSLApplicationRunner
     }*/
 
