@@ -7,6 +7,7 @@ import be.kuleuven.FRP_EMBEDDED.{CFRPDSLImpl, FRPDSLApplication}
  */
 trait MyFirstApp extends FRPDSLApplication {
 
+    override def createMainFun = ???
     System.out.println("My first application")
 
     // PRINT CASE 1

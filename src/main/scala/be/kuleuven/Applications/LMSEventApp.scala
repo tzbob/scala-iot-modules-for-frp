@@ -39,7 +39,7 @@ import OutputGenerator.withOutFile
 object LMSEventAppRunner {
 
   def main(args: Array[String]): Unit = {
-    /*withOutFile("LMSEventApp.c") {A
+    /*withOutFile("LMSEventApp.c") {
       new LMSEventApp with CFRPDSLApplicationRunner
     }*/
 
