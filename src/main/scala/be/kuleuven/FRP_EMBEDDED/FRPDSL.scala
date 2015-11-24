@@ -105,13 +105,8 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
       }
     }
 
-    e match {
-      case en @ MapEvent(_,_) =>
-        val voidretfun: (Rep[en.Out]=>Rep[Unit]) = { x:Rep[en.In] => unitToRepUnit( () ) }
-        generateRec(en, voidretfun)
-
-      case _ => ()
-    }
+    val voidretfun = {x:Rep[X] => unitToRepUnit( () )}
+    generateRec(e,voidretfun)
 
   }
 
