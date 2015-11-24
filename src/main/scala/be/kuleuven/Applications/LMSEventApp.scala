@@ -22,7 +22,7 @@ trait LMSEventApp extends FRPDSLApplication {
 /*
  * More realistic representation of the user program
  */
-trait LMSEventAppReal extends FRPDSLApplication {
+trait LMSEventMapApp extends FRPDSLApplication {
 
   override def createMainFun {
     val t1: Event[Int] = TimerEvent(5) // every 5 sec
@@ -31,6 +31,19 @@ trait LMSEventAppReal extends FRPDSLApplication {
 
     //generateEventFunctions(n2)
     generator(n2)
+  }
+}
+
+trait LMSEventFilterApp extends FRPDSLApplication {
+
+  override def createMainFun {
+    val t1: Event[Int] = TimerEvent(5) // every 5 sec
+    val n1 = t1.map[Int]( (i:Rep[Int]) => 2*i )
+    val n2 = n1.filter( (i:Rep[Int]) => infix_%(i,2)==0)
+    val n3 = n2.map[Int]( (i:Rep[Int]) => i+1)
+
+    //generateEventFunctions(n2)
+    generator(n3)
   }
 }
 
@@ -45,7 +58,7 @@ object LMSEventAppRunner {
     }*/
 
     //withOutFile("LMSEventAppReal.c") {
-      new LMSEventAppReal with CFRPDSLApplicationRunner {
+      new LMSEventFilterApp with CFRPDSLApplicationRunner {
         createMainFun
         emitAll()
       }

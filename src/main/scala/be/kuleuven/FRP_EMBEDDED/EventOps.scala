@@ -69,7 +69,7 @@ trait EventOpsImpl extends EventOps {
   }
   case class FilterEvent[A](parent: Event[A], f: Rep[A] => Rep[Boolean]) extends EventNode[A,A] {
     override val parentEvents: List[Event[In]] = List(parent)
-    override val updateFunc: Rep[In]=>Rep[Out] = ??? //TODO: how to use Rep version of ifthenelse
+    override val updateFunc: Rep[In]=>Rep[Out] = null //TODO: how to use Rep version of ifthenelse
     override val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = parent.typOut
   }
