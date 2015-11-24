@@ -51,7 +51,7 @@ trait EventOpsImpl extends EventOps {
 
   case class InputEvent[A] (i: Rep[A]) (implicit tA:Typ[A]) extends EventNode[Unit,A] {
     override val parentEvents: List[Event[Unit]] = Nil //TODO: implement
-    override val updateFunc: Rep[In] => Rep[Out] = Unit => i // TODO: fix Unit
+    override val updateFunc: Rep[In] => Rep[Out] = unit => i // TODO: fix Unit
     override val typIn: Typ[In] = typ[Unit]
     override val typOut: Typ[Out] = tA
   }
