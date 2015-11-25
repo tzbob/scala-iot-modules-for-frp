@@ -81,12 +81,13 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     // TODO: notion: all explicit types can be ommitted since all Any -> no actual type checking. Fix?
     def generateRec[B](e:Event[B], f:Rep[B]=>Rep[Unit]): Unit = {
       e match {
+        case en @ MergeEvent(_) => ()
+
         case en @ FilterEvent(_,_) =>
           val filterfun: (Rep[en.In] => Rep[Boolean]) = toplevel("filterfun"+en.id)(en.f)(en.typIn,typ[Boolean])
           val g: Rep[en.In]=>Rep[en.Out] = { x =>
             if (!filterfun(x)) unchecked[Unit]("return")
-            val y = x
-            y.asInstanceOf[Rep[en.Out]]
+            x
           }
           val x: Rep[en.In] => Rep[Unit] = myComposeFunction(f,g)
           generateRec[en.In](en.parent,x)
