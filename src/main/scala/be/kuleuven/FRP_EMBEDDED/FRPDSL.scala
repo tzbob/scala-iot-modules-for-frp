@@ -83,6 +83,11 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
       e match {
         case en @ MergeEvent(_,_) => ()
 
+        case en @ ConstantEvent(_,_) =>
+          val g: (Rep[en.In] => Rep[en.Out]) = toplevel("constantfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
+          val x: (Rep[en.In] => Rep[Unit]) = myComposeFunction(f,g)
+          generateRec[en.In](en.parent,x)
+
         case en @ FilterEvent(_,_) =>
           val filterfun: (Rep[en.In] => Rep[Boolean]) = toplevel("filterfun"+en.id)(en.f)(en.typIn,typ[Boolean])
           val g: Rep[en.In]=>Rep[en.Out] = { x =>
