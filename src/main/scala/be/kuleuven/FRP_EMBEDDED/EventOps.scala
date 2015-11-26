@@ -14,7 +14,7 @@ trait EventOps extends Base {
     def constant[B:Typ] (c: Rep[B]): Event[B]
     def map[B:Typ] (f: Rep[A] => Rep[B]): Event[B]
     def filter (f: Rep[A] => Rep[Boolean]): Event[A]
-    def merge (e: Event[A]*): Event[A]
+    def merge (e: Event[A], f:(Rep[A],Rep[A])=>Rep[A]): Event[A]
 
     def startsWith(i: Rep[A]): Behavior[A]
     def foldp[B]( fun:((A,B) => B), init:B): Behavior[B]
@@ -73,7 +73,7 @@ trait EventOpsImpl extends EventOps {
     override val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = parent.typOut
   }
-  case class MergeEvent[A](parents: List[Event[A]]) extends EventNode[A,A] {
+  case class MergeEvent[A](parents: List[Event[A]], f:(Rep[A],Rep[A])=>Rep[A] ) extends EventNode[A,A] {
     override val parentEvents: List[Event[In]] = parents
     override val updateFunc: Rep[In] => Rep[Out] = null //TODO: implement
     override val typIn: Typ[In] = parents(0).typOut //TODO: fix if different typed Events can be merged
@@ -84,7 +84,7 @@ trait EventOpsImpl extends EventOps {
     override def constant[B:Typ](c: Rep[B]): Event[B] = ConstantEvent[A,B](this, c)
     override def map[B:Typ](f: Rep[A] => Rep[B]): Event[B] = MapEvent[A,B](this, f)
     override def filter(f: Rep[A] => Rep[Boolean]): Event[A] = FilterEvent[A](this, f)
-    override def merge(e: Event[A]*) = MergeEvent[A](this :: e.toList)
+    override def merge(e: Event[A], f: (Rep[A],Rep[A])=>Rep[A]) = MergeEvent[A](this :: e :: Nil, f)
 
     override def startsWith(i: Rep[A]): Behavior[A] = ??? // TODO: implement
     override def foldp[B](fun: (A, B) => B, init: B): Behavior[B] = ??? // TODO: implement

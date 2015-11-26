@@ -30,7 +30,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
       case c @ ConstantEvent(_,_) => "ConstantEvent@"+ JInteger.toHexString(System.identityHashCode(c)) + "(" + printParents(c.parentEvents) + ")"
       case m @ MapEvent(_,_) => "MapEvent@" + JInteger.toHexString(System.identityHashCode(m)) + "(" + printParents(m.parentEvents) + ")"
       case f @ FilterEvent(_,_) => "FilterEvent@" + JInteger.toHexString(System.identityHashCode(f)) + "(" + printParents(f.parentEvents) + ")"
-      case m @ MergeEvent(_) => "MergeEvent@" + JInteger.toHexString(System.identityHashCode(m)) + "(" + printParents(m.parentEvents) + ")"
+      case m @ MergeEvent(_,_) => "MergeEvent@" + JInteger.toHexString(System.identityHashCode(m)) + "(" + printParents(m.parentEvents) + ")"
       case _ => "other"
     }
   }
@@ -55,7 +55,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
                                         for(p <- en.parentEvents)
                                           generateEventFunction(p)
 
-        case en @ MergeEvent(_)      => toplevel("mergefun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
+        case en @ MergeEvent(_,_)      => toplevel("mergefun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
                                         for(p <- en.parentEvents)
                                           generateEventFunction(p)
         case _                      => ()
@@ -81,7 +81,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     // TODO: notion: all explicit types can be ommitted since all Any -> no actual type checking. Fix?
     def generateRec[B](e:Event[B], f:Rep[B]=>Rep[Unit]): Unit = {
       e match {
-        case en @ MergeEvent(_) => ()
+        case en @ MergeEvent(_,_) => ()
 
         case en @ FilterEvent(_,_) =>
           val filterfun: (Rep[en.In] => Rep[Boolean]) = toplevel("filterfun"+en.id)(en.f)(en.typIn,typ[Boolean])
