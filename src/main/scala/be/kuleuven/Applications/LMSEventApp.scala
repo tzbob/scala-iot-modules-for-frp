@@ -56,6 +56,20 @@ trait LMSEventConstantApp extends FRPDSLApplication {
   }
 }
 
+trait LMSEventMergeApp extends FRPDSLApplication {
+
+  override def createMainFun {
+    val t1: Event[Int] = TimerEvent(5)
+    val t2: Event[Int] = TimerEvent(10)
+    val c1 = t1.constant( 1 )
+    val c2 = t2.constant( 2 )
+    val m = c1.merge(c2, (x:Rep[Int],y:Rep[Int])=>x+y)
+    val n1 = m.map( (x:Rep[Int]) => x*2 )
+
+    generator(n1)
+  }
+}
+
 import OutputGenerator.withOutFile
 
 object LMSEventAppRunner {
@@ -64,6 +78,13 @@ object LMSEventAppRunner {
     /*withOutFile("LMSEventApp.c") {
       new LMSEventApp with CFRPDSLApplicationRunner
     }*/
+
+    //withOutFile("LMSEventAppReal.c") {
+    new LMSEventFilterApp with CFRPDSLApplicationRunner {
+      createMainFun
+      emitAll()
+    }
+    //}
 
     //withOutFile("LMSEventAppReal.c") {
       new LMSEventConstantApp with CFRPDSLApplicationRunner {

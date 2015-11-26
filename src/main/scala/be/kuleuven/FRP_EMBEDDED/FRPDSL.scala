@@ -9,7 +9,6 @@ trait FRPDSL
 
   def printEvent[A](e: Event[A]): String
 
-  def generateEventFunctions[A](e: Event[A]): Unit
   def generator[A](e: Event[A]): Unit
 
   // keep track of top level functions
@@ -20,49 +19,20 @@ trait FRPDSL
 trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
   override def printEvent[A](e: Event[A]) = {
-    def printParents[B](l: List[Event[B]]): String = {
-      val x = for(p <- l) yield printEvent(p)
+    def printParents[B](p: Event[B]): String = {
+      val x = printEvent(p)
       x.mkString(",")
     }
 
     e match {
       case i @ InputEvent(_) => "InputEvent@"+ JInteger.toHexString(System.identityHashCode(i))
-      case c @ ConstantEvent(_,_) => "ConstantEvent@"+ JInteger.toHexString(System.identityHashCode(c)) + "(" + printParents(c.parentEvents) + ")"
-      case m @ MapEvent(_,_) => "MapEvent@" + JInteger.toHexString(System.identityHashCode(m)) + "(" + printParents(m.parentEvents) + ")"
-      case f @ FilterEvent(_,_) => "FilterEvent@" + JInteger.toHexString(System.identityHashCode(f)) + "(" + printParents(f.parentEvents) + ")"
-      case m @ MergeEvent(_,_) => "MergeEvent@" + JInteger.toHexString(System.identityHashCode(m)) + "(" + printParents(m.parentEvents) + ")"
+      case c @ ConstantEvent(_,_) => "ConstantEvent@"+ JInteger.toHexString(System.identityHashCode(c)) + "(" + printParents(c.parent) + ")"
+      case m @ MapEvent(_,_) => "MapEvent@" + JInteger.toHexString(System.identityHashCode(m)) + "(" + printParents(m.parent) + ")"
+      case f @ FilterEvent(_,_) => "FilterEvent@" + JInteger.toHexString(System.identityHashCode(f)) + "(" + printParents(f.parent) + ")"
+      case m @ MergeEvent(_,_) => "MergeEvent@" + JInteger.toHexString(System.identityHashCode(m)) +
+                                      "(" + printParents(m.parentLeft) + "," + printParents(m.parentRight) + ")"
       case _ => "other"
     }
-  }
-
-  override def generateEventFunctions[A](e: Event[A]): Unit = {
-
-    def generateEventFunction[B](ev: Event[B]): Unit = {
-      ev match {
-        case en @ InputEvent(_)      => toplevel("inputfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
-                                        for(p <- en.parentEvents)
-                                          generateEventFunction(p)
-
-        case en @ ConstantEvent(_,_) => toplevel("constantfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
-                                        for(p <- en.parentEvents)
-                                          generateEventFunction(p)
-
-        case en @ MapEvent(_,_)      => toplevel("mapfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
-                                        for(p <- en.parentEvents)
-                                          generateEventFunction(p)
-
-        case en @ FilterEvent(_,_)   => toplevel("filterfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
-                                        for(p <- en.parentEvents)
-                                          generateEventFunction(p)
-
-        case en @ MergeEvent(_,_)      => toplevel("mergefun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
-                                        for(p <- en.parentEvents)
-                                          generateEventFunction(p)
-        case _                      => ()
-      }
-    }
-
-    generateEventFunction(e)
   }
 
   override def generator[X](e: Event[X]): Unit = {
@@ -89,7 +59,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
           generateRec[en.In](en.parent,x)
 
         case en @ FilterEvent(_,_) =>
-          val filterfun: (Rep[en.In] => Rep[Boolean]) = toplevel("filterfun"+en.id)(en.f)(en.typIn,typ[Boolean])
+          val filterfun: (Rep[en.In] => Rep[Boolean]) = toplevel("filterfun"+en.id)(en.boolFun)(en.typIn,typ[Boolean])
           val g: Rep[en.In]=>Rep[en.Out] = { x =>
             if (!filterfun(x)) unchecked[Unit]("return")
             x
@@ -99,7 +69,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
         case en @ MapEvent(_,_) =>
           val g: (Rep[en.In] => Rep[en.Out]) = toplevel("mapfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
-          val x: (Rep[en.In] => Rep[Unit]) = myComposeFunction(f,g)  //TODO: also works fine f.compose(g)
+          val x: (Rep[en.In] => Rep[Unit]) = myComposeFunction(f,g)
           generateRec[en.In](en.parent,x)
 
         case en @ InputEvent(_) =>
