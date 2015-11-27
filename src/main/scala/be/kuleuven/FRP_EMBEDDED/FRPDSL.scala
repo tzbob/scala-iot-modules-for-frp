@@ -49,14 +49,14 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     }
 
     // TODO: notion: all explicit types can be ommitted since all Any -> no actual type checking. Fix?
-    def generateRec[B](e:Event[B], f:Rep[B]=>Rep[Unit]): Unit = {
+    def generateRec[B](e:Event[B], f:Rep[B]=>Rep[Unit], target: EventID): Unit = {
       e match {
         case en @ MergeEvent(_,_) => ()
 
         case en @ ConstantEvent(_,_) =>
           val g: (Rep[en.In] => Rep[en.Out]) = toplevel("constantfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
           val x: (Rep[en.In] => Rep[Unit]) = myComposeFunction(f,g)
-          generateRec[en.In](en.parent,x)
+          generateRec[en.In](en.parent, x, target)
 
         case en @ FilterEvent(_,_) =>
           val filterfun: (Rep[en.In] => Rep[Boolean]) = toplevel("filterfun"+en.id)(en.boolFun)(en.typIn,typ[Boolean])
@@ -65,12 +65,12 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
             x
           }
           val x: Rep[en.In] => Rep[Unit] = myComposeFunction(f,g)
-          generateRec[en.In](en.parent,x)
+          generateRec[en.In](en.parent, x, target)
 
         case en @ MapEvent(_,_) =>
           val g: (Rep[en.In] => Rep[en.Out]) = toplevel("mapfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
           val x: (Rep[en.In] => Rep[Unit]) = myComposeFunction(f,g)
-          generateRec[en.In](en.parent,x)
+          generateRec[en.In](en.parent, x, target)
 
         case en @ InputEvent(_) =>
           val g: (Rep[Unit] => Rep[en.Out]) = toplevel("inputfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
@@ -82,7 +82,8 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     }
 
     val voidretfun = {x:Rep[X] => unitToRepUnit( () )}
-    generateRec(e,voidretfun)
+    for(inputID <- e.inputEventIDs)
+    generateRec(e,voidretfun, inputID)
 
   }
 

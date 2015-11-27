@@ -5,14 +5,15 @@ import scala.lms.common.Base
 trait EventOps extends Base {
   behavior: BehaviorOps =>
 
+  type EventID = Int
+
   trait Event[A] {
     type In
     type Out = A
 
     val typIn: Typ[In]  //TODO: make private[FRP_EMBEDDED]
     val typOut: Typ[Out]
-    type ID = Int
-    val inputEventIDs: List[ID]
+    val inputEventIDs: List[EventID]
 
     def constant[B:Typ] (c: Rep[B]): Event[B]
     def map[B:Typ] (f: Rep[A] => Rep[B]): Event[B]
@@ -57,7 +58,7 @@ trait EventOpsImpl extends EventOps {
     val updateFunc: Rep[In] => Rep[Out] = unit => i //TODO: fix Unit input param to no input parameter
     override val typIn: Typ[In] = typ[Unit]
     override val typOut: Typ[Out] = tA
-    override val inputEventIDs: List[ID] = this.id :: Nil
+    override val inputEventIDs: List[EventID] = this.id :: Nil
 
     println("Create InputEvent(ID:" + id + "): " + inputEventIDs)
   }
@@ -65,7 +66,7 @@ trait EventOpsImpl extends EventOps {
     val updateFunc: Rep[In]=>Rep[Out] = _ => c
     override val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = tB
-    override val inputEventIDs: List[ID] = parent.inputEventIDs
+    override val inputEventIDs: List[EventID] = parent.inputEventIDs
 
     println("Create ConstantEvent(ID:" + id + "): " + inputEventIDs)
   }
@@ -73,14 +74,14 @@ trait EventOpsImpl extends EventOps {
     val updateFunc: Rep[In]=>Rep[Out] = f
     override val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = tB
-    override val inputEventIDs: List[ID] = parent.inputEventIDs
+    override val inputEventIDs: List[EventID] = parent.inputEventIDs
 
     println("Create MapEvent(ID:" + id + "): " + inputEventIDs)
   }
   case class FilterEvent[A](parent: Event[A], boolFun: Rep[A] => Rep[Boolean]) extends EventNode[A,A] {
     override val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = typIn
-    override val inputEventIDs: List[ID] = parent.inputEventIDs
+    override val inputEventIDs: List[EventID] = parent.inputEventIDs
 
     println("Create FilterEvent(ID:" + id + "): " + inputEventIDs)
   }
@@ -90,9 +91,9 @@ trait EventOpsImpl extends EventOps {
     val parentRight: Event[In] = parents._2
     override val typIn: Typ[In] = parentLeft.typOut //TODO: fix if different typed Events can be merged
     override val typOut: Typ[Out] = typIn
-    val inputIDsLeft: List[ID] = parentLeft.inputEventIDs
-    val inputIDsRight: List[ID] = parentRight.inputEventIDs
-    override val inputEventIDs: List[ID] = inputIDsLeft ::: inputIDsRight
+    val inputIDsLeft: List[EventID] = parentLeft.inputEventIDs
+    val inputIDsRight: List[EventID] = parentRight.inputEventIDs
+    override val inputEventIDs: List[EventID] = inputIDsLeft ::: inputIDsRight
 
     println("Create MergeEvent(ID:" + id + "): " + inputEventIDs + ". Left: " + inputIDsLeft + ", Right: " + inputIDsRight)
   }
