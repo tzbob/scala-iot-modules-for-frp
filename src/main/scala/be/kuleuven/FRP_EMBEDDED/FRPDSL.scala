@@ -52,17 +52,17 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     def generateRec[B](e:Event[B], f:Rep[B]=>Rep[Unit], target: EventID): Unit = {
       e match {
         case en @ MergeEvent(_,_) =>
-          def isDisjoint(left: Set[EventID], right: Set[EventID]): Boolean = {
+          def isDisjointFor(target: EventID, left: Set[EventID], right: Set[EventID]): Boolean = {
             var b: Boolean = true
-            for(l <- left) {
+            for(l <- left if l==target) {
               if(right.contains(l)) b = false
             }
             b
           }
-          if(isDisjoint(en.inputIDsLeft, en.inputIDsRight)){
-            System.out.println("Disjoint")
+          if(isDisjointFor(target, en.inputIDsLeft, en.inputIDsRight)){
+            System.out.println("ID: " + target + ": Disjoint")
           } else {
-            System.out.println("Non-Disjoint")
+            System.out.println("ID: " + target + ": Non-Disjoint")
           }
 
 
