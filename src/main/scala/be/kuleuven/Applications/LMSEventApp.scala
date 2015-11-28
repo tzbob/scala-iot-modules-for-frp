@@ -72,6 +72,37 @@ trait LMSEventMerge1App extends FRPDSLApplication {
   }
 }
 
+trait LMSEventMerge2App extends FRPDSLApplication {
+
+  override def createMainFun {
+    val t1: Event[Int] = TimerEvent(5)
+
+    val c1 = t1.constant( 1 )
+    val c2 = t1.constant( 2 )
+
+    val m = c1.merge(c2, (x:Rep[Int],y:Rep[Int])=>x+y)
+    val n1 = m.map( (x:Rep[Int]) => x*2 )
+
+    generator(n1)
+  }
+}
+
+trait LMSEventMerge3App extends FRPDSLApplication {
+
+  override def createMainFun {
+    val t1: Event[Int] = TimerEvent(5)
+    val t2: Event[Int] = TimerEvent(10)
+
+    val m1 = t1.merge(t2, (x:Rep[Int],y:Rep[Int])=>x*y)
+    val c2 = t1.constant( 2 )
+
+    val m2 = m1.merge(c2, (x:Rep[Int],y:Rep[Int])=>x+y)
+    val n1 = m2.map( (x:Rep[Int]) => x*2 )
+
+    generator(n1)
+  }
+}
+
 import OutputGenerator.withOutFile
 
 object LMSEventAppRunner {
@@ -114,7 +145,33 @@ object LMSEventAppRunner {
       System.out.println("Creating flow graph...")
       createMainFun
       System.out.println("\n")
-      emitAll()
+      //emitAll()
+      System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+      System.out.println("\n\n")
+    }
+    //}
+
+    //withOutFile("LMSEventAppReal.c") {
+    new LMSEventMerge2App with CFRPDSLApplicationRunner {
+      System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+      System.out.println("MergeApp2:")
+      System.out.println("Creating flow graph...")
+      createMainFun
+      System.out.println("\n")
+      //emitAll()
+      System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+      System.out.println("\n\n")
+    }
+    //}
+
+    //withOutFile("LMSEventAppReal.c") {
+    new LMSEventMerge3App with CFRPDSLApplicationRunner {
+      System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+      System.out.println("MergeApp3:")
+      System.out.println("Creating flow graph...")
+      createMainFun
+      System.out.println("\n")
+      //emitAll()
       System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
     }
     //}
