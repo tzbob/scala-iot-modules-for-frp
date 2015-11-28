@@ -51,7 +51,20 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     // TODO: notion: all explicit types can be ommitted since all Any -> no actual type checking. Fix?
     def generateRec[B](e:Event[B], f:Rep[B]=>Rep[Unit], target: EventID): Unit = {
       e match {
-        case en @ MergeEvent(_,_) => ()
+        case en @ MergeEvent(_,_) =>
+          def isDisjoint(left: Set[EventID], right: Set[EventID]): Boolean = {
+            var b: Boolean = true
+            for(l <- left) {
+              if(right.contains(l)) b = false
+            }
+            b
+          }
+          if(isDisjoint(en.inputIDsLeft, en.inputIDsRight)){
+            System.out.println("Disjoint")
+          } else {
+            System.out.println("Non-Disjoint")
+          }
+
 
         case en @ ConstantEvent(_,_) =>
           val g: (Rep[en.In] => Rep[en.Out]) = toplevel("constantfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
@@ -75,7 +88,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
         case en @ InputEvent(_) =>
           val g: (Rep[Unit] => Rep[en.Out]) = toplevel("inputfun"+en.id)(en.updateFunc)(en.typIn,en.typOut)
           val x: (Rep[en.In] => Rep[Unit]) = myComposeUnit(f,g)   //f.compose(g)
-          toplevel("top")(x)(en.typIn,typ[Unit])
+          toplevel("top"+en.id)(x)(en.typIn,typ[Unit])
 
         case _ => ()
       }
