@@ -23,7 +23,16 @@ trait CFRPDSLImpl extends FRPDSLImpl
       val stream = new PrintWriter(System.out)
       stream.println("/* FILE: " + x.name + ".c */")
       for ((_,v) <- rec) codegen.emitForwardDef(mtype(v.mA)::Nil, v.name, stream)(mtype(v.mB))
+      for ((_,v) <- rec2) codegen.emitForwardDef(mtype(v.mA)::mtype(v.mA)::Nil, v.name, stream)(mtype(v.mB))
       codegen.emitSource(x.f, x.name, stream)(mtype(x.mA), mtype(x.mB))
+    }
+
+    rec2.foreach { case (k,x) =>
+      val stream = new PrintWriter(System.out)
+      stream.println("/* FILE: " + x.name + ".c */")
+      for ((_,v) <- rec) codegen.emitForwardDef(mtype(v.mA)::Nil, v.name, stream)(mtype(v.mB))
+      for ((_,v) <- rec2) codegen.emitForwardDef(mtype(v.mA)::mtype(v.mA)::Nil, v.name, stream)(mtype(v.mB))
+      codegen.emitSource2(x.f, x.name, stream)(mtype(x.mA), mtype(x.mA), mtype(x.mB))
     }
 
     //System.out.println(source.toString)

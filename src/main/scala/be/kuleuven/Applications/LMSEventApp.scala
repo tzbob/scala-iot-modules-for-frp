@@ -138,42 +138,44 @@ object LMSEventAppRunner {
       }
     //}
 
-    //withOutFile("LMSEventAppReal.c") {
+    withOutFile("LMSEventMerge1App.c") {
     new LMSEventMerge1App with CFRPDSLApplicationRunner {
       System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       System.out.println("MergeApp1:")
       System.out.println("Creating flow graph...")
       createMainFun
       System.out.println("\n")
-      //emitAll()
+      emitAll()
       System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       System.out.println("\n\n")
     }
-    //}
+    }
 
-    //withOutFile("LMSEventAppReal.c") {
+    withOutFile("LMSEventMerge2App.c") {
     new LMSEventMerge2App with CFRPDSLApplicationRunner {
       System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       System.out.println("MergeApp2:")
       System.out.println("Creating flow graph...")
       createMainFun
       System.out.println("\n")
-      //emitAll()
+      emitAll()
       System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       System.out.println("\n\n")
     }
-    //}
+    }
 
-    //withOutFile("LMSEventAppReal.c") {
+    withOutFile("LMSEventMerge3App.c") {
     new LMSEventMerge3App with CFRPDSLApplicationRunner {
       System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       System.out.println("MergeApp3:")
       System.out.println("Creating flow graph...")
       createMainFun
       System.out.println("\n")
-      //emitAll()
+      //printEventTree()
+      //System.out.println("\n")
+      emitAll()
       System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
     }
-    //}
+    }
   }
 }

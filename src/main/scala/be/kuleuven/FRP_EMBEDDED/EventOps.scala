@@ -32,10 +32,13 @@ trait EventOps extends Base {
 trait EventOpsImpl extends EventOps {
   behaviorImpl: BehaviorOpsImpl =>
 
+  val nodeMap: scala.collection.mutable.Map[EventID,Event[_]] = scala.collection.mutable.HashMap()
+
   override def TimerEvent(i: Rep[Int])(implicit tI:Typ[Int]) = InputEvent[Int](i)  // only conceptual
 
   abstract class EventNode[A,B] extends EventImpl[B] {
     val id = EventNode.nextid
+    nodeMap += ((id, this))
     override type In = A
     // NOT GENERAL ANYMORE
     //val updateFunc: Rep[In] => Rep[Out]
@@ -56,7 +59,7 @@ trait EventOpsImpl extends EventOps {
   }
 
   case class InputEvent[A] (i: Rep[A]) (implicit tA:Typ[A]) extends EventNode[Unit,A] {
-    val updateFunc: Rep[In] => Rep[Out] = unit => i //TODO: fix Unit input param to no input parameter
+    val inputFun: Rep[In] => Rep[Out] = unit => i //TODO: fix Unit input param to no input parameter
     override val typIn: Typ[In] = typ[Unit]
     override val typOut: Typ[Out] = tA
     override val inputEventIDs: Set[EventID] = HashSet(this.id)
@@ -64,7 +67,7 @@ trait EventOpsImpl extends EventOps {
     println("Create InputEvent(ID:" + id + "): " + inputEventIDs)
   }
   case class ConstantEvent[A,B](parent: Event[A], c : Rep[B])(implicit tB:Typ[B]) extends EventNode[A,B] {
-    val updateFunc: Rep[In]=>Rep[Out] = _ => c
+    val constFun: Rep[In]=>Rep[Out] = _ => c
     override val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = tB
     override val inputEventIDs: Set[EventID] = parent.inputEventIDs
@@ -72,21 +75,23 @@ trait EventOpsImpl extends EventOps {
     println("Create ConstantEvent(ID:" + id + "): " + inputEventIDs)
   }
   case class MapEvent[A,B](parent: Event[A], f: Rep[A] => Rep[B])(implicit tB:Typ[B]) extends EventNode[A,B] {
-    val updateFunc: Rep[In]=>Rep[Out] = f
+    val mapFun: Rep[In]=>Rep[Out] = f
     override val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = tB
     override val inputEventIDs: Set[EventID] = parent.inputEventIDs
 
     println("Create MapEvent(ID:" + id + "): " + inputEventIDs)
   }
-  case class FilterEvent[A](parent: Event[A], boolFun: Rep[A] => Rep[Boolean]) extends EventNode[A,A] {
+  case class FilterEvent[A](parent: Event[A], f: Rep[A] => Rep[Boolean]) extends EventNode[A,A] {
+    val filterFun: Rep[In]=>Rep[Boolean] = f
     override val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = typIn
     override val inputEventIDs: Set[EventID] = parent.inputEventIDs
 
     println("Create FilterEvent(ID:" + id + "): " + inputEventIDs)
   }
-  case class MergeEvent[A](parents: (Event[A],Event[A]), f:(Rep[A],Rep[A])=>Rep[A] ) extends EventNode[A,A] {
+  case class MergeEvent[A](parents: (Event[A],Event[A]), f: (Rep[A],Rep[A])=>Rep[A] ) extends EventNode[A,A] {
+    val mergeFun: (Rep[In],Rep[In])=>Rep[Out] = f
     val parentEvents: List[Event[In]] = parents._1::parents._2::Nil
     val parentLeft: Event[In] = parents._1
     val parentRight: Event[In] = parents._2
