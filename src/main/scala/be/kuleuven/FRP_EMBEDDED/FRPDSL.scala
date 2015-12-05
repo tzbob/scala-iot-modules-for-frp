@@ -57,19 +57,25 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
     def myComposeCombinedFunction[A,B]
         (first:Rep[A]=>Rep[B], second:Rep[A]=>Rep[B], combo:(Rep[B],Rep[B])=>Rep[B]): Rep[A]=>Rep[B] = {
-      x:Rep[A] => val y = first(x); val z = second(x); combo(y,z)
+      x:Rep[A] =>
+        val y = first(x)
+        val z = second(x)
+        val c = combo(y,z)
+        c
+    }
+
+    def isDisjointFor(target: EventID, left: Set[EventID], right: Set[EventID]): Boolean = {
+      var b: Boolean = true
+      for(l <- left if l==target) {
+        if(right.contains(l)) b = false
+      }
+      b
     }
 
     def generateCombRec[B,MergeIn,InputOut](e:Event[B], f:Rep[B]=>Rep[MergeIn], target: EventID) : Rep[InputOut]=>Rep[MergeIn] = {
       e match {
         case en @ MergeEvent(_,_) =>
-          def isDisjointFor(target: EventID, left: Set[EventID], right: Set[EventID]): Boolean = {
-            var b: Boolean = true
-            for(l <- left if l==target) {
-              if(right.contains(l)) b = false
-            }
-            b
-          }
+
           if(isDisjointFor(target, en.inputIDsLeft, en.inputIDsRight)){
             if(en.inputIDsLeft.contains(target)) generateCombRec(en.parentLeft, f, target)
             else generateCombRec(en.parentRight, f, target)
@@ -102,7 +108,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
         case en @ FilterEvent(_,_) =>
           val filterfun: (Rep[en.In] => Rep[Boolean]) = toplevel("filterfun"+en.id)(en.filterFun)(en.typIn,typ[Boolean])
           val g: Rep[en.In]=>Rep[en.Out] = { x =>
-            if (!filterfun(x)) unchecked[Unit]("return")
+            if (!filterfun(x)) unchecked[Unit]("return") //TODO: No return can be used in branch (exterior check needed)
             x
           }
           val x: Rep[en.In] => Rep[MergeIn] = myComposeFunction(f,g)
@@ -124,13 +130,6 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     def generateLinRec[B](e:Event[B], f:Rep[B]=>Rep[Unit], target: EventID): Unit = {
       e match {
         case en @ MergeEvent(_,_) =>
-          def isDisjointFor(target: EventID, left: Set[EventID], right: Set[EventID]): Boolean = {
-            var b: Boolean = true
-            for(l <- left if l==target) {
-              if(right.contains(l)) b = false
-            }
-            b
-          }
           if(isDisjointFor(target, en.inputIDsLeft, en.inputIDsRight)){
             System.out.println("MergeEvent(ID:" + en.id + ") ID=" + target + ": Disjoint")
             if(en.inputIDsLeft.contains(target)) generateLinRec(en.parentLeft, f, target)
@@ -150,6 +149,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
             //build right function until target input
             val z: Rep[inputNode.Out]=>Rep[en.In] = generateCombRec(en.parentRight, idfun, target)
 
+            //TODO: dynamic checking needed when filter nodes present in branch
             val mergeFun: (Rep[en.In],Rep[en.In])=>Rep[en.Out] = toplevel2("mergefun"+en.id)(en.mergeFun)(en.typIn,en.typOut)
             val g: Rep[inputNode.Out]=>Rep[en.Out] = myComposeCombinedFunction(y,z,mergeFun)
             val x : Rep[inputNode.Out]=>Rep[Unit] = myComposeFunction(f,g)
