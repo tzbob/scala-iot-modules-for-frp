@@ -113,7 +113,8 @@ trait LMSEventMerge4App extends FRPDSLApplication {
     val c3 = t.constant( 3 )
 
     val m1 = c1.merge(c2, (x:Rep[Int],y:Rep[Int])=>x+y)
-    val m2 = m1.merge(c3, (x:Rep[Int],y:Rep[Int])=>x+y)
+    val n2 = m1.map( (x:Rep[Int]) => x+2)
+    val m2 = n2.merge(c3, (x:Rep[Int],y:Rep[Int])=>x+y)
 
     val n1 = m2.map( (x:Rep[Int]) => x*2 )
 
