@@ -150,7 +150,7 @@ object LMSEventAppRunner {
     /*withOutFile("LMSEventApp.c") {
       new LMSEventApp with CFRPDSLApplicationRunner
     }*/
-
+    /*
     //withOutFile("LMSEventAppReal.c") {
     new LMSEventFilterApp with CFRPDSLApplicationRunner {
       System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
@@ -232,7 +232,7 @@ object LMSEventAppRunner {
         System.out.println("\n\n")
       }
     }
-
+    */
     withOutFile("LMSEventMerge5App.c") {
       new LMSEventMerge5App with CFRPDSLApplicationRunner {
         System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")

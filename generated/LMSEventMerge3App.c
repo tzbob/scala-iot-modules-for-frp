@@ -117,7 +117,27 @@ void top2(void  x8) {
 int32_t x9 = inputfun2();
 int32_t x10 = constantfun4(x9);
 int32_t x11 = mergefun5(x9,x10);
-int32_t x12 = mapfun6(x11);
+bool x12 = true && true;
+int32_t x19;
+if (x12) {
+x19 = x11;
+} else {
+int32_t x17;
+if (true) {
+x17 = x9;
+} else {
+int32_t x15;
+if (true) {
+x15 = x10;
+} else {
+return;
+x15 = x10;
+}
+x17 = x15;
+}
+x19 = x17;
+}
+int32_t x20 = mapfun6(x19);
 }
 /*****************************************
   End of C Generated Code                  
@@ -137,7 +157,7 @@ int32_t mergefun5(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t inputfun1(void  x14) {
+int32_t inputfun1(void  x22) {
 return 5;
 }
 /*****************************************
@@ -158,9 +178,9 @@ int32_t mergefun5(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t mergefun5(int32_t  x15, int32_t  x16) {
-int32_t x17 = x15 + x16;
-return x17;
+int32_t mergefun5(int32_t  x23, int32_t  x24) {
+int32_t x25 = x23 + x24;
+return x25;
 }
 /*****************************************
   End of C Generated Code                  

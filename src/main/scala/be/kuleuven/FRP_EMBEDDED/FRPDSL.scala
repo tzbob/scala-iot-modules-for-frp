@@ -72,13 +72,13 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
       b
     }
 
-    def generateCombRec[B,MergeIn,InputOut](e:Event[B], f:Rep[B]=>Rep[MergeIn], target: EventID) : Rep[InputOut]=>Rep[MergeIn] = {
+    def generateCombRec[B,MergeIn,InputOut](e:Event[B], f:Rep[B]=>Rep[MergeIn], setBranchFalse:()=>Rep[Unit], target: EventID) : Rep[InputOut]=>Rep[MergeIn] = {
       e match {
         case en @ MergeEvent(_,_) =>
 
           if(isDisjointFor(target, en.inputIDsLeft, en.inputIDsRight)){
-            if(en.inputIDsLeft.contains(target)) generateCombRec(en.parentLeft, f, target)
-            else generateCombRec(en.parentRight, f, target)
+            if(en.inputIDsLeft.contains(target)) generateCombRec(en.parentLeft, f, setBranchFalse, target)
+            else generateCombRec(en.parentRight, f, setBranchFalse, target)
           }
           else {
             System.out.println("MergeEvent(ID:" + en.id + ") ID=" + target + ": Non-Disjoint")
@@ -91,9 +91,9 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
             //build left function until target input
             val idfun: Rep[en.In]=>Rep[en.In] = (x:Rep[en.In])=>x
-            val y: Rep[inputNode.Out]=>Rep[en.In] = generateCombRec(en.parentLeft, idfun, target)
+            val y: Rep[inputNode.Out]=>Rep[en.In] = generateCombRec(en.parentLeft, idfun, setBranchFalse, target)
             //build right function until target input
-            val z: Rep[inputNode.Out]=>Rep[en.In] = generateCombRec(en.parentRight, idfun, target)
+            val z: Rep[inputNode.Out]=>Rep[en.In] = generateCombRec(en.parentRight, idfun, setBranchFalse, target)
             val mergeFun: (Rep[en.In],Rep[en.In])=>Rep[en.Out] = toplevel2("mergefun"+en.id)(en.mergeFun)(en.typIn,en.typOut)
             val g: Rep[inputNode.Out]=>Rep[en.Out] = myComposeCombinedFunction(y,z,mergeFun)
             val x : Rep[inputNode.Out]=>Rep[MergeIn] = myComposeFunction(f,g)
@@ -103,21 +103,21 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
         case en @ ConstantEvent(_,_) =>
           val g: (Rep[en.In] => Rep[en.Out]) = toplevel("constantfun"+en.id)(en.constFun)(en.typIn,en.typOut)
           val x: (Rep[en.In] => Rep[MergeIn]) = myComposeFunction(f,g)
-          generateCombRec(en.parent, x, target)
+          generateCombRec(en.parent, x, setBranchFalse, target)
 
         case en @ FilterEvent(_,_) =>
           val filterfun: (Rep[en.In] => Rep[Boolean]) = toplevel("filterfun"+en.id)(en.filterFun)(en.typIn,typ[Boolean])
           val g: Rep[en.In]=>Rep[en.Out] = { x =>
-            if (!filterfun(x)) unchecked[Unit]("return") //TODO: No return can be used in branch (exterior check needed)
+            if (!filterfun(x)) setBranchFalse()
             x
           }
           val x: Rep[en.In] => Rep[MergeIn] = myComposeFunction(f,g)
-          generateCombRec(en.parent, x, target)
+          generateCombRec(en.parent, x, setBranchFalse, target)
 
         case en @ MapEvent(_,_) =>
           val g: (Rep[en.In] => Rep[en.Out]) = toplevel("mapfun"+en.id)(en.mapFun)(en.typIn,en.typOut)
           val x: (Rep[en.In] => Rep[MergeIn]) = myComposeFunction(f,g)
-          generateCombRec(en.parent, x, target)
+          generateCombRec(en.parent, x, setBranchFalse, target)
 
         case en @ InputEvent(_) =>
           f.asInstanceOf[Rep[InputOut]=>Rep[MergeIn]]
@@ -145,13 +145,43 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
             val idfun: Rep[en.In]=>Rep[en.In] = (x:Rep[en.In])=>x
             //build left function until target input
-            val y: Rep[inputNode.Out]=>Rep[en.In] = generateCombRec(en.parentLeft, idfun, target)
+            var leftOk: Rep[Boolean] = true
+            val setLeftFalse:()=>Rep[Unit] = ( () => leftOk = false )
+            val y: Rep[inputNode.Out]=>Rep[en.In] = generateCombRec(en.parentLeft, idfun, setLeftFalse, target)
             //build right function until target input
-            val z: Rep[inputNode.Out]=>Rep[en.In] = generateCombRec(en.parentRight, idfun, target)
+            var rightOk: Rep[Boolean] = true
+            val setRightFalse: ()=>Rep[Unit] = ( () => rightOk = false )
+            val z: Rep[inputNode.Out]=>Rep[en.In] = generateCombRec(en.parentRight, idfun, setRightFalse, target)
+
+            val mergeFun: (Rep[en.In],Rep[en.In])=>Rep[en.Out] = toplevel2("mergefun"+en.id)(en.mergeFun)(en.typIn,en.typOut)
 
             //TODO: dynamic checking needed when filter nodes present in branch
-            val mergeFun: (Rep[en.In],Rep[en.In])=>Rep[en.Out] = toplevel2("mergefun"+en.id)(en.mergeFun)(en.typIn,en.typOut)
-            val g: Rep[inputNode.Out]=>Rep[en.Out] = myComposeCombinedFunction(y,z,mergeFun)
+
+            def createConditional[T:Typ]
+              (leftVal:Rep[T], rightVal:Rep[T], mergeVal:Rep[T], leftOk:Rep[Boolean], rightOk:Rep[Boolean]): Rep[T] ={
+
+              if(leftOk && rightOk) mergeVal
+              else {
+                if(leftOk) leftVal
+                else {
+                  if(rightOk) rightVal
+                  else {
+                    unchecked[Unit]("return")
+                    rightVal //TODO: this is weird, but we need to return something however never used
+                  }
+                }
+              }
+            }
+
+            val g: Rep[inputNode.Out]=>Rep[en.Out] = { //myComposeCombinedFunction(y,z,mergeFun)
+              x =>
+                val leftVal = y(x)
+                val rightVal = z(x)
+                val mergeVal = mergeFun(leftVal, rightVal)
+                createConditional(leftVal,rightVal,mergeVal, leftOk, rightOk)(en.typIn)
+            }
+
+
             val x : Rep[inputNode.Out]=>Rep[Unit] = myComposeFunction(f,g)
             generateLinRec[inputNode.Out](inputNode.asInstanceOf[Event[inputNode.Out]], x, target) //TODO: fix cast
           }
