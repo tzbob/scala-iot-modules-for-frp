@@ -72,7 +72,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
       b
     }
 
-    def generateCombRec[B,MergeIn,InputOut](e:Event[B], f:Rep[B]=>Rep[MergeIn], initBranch:()=>Var[Boolean], setBranchFalse:()=>Rep[Unit], target: EventID) : Rep[InputOut]=>Rep[MergeIn] = {
+    def generateCombRec[B,MergeIn,InputOut](e:Event[B], f:Rep[B]=>Rep[MergeIn], initBranch:()=>Rep[Unit], setBranchFalse:()=>Rep[Unit], target: EventID) : Rep[InputOut]=>Rep[MergeIn] = {
       e match {
         case en @ MergeEvent(_,_) =>
 
@@ -147,13 +147,13 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
             val idfun: Rep[en.In]=>Rep[en.In] = (x:Rep[en.In])=>x
             //build left function until target input
             lazy val leftOk: Var[Boolean] = var_new(true)
-            val initLeft: ()=>Var[Boolean] = { () => leftOk }
-            val setLeftFalse:()=>Rep[Unit] = { () => val x=leftOk; var_assign(x, false) }
+            val initLeft: ()=>Rep[Unit] = { () => leftOk;() }
+            val setLeftFalse:()=>Rep[Unit] = { () => var_assign(leftOk, false) }
             val y: Rep[inputNode.Out]=>Rep[en.In] = generateCombRec(en.parentLeft, idfun, initLeft, setLeftFalse, target)
             //build right function until target input
             lazy val rightOk: Var[Boolean] = var_new(true)
-            val initRight: ()=>Var[Boolean] = { () => rightOk }
-            val setRightFalse: ()=>Rep[Unit] = { () => val x=rightOk;var_assign(x, false) }
+            val initRight: ()=>Rep[Unit] = { () => rightOk;() }
+            val setRightFalse: ()=>Rep[Unit] = { () => var_assign(rightOk, false) }
             val z: Rep[inputNode.Out]=>Rep[en.In] = generateCombRec(en.parentRight, idfun, initRight, setRightFalse, target)
 
             val mergeFun: (Rep[en.In],Rep[en.In])=>Rep[en.Out] = toplevel2("mergefun"+en.id)(en.mergeFun)(en.typIn,en.typOut)
@@ -163,17 +163,11 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
             def createConditional[T:Typ]
               (leftVal:Rep[T], rightVal:Rep[T], mergeVal:Rep[T], leftOk:Rep[Boolean], rightOk:Rep[Boolean]): Rep[T] ={
 
+              if(!leftOk && !rightOk) unchecked[Unit]("return")
+
               if(leftOk && rightOk) mergeVal
-              else {
-                if(leftOk) leftVal
-                else {
-                  if(rightOk) rightVal
-                  else {
-                    unchecked[Unit]("return")
-                    rightVal //TODO: this is weird, but we need to return something however never used
-                  }
-                }
-              }
+              else if(leftOk) leftVal
+              else rightVal
             }
 
             val g: Rep[inputNode.Out]=>Rep[en.Out] = { //myComposeCombinedFunction(y,z,mergeFun)
