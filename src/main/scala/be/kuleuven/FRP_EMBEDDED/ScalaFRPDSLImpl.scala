@@ -19,7 +19,7 @@ trait ScalaFRPDSLImpl extends FRPDSLImpl
     //val source = new java.io.StringWriter()
     //val stream = new java.io.PrintWriter(source,true)
 
-    rec.foreach { case (k,x) =>
+    rec1.foreach { case (k,x) =>
       val stream = new PrintWriter(System.out)
       stream.println("/* FILE: " + x.name + ".scala */")
       codegen.emitSource(x.f, x.name, stream)(mtype(x.mA), mtype(x.mB))

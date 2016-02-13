@@ -8,11 +8,11 @@ import be.kuleuven.FRP_EMBEDDED.{CFRPDSLApplicationRunner, OutputGenerator, FRPD
 trait LMSEventApp extends FRPDSLApplication {
 
   override def createMainFun {
-    val mapfun = toplevel("mapevent") { x: Rep[Int] =>
+    val mapfun = toplevel1("mapevent") { x: Rep[Int] =>
       2 * x
     }
 
-    toplevel("main") { x: Rep[Int] =>
+    toplevel1("main") { x: Rep[Int] =>
       printf("Result of mapping: %d\n", mapfun(x))
     }
     ()

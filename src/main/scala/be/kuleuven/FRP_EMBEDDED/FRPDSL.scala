@@ -13,7 +13,7 @@ trait FRPDSL
 
   // keep track of top level functions
   // TODO: can be removed eventually, user won't need to define them
-  def toplevel[A:Typ,B:Typ](name: String)(f: Rep[A] => Rep[B]): Rep[A] => Rep[B]
+  def toplevel1[A:Typ,B:Typ](name: String)(f: Rep[A] => Rep[B]): Rep[A] => Rep[B]
 }
 
 trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
@@ -50,9 +50,9 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
       x:Rep[C] => val y = second(x);first(y)
     }
 
-    def myComposeUnit[A,B,C,D]
-        (first:Rep[B] => Rep[A], second:Rep[Unit]=>Rep[B]): Rep[Unit] => Rep[A] = {
-      x:Rep[Unit] => val y = second(); first(y)
+    def myComposeUnit[A,B]
+        (first:Rep[B] => Rep[A], second:()=>Rep[B]): () => Rep[A] = {
+      () => val y = second(); first(y)
     }
 
     def myComposeCombinedFunction[A,B]
@@ -107,12 +107,12 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
           }
 
         case en @ ConstantEvent(_,_) =>
-          val g: (Rep[en.In] => Rep[en.Out]) = toplevel("constantfun"+en.id)(en.constFun)(en.typIn,en.typOut)
+          val g: (Rep[en.In] => Rep[en.Out]) = toplevel1("constantfun"+en.id)(en.constFun)(en.typIn,en.typOut)
           val x: (Rep[en.In] => Rep[MergeIn]) = myComposeFunction(f,g)
           generateCombRec(en.parent, x,initBranch, setBranchFalse, target)
 
         case en @ FilterEvent(_,_) =>
-          val filterfun: (Rep[en.In] => Rep[Boolean]) = toplevel("filterfun"+en.id)(en.filterFun)(en.typIn,typ[Boolean])
+          val filterfun: (Rep[en.In] => Rep[Boolean]) = toplevel1("filterfun"+en.id)(en.filterFun)(en.typIn,typ[Boolean])
           val g: Rep[en.In]=>Rep[en.Out] = { x =>
             initBranch()
             if (!filterfun(x)) setBranchFalse()
@@ -122,13 +122,14 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
           generateCombRec(en.parent, x,initBranch, setBranchFalse, target)
 
         case en @ MapEvent(_,_) =>
-          val g: (Rep[en.In] => Rep[en.Out]) = toplevel("mapfun"+en.id)(en.mapFun)(en.typIn,en.typOut)
+          val g: (Rep[en.In] => Rep[en.Out]) = toplevel1("mapfun"+en.id)(en.mapFun)(en.typIn,en.typOut)
           val x: (Rep[en.In] => Rep[MergeIn]) = {
             x:Rep[en.In] =>
               if(initBranch()) f(g(x))
-              else ??? //unit(0).asInstanceOf[Rep[MergeIn]] //TODO: we need neutral element for each possible type
-            }
-          generateCombRec(en.parent, x,initBranch, setBranchFalse, target)
+              else unit(0).asInstanceOf[Rep[MergeIn]] //TODO: we need neutral element for each possible type
+              //ifUnsafe(initBranch())(f(g(x)))
+          }
+          generateCombRec(en.parent, x, initBranch, setBranchFalse, target)
 
         case en @ InputEvent(_) =>
           f.asInstanceOf[Rep[InputOut]=>Rep[MergeIn]]
@@ -195,12 +196,12 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
 
         case en @ ConstantEvent(_,_) =>
-          val g: (Rep[en.In] => Rep[en.Out]) = toplevel("constantfun"+en.id)(en.constFun)(en.typIn,en.typOut)
+          val g: (Rep[en.In] => Rep[en.Out]) = toplevel1("constantfun"+en.id)(en.constFun)(en.typIn,en.typOut)
           val x: (Rep[en.In] => Rep[Unit]) = myComposeFunction(f,g)
           generateLinRec[en.In](en.parent, x, target)
 
         case en @ FilterEvent(_,_) =>
-          val filterfun: (Rep[en.In] => Rep[Boolean]) = toplevel("filterfun"+en.id)(en.filterFun)(en.typIn,typ[Boolean])
+          val filterfun: (Rep[en.In] => Rep[Boolean]) = toplevel1("filterfun"+en.id)(en.filterFun)(en.typIn,typ[Boolean])
           val g: Rep[en.In]=>Rep[en.Out] = { x =>
             if (!filterfun(x)) unchecked[Unit]("return")
             x
@@ -209,14 +210,14 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
           generateLinRec[en.In](en.parent, x, target)
 
         case en @ MapEvent(_,_) =>
-          val g: (Rep[en.In] => Rep[en.Out]) = toplevel("mapfun"+en.id)(en.mapFun)(en.typIn,en.typOut)
+          val g: (Rep[en.In] => Rep[en.Out]) = toplevel1("mapfun"+en.id)(en.mapFun)(en.typIn,en.typOut)
           val x: (Rep[en.In] => Rep[Unit]) = myComposeFunction(f,g)
           generateLinRec[en.In](en.parent, x, target)
 
         case en @ InputEvent(_) =>
-          val g: (Rep[Unit] => Rep[en.Out]) = toplevel("inputfun"+en.id)(en.inputFun)(en.typIn,en.typOut)
-          val x: (Rep[en.In] => Rep[Unit]) = myComposeUnit(f,g)   //f.compose(g)
-          toplevel("top"+en.id)(x)(en.typIn,typ[Unit])
+          val g: (() => Rep[en.Out]) = toplevel0("inputfun"+en.id)(en.inputFun)(en.typOut)
+          val x: ( () => Rep[Unit]) = myComposeUnit(f,g)   //f.compose(g)
+          toplevel0("top"+en.id)(x)(typ[Unit])
 
         case _ => throw new IllegalStateException("Unsupported Event type")
       }
@@ -228,11 +229,23 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
   }
 
-  case class TopLevel[A,B](name: String, mA: Typ[A], mB:Typ[B], f: Rep[A] => Rep[B])
-  val rec = new scala.collection.mutable.HashMap[String,TopLevel[_,_]]
-  override def toplevel[A:Typ,B:Typ](name: String)(f: Rep[A] => Rep[B]): Rep[A] => Rep[B] = {
+  def ifUnsafe[T:Typ](cond: Rep[Boolean])(ifp: Rep[T]): Rep[T] = {
+    unchecked[T]("if (", cond, ") {", ifp , "}")
+  }
+
+  case class TopLevel0[B](name: String, mB:Typ[B], f: () => Rep[B])
+  val rec0 = new scala.collection.mutable.HashMap[String,TopLevel0[_]]
+  def toplevel0[B:Typ](name: String)(f: () => Rep[B]): () => Rep[B] = {
+    val g = () => unchecked[B](name,"()")
+    rec0.getOrElseUpdate(name, TopLevel0(name, typ[B], f))
+    g
+  }
+
+  case class TopLevel1[A,B](name: String, mA: Typ[A], mB:Typ[B], f: Rep[A] => Rep[B])
+  val rec1 = new scala.collection.mutable.HashMap[String,TopLevel1[_,_]]
+  override def toplevel1[A:Typ,B:Typ](name: String)(f: Rep[A] => Rep[B]): Rep[A] => Rep[B] = {
     val g = (x: Rep[A]) => unchecked[B](name,"(",x,")")
-    rec.getOrElseUpdate(name, TopLevel(name, typ[A], typ[B], f))
+    rec1.getOrElseUpdate(name, TopLevel1(name, typ[A], typ[B], f))
     g
   }
 
@@ -243,4 +256,5 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     rec2.getOrElseUpdate(name, TopLevel2(name, typ[A], typ[B], f))
     g
   }
+
 }

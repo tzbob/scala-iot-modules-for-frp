@@ -5,7 +5,7 @@ import be.kuleuven.FRP_EMBEDDED._
 trait LMSAppTest1 extends FRPDSLApplication {
 
   override def createMainFun {
-    toplevel("main") { x: Rep[Int] =>
+    toplevel1("main") { x: Rep[Int] =>
       var i = 0
       while (i < 10) {
         printf("Hello, world! %d\n", i)
@@ -20,7 +20,7 @@ trait LMSAppTest1 extends FRPDSLApplication {
 trait LMSAppTest2 extends FRPDSLApplication {
 
   override def createMainFun {
-    toplevel("main") { x: Rep[Int] =>
+    toplevel1("main") { x: Rep[Int] =>
       def fac: Rep[((Int, Int)) => Int] = fun { (n, dummy) =>
         if (n == 0) 1 else n * fac(n - 1, dummy)
       }
@@ -34,17 +34,17 @@ trait LMSAppTest2 extends FRPDSLApplication {
 trait LMSAppTest3 extends FRPDSLApplication {
 
   override def createMainFun: Unit = {
-    val test2 = toplevel("test2") { x: Rep[Int] =>
+    val test2 = toplevel1("test2") { x: Rep[Int] =>
       printf("Hello, world: test2\n")
       x
     }
 
-    val test1 = toplevel("test1") { x: Rep[Int] =>
+    val test1 = toplevel1("test1") { x: Rep[Int] =>
       printf("Hello, world: test1\n")
       test2(x)
     }
 
-    val main = toplevel("main") { x: Rep[Int] =>
+    val main = toplevel1("main") { x: Rep[Int] =>
       printf("Hello, world: main\n")
       test1(x)
     }
