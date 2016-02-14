@@ -39,97 +39,155 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     System.out.println(nodeMap)
   }
 
+  def myComposeFunction[A,B,C,D]
+  (first:Rep[B] => Rep[A], second:Rep[C] => Rep[B]): Rep[C] => Rep[A]  = {
+    x:Rep[C] => val y = second(x);first(y)
+  }
+
+  def myComposeCheckedFunction[A:Typ,B,C,D]
+  (f:Rep[B] => Rep[A], g:Rep[C] => Rep[B], initBranch: () => Rep[Boolean]): Rep[C] => Rep[A]  = {
+    x: Rep[C] =>
+      if (initBranch()) f(g(x))
+      else unit(0).asInstanceOf[Rep[A]]
+      //ifUnsafe(initBranch())(f(g(x)))
+  }
+
+  def myComposeUnit[A,B]
+  (first:Rep[B] => Rep[A], second:()=>Rep[B]): () => Rep[A] = {
+    () => val y = second(); first(y)
+  }
+
+  def myComposeCombinedFunction[A,B]
+  (first:Rep[A]=>Rep[B], second:Rep[A]=>Rep[B], combo:(Rep[B],Rep[B])=>Rep[B]): Rep[A]=>Rep[B] = {
+    x:Rep[A] =>
+      val y = first(x)
+      val z = second(x)
+      val c = combo(y,z)
+      c
+  }
+
+  def isDisjointFor(target: EventID, left: Set[EventID], right: Set[EventID]): Boolean = {
+    var b: Boolean = true
+    for(l <- left if l==target) {
+      if(right.contains(l)) b = false
+    }
+    b
+  }
+
+  def getSplitNode(left: List[EventID], right: List[EventID]): EventID = {
+    for(l <- left) {
+      if(right.contains(l)) return l
+    }
+
+    throw new IllegalStateException("Getting index of splitting node failed.")
+  }
+
   //NOTE: One propagation considers only 1 active input!
   override def generator[X](e: Event[X]): Unit = {
-    /*def generate[C,D](ev: EventNode[C,D], s:String): Rep[C] => Rep[D] = {
-      toplevel(s+ev.id)(ev.updateFunc)(ev.typIn,ev.typOut)
-    }*/
-
-    def myComposeFunction[A,B,C,D]
-        (first:Rep[B] => Rep[A], second:Rep[C] => Rep[B]): Rep[C] => Rep[A]  = {
-      x:Rep[C] => val y = second(x);first(y)
-    }
-
-    def myComposeUnit[A,B]
-        (first:Rep[B] => Rep[A], second:()=>Rep[B]): () => Rep[A] = {
-      () => val y = second(); first(y)
-    }
-
-    def myComposeCombinedFunction[A,B]
-        (first:Rep[A]=>Rep[B], second:Rep[A]=>Rep[B], combo:(Rep[B],Rep[B])=>Rep[B]): Rep[A]=>Rep[B] = {
-      x:Rep[A] =>
-        val y = first(x)
-        val z = second(x)
-        val c = combo(y,z)
-        c
-    }
-
-    def isDisjointFor(target: EventID, left: Set[EventID], right: Set[EventID]): Boolean = {
-      var b: Boolean = true
-      for(l <- left if l==target) {
-        if(right.contains(l)) b = false
-      }
-      b
-    }
 
     def generateCombRec[B,MergeIn:Typ,InputOut]
       (
         e:Event[B], f:Rep[B]=>Rep[MergeIn],
         initBranch:()=>Rep[Boolean], setBranchFalse:()=>Rep[Unit],
-        target: EventID
+        inputID: EventID,
+        splitID: EventID
       )
     : Rep[InputOut]=>Rep[MergeIn] = {
       e match {
         case en @ MergeEvent(_,_) =>
-
-          if(isDisjointFor(target, en.inputIDsLeft, en.inputIDsRight)){
-            if(en.inputIDsLeft.contains(target)) generateCombRec(en.parentLeft, f,initBranch, setBranchFalse, target)
-            else generateCombRec(en.parentRight, f, initBranch, setBranchFalse, target)
+          if (en.id == splitID) {
+            f.asInstanceOf[Rep[InputOut]=>Rep[MergeIn]]
           }
           else {
-            System.out.println("MergeEvent(ID:" + en.id + ") ID=" + target + ": Non-Disjoint")
 
-            val inputNode: Event[_] =
-              nodeMap.get(target) match {
-                case Some(e) => e
-                case None => throw new IllegalStateException("Node does not exist.")
+            if (isDisjointFor(inputID, en.inputIDsLeft, en.inputIDsRight)) {
+              if (en.inputIDsLeft.contains(inputID)) generateCombRec(en.parentLeft, f, initBranch, setBranchFalse, inputID, splitID)
+              else generateCombRec(en.parentRight, f, initBranch, setBranchFalse, inputID, splitID)
+            }
+            else {
+              System.out.println("MergeEvent(ID:" + en.id + ") ID=" + inputID + ": Non-Disjoint")
+
+              val innerSplitID = getSplitNode(en.leftAncestors, en.rightAncestors)
+              val splitNode: Event[_] =
+                nodeMap.get(innerSplitID) match {
+                  case Some(e) => e
+                  case None => throw new IllegalStateException("Node does not exist.")
+                }
+
+              //build left function until target input
+              val idfun: Rep[en.In] => Rep[en.In] = (x: Rep[en.In]) => x
+              lazy val leftOk: Var[Boolean] = var_new(true)
+              val initLeft: ()=>Rep[Boolean] = { () => leftOk }
+              val setLeftFalse:()=>Rep[Unit] = { () => var_assign(leftOk, false) }
+              val leftfun: Rep[splitNode.Out] => Rep[en.In] = generateCombRec(en.parentLeft, idfun, initLeft, setLeftFalse, inputID, innerSplitID)(en.typIn)
+              //build right function until target input
+              lazy val rightOk: Var[Boolean] = var_new(true)
+              val initRight: ()=>Rep[Boolean] = { () => rightOk }
+              val setRightFalse: ()=>Rep[Unit] = { () => var_assign(rightOk, false) }
+              val rightfun: Rep[splitNode.Out] => Rep[en.In] = generateCombRec(en.parentRight, idfun, initRight, setRightFalse, inputID, innerSplitID)(en.typIn)
+              val mergeFun: (Rep[en.In], Rep[en.In]) => Rep[en.Out] = toplevel2("mergefun" + en.id)(en.mergeFun)(en.typIn, en.typOut)
+
+              def createConditional[X,Y:Typ]
+              (
+                leftfun: Rep[X]=>Rep[Y], rightfun: Rep[X]=>Rep[Y], mergefun: (Rep[Y],Rep[Y])=>Rep[Y],
+                leftOk: ()=>Rep[Boolean], rightOk: ()=>Rep[Boolean]
+                ) : Rep[X] => Rep[Y] = {
+                x =>
+                  val leftval = leftfun(x)
+                  val rightval = rightfun(x)
+
+                  if(!leftOk() && !rightOk()) setBranchFalse()
+
+                  if(leftOk() && rightOk()) {
+                    mergefun(leftval,rightval)
+                  }
+                  else if(leftOk()) leftval
+                  else rightval
               }
 
-            //build left function until target input
-            val idfun: Rep[en.In]=>Rep[en.In] = (x:Rep[en.In])=>x
-            val y: Rep[inputNode.Out]=>Rep[en.In] = generateCombRec(en.parentLeft, idfun, initBranch, setBranchFalse, target)(en.typIn)
-            //build right function until target input
-            val z: Rep[inputNode.Out]=>Rep[en.In] = generateCombRec(en.parentRight, idfun, initBranch, setBranchFalse, target)(en.typIn)
-            val mergeFun: (Rep[en.In],Rep[en.In])=>Rep[en.Out] = toplevel2("mergefun"+en.id)(en.mergeFun)(en.typIn,en.typOut)
-            val g: Rep[inputNode.Out]=>Rep[en.Out] = myComposeCombinedFunction(y,z,mergeFun)
-            val x : Rep[inputNode.Out]=>Rep[MergeIn] = myComposeFunction(f,g)
-            x.asInstanceOf[Rep[InputOut]=>Rep[MergeIn]] //TODO: fix typecast (because of InputOut type -> totally useless)
+              val g: Rep[splitNode.Out]=>Rep[en.Out] =
+                createConditional(leftfun, rightfun, mergeFun, initLeft, initRight)(en.typIn)
+
+              val x: Rep[splitNode.Out] => Rep[MergeIn] = myComposeCheckedFunction(f, g, initBranch)
+              generateCombRec(splitNode, x.asInstanceOf[Rep[Any]=>Rep[MergeIn]], initBranch, setBranchFalse, inputID, splitID)
+              //x.asInstanceOf[Rep[InputOut]=>Rep[MergeIn]] //TODO: fix typecast (because of InputOut type -> totally useless)
+            }
+          }
+
+        case en @ FilterEvent(_,_) =>
+          if (en.id == splitID) {
+            f.asInstanceOf[Rep[InputOut]=>Rep[MergeIn]]
+          }
+          else {
+            val filterfun: (Rep[en.In] => Rep[Boolean]) = toplevel1("filterfun" + en.id)(en.filterFun)(en.typIn, typ[Boolean])
+            val g: Rep[en.In] => Rep[en.Out] = { x =>
+              initBranch()
+              if (!filterfun(x)) setBranchFalse()
+              x
+            }
+            val x: Rep[en.In] => Rep[MergeIn] = myComposeCheckedFunction(f, g, initBranch)
+            generateCombRec(en.parent, x, initBranch, setBranchFalse, inputID, splitID)
           }
 
         case en @ ConstantEvent(_,_) =>
-          val g: (Rep[en.In] => Rep[en.Out]) = toplevel1("constantfun"+en.id)(en.constFun)(en.typIn,en.typOut)
-          val x: (Rep[en.In] => Rep[MergeIn]) = myComposeFunction(f,g)
-          generateCombRec(en.parent, x,initBranch, setBranchFalse, target)
-
-        case en @ FilterEvent(_,_) =>
-          val filterfun: (Rep[en.In] => Rep[Boolean]) = toplevel1("filterfun"+en.id)(en.filterFun)(en.typIn,typ[Boolean])
-          val g: Rep[en.In]=>Rep[en.Out] = { x =>
-            initBranch()
-            if (!filterfun(x)) setBranchFalse()
-            x
+          if (en.id == splitID) {
+            f.asInstanceOf[Rep[InputOut]=>Rep[MergeIn]]
           }
-          val x: Rep[en.In] => Rep[MergeIn] = myComposeFunction(f,g)
-          generateCombRec(en.parent, x,initBranch, setBranchFalse, target)
+          else {
+            val g: (Rep[en.In] => Rep[en.Out]) = toplevel1("constantfun" + en.id)(en.constFun)(en.typIn, en.typOut)
+            val x: (Rep[en.In] => Rep[MergeIn]) = myComposeCheckedFunction(f, g, initBranch)
+            generateCombRec(en.parent, x, initBranch, setBranchFalse, inputID, splitID)
+          }
 
         case en @ MapEvent(_,_) =>
-          val g: (Rep[en.In] => Rep[en.Out]) = toplevel1("mapfun"+en.id)(en.mapFun)(en.typIn,en.typOut)
-          val x: (Rep[en.In] => Rep[MergeIn]) = {
-            x:Rep[en.In] =>
-              if(initBranch()) f(g(x))
-              else unit(0).asInstanceOf[Rep[MergeIn]] //TODO: we need neutral element for each possible type
-              //ifUnsafe(initBranch())(f(g(x)))
+          if (en.id == splitID) {
+            f.asInstanceOf[Rep[InputOut]=>Rep[MergeIn]]
           }
-          generateCombRec(en.parent, x, initBranch, setBranchFalse, target)
+          else {
+            val g: (Rep[en.In] => Rep[en.Out]) = toplevel1("mapfun" + en.id)(en.mapFun)(en.typIn, en.typOut)
+            val x: (Rep[en.In] => Rep[MergeIn]) = myComposeCheckedFunction(f,g,initBranch)
+            generateCombRec(en.parent, x, initBranch, setBranchFalse, inputID, splitID)
+          }
 
         case en @ InputEvent(_) =>
           f.asInstanceOf[Rep[InputOut]=>Rep[MergeIn]]
@@ -139,18 +197,19 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     }
 
     // TODO: notion: all explicit types can be ommitted since all Any -> no actual type checking. Fix?
-    def generateLinRec[B](e:Event[B], f:Rep[B]=>Rep[Unit], target: EventID): Unit = {
+    def generateLinRec[B](e:Event[B], f:Rep[B]=>Rep[Unit], inputID: EventID): Unit = {
       e match {
         case en @ MergeEvent(_,_) =>
-          if(isDisjointFor(target, en.inputIDsLeft, en.inputIDsRight)){
-            System.out.println("MergeEvent(ID:" + en.id + ") ID=" + target + ": Disjoint")
-            if(en.inputIDsLeft.contains(target)) generateLinRec(en.parentLeft, f, target)
-            else generateLinRec(en.parentRight, f, target)
+          if(isDisjointFor(inputID, en.inputIDsLeft, en.inputIDsRight)){
+            System.out.println("MergeEvent(ID:" + en.id + ") ID=" + inputID + ": Disjoint")
+            if(en.inputIDsLeft.contains(inputID)) generateLinRec(en.parentLeft, f, inputID)
+            else generateLinRec(en.parentRight, f, inputID)
           } else {
-            System.out.println("MergeEvent(ID:" + en.id + ") ID=" + target + ": Non-Disjoint")
+            System.out.println("MergeEvent(ID:" + en.id + ") ID=" + inputID + ": Non-Disjoint")
 
-            val inputNode: Event[_] =
-              nodeMap.get(target) match {
+            val splitID = getSplitNode(en.leftAncestors, en.rightAncestors)
+            val splitNode: Event[_] =
+              nodeMap.get(splitID) match {
                 case Some(e) => e
                 case None => throw new IllegalStateException("Node does not exist.")
               }
@@ -160,45 +219,45 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
             lazy val leftOk: Var[Boolean] = var_new(true)
             val initLeft: ()=>Rep[Boolean] = { () => leftOk }
             val setLeftFalse:()=>Rep[Unit] = { () => var_assign(leftOk, false) }
-            val y: Rep[inputNode.Out]=>Rep[en.In] = generateCombRec(en.parentLeft, idfun, initLeft, setLeftFalse, target)(en.typIn)
+            val leftfun: Rep[splitNode.Out]=>Rep[en.In] = generateCombRec(en.parentLeft, idfun, initLeft, setLeftFalse, inputID, splitID)(en.typIn)
             //build right function until target input
             lazy val rightOk: Var[Boolean] = var_new(true)
             val initRight: ()=>Rep[Boolean] = { () => rightOk }
             val setRightFalse: ()=>Rep[Unit] = { () => var_assign(rightOk, false) }
-            val z: Rep[inputNode.Out]=>Rep[en.In] = generateCombRec(en.parentRight, idfun, initRight, setRightFalse, target)(en.typIn)
+            val rightfun: Rep[splitNode.Out]=>Rep[en.In] = generateCombRec(en.parentRight, idfun, initRight, setRightFalse, inputID, splitID)(en.typIn)
 
             val mergeFun: (Rep[en.In],Rep[en.In])=>Rep[en.Out] = toplevel2("mergefun"+en.id)(en.mergeFun)(en.typIn,en.typOut)
 
-            //TODO: dynamic checking needed when filter nodes present in branch
-
-            def createConditional[T:Typ]
-              (leftVal:Rep[T], rightVal:Rep[T], mergeVal:Rep[T], leftOk:Rep[Boolean], rightOk:Rep[Boolean]): Rep[T] ={
-
-              if(!leftOk && !rightOk) unchecked[Unit]("return")
-
-              if(leftOk && rightOk) mergeVal
-              else if(leftOk) leftVal
-              else rightVal
-            }
-
-            val g: Rep[inputNode.Out]=>Rep[en.Out] = { //myComposeCombinedFunction(y,z,mergeFun)
+            def createConditional[X,Y:Typ]
+            (
+              leftfun: Rep[X]=>Rep[Y], rightfun: Rep[X]=>Rep[Y], mergefun: (Rep[Y],Rep[Y])=>Rep[Y],
+              leftOk: ()=>Rep[Boolean], rightOk: ()=>Rep[Boolean]
+            ) : Rep[X] => Rep[Y] = {
               x =>
-                val leftVal = y(x)
-                val rightVal = z(x)
-                val mergeVal = mergeFun(leftVal, rightVal)
-                createConditional(leftVal,rightVal,mergeVal, leftOk, rightOk)(en.typIn)
+                val leftval = leftfun(x)
+                val rightval = rightfun(x)
+
+                if(!leftOk() && !rightOk()) unchecked[Unit]("return")
+
+                if(leftOk() && rightOk()) {
+                  mergefun(leftval,rightval)
+                }
+                else if(leftOk()) leftval
+                else rightval
             }
 
+            val g: Rep[splitNode.Out]=>Rep[en.Out] =
+              createConditional(leftfun, rightfun, mergeFun, initLeft, initRight)(en.typIn) //TODO: en.In == en.Out -> fix?
 
-            val x : Rep[inputNode.Out]=>Rep[Unit] = myComposeFunction(f,g)
-            generateLinRec[inputNode.Out](inputNode.asInstanceOf[Event[inputNode.Out]], x, target) //TODO: fix cast
+            val x : Rep[splitNode.Out]=>Rep[Unit] = myComposeFunction(f,g)
+            generateLinRec[splitNode.Out](splitNode.asInstanceOf[Event[splitNode.Out]], x, inputID) //TODO: fix cast
           }
 
 
         case en @ ConstantEvent(_,_) =>
           val g: (Rep[en.In] => Rep[en.Out]) = toplevel1("constantfun"+en.id)(en.constFun)(en.typIn,en.typOut)
           val x: (Rep[en.In] => Rep[Unit]) = myComposeFunction(f,g)
-          generateLinRec[en.In](en.parent, x, target)
+          generateLinRec[en.In](en.parent, x, inputID)
 
         case en @ FilterEvent(_,_) =>
           val filterfun: (Rep[en.In] => Rep[Boolean]) = toplevel1("filterfun"+en.id)(en.filterFun)(en.typIn,typ[Boolean])
@@ -207,12 +266,12 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
             x
           }
           val x: Rep[en.In] => Rep[Unit] = myComposeFunction(f,g)
-          generateLinRec[en.In](en.parent, x, target)
+          generateLinRec[en.In](en.parent, x, inputID)
 
         case en @ MapEvent(_,_) =>
           val g: (Rep[en.In] => Rep[en.Out]) = toplevel1("mapfun"+en.id)(en.mapFun)(en.typIn,en.typOut)
           val x: (Rep[en.In] => Rep[Unit]) = myComposeFunction(f,g)
-          generateLinRec[en.In](en.parent, x, target)
+          generateLinRec[en.In](en.parent, x, inputID)
 
         case en @ InputEvent(_) =>
           val g: (() => Rep[en.Out]) = toplevel0("inputfun"+en.id)(en.inputFun)(en.typOut)
@@ -225,8 +284,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
     val voidretfun = {x:Rep[X] => unitToRepUnit( () )}
     for(inputID <- e.inputEventIDs)
-    generateLinRec(e,voidretfun, inputID)
-
+    generateLinRec(e, voidretfun, inputID)
   }
 
   def ifUnsafe[T:Typ](cond: Rep[Boolean])(ifp: Rep[T]): Rep[T] = {

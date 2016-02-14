@@ -14,7 +14,9 @@ trait EventOps extends Base {
 
     val typIn: Typ[In]  //TODO: make private[FRP_EMBEDDED]
     val typOut: Typ[Out]
+    val id: EventID
     val inputEventIDs: Set[EventID]
+    val ancestorEventIDs: List[EventID]
 
     def constant[B:Typ] (c: Rep[B]): Event[B]
     def map[B:Typ] (f: Rep[A] => Rep[B]): Event[B]
@@ -37,7 +39,7 @@ trait EventOpsImpl extends EventOps {
   override def TimerEvent(i: Rep[Int])(implicit tI:Typ[Int]) = InputEvent[Int](i)  // only conceptual
 
   abstract class EventNode[A,B] extends EventImpl[B] {
-    val id = EventNode.nextid
+    override val id = EventNode.nextid
     nodeMap += ((id, this))
     override type In = A
     // NOT GENERAL ANYMORE
@@ -63,36 +65,40 @@ trait EventOpsImpl extends EventOps {
     override val typIn: Typ[In] = typ[Unit]
     override val typOut: Typ[Out] = tA
     override val inputEventIDs: Set[EventID] = HashSet(this.id)
+    override val ancestorEventIDs: List[EventID] = Nil
 
-    println("Create InputEvent(ID:" + id + "): " + inputEventIDs)
+    println("Create InputEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
   }
   case class ConstantEvent[A,B](parent: Event[A], c : Rep[B])(implicit tB:Typ[B]) extends EventNode[A,B] {
     val constFun: Rep[In]=>Rep[Out] = _ => c
     override val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = tB
     override val inputEventIDs: Set[EventID] = parent.inputEventIDs
+    override val ancestorEventIDs: List[EventID] = parent.id::parent.ancestorEventIDs
 
-    println("Create ConstantEvent(ID:" + id + "): " + inputEventIDs)
+    println("Create ConstantEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
   }
   case class MapEvent[A,B](parent: Event[A], f: Rep[A] => Rep[B])(implicit tB:Typ[B]) extends EventNode[A,B] {
     val mapFun: Rep[In]=>Rep[Out] = f
     override val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = tB
     override val inputEventIDs: Set[EventID] = parent.inputEventIDs
+    override val ancestorEventIDs: List[EventID] = parent.id::parent.ancestorEventIDs
 
-    println("Create MapEvent(ID:" + id + "): " + inputEventIDs)
+    println("Create MapEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
   }
   case class FilterEvent[A](parent: Event[A], f: Rep[A] => Rep[Boolean]) extends EventNode[A,A] {
     val filterFun: Rep[In]=>Rep[Boolean] = f
     override val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = typIn
     override val inputEventIDs: Set[EventID] = parent.inputEventIDs
+    override val ancestorEventIDs: List[EventID] = parent.id::parent.ancestorEventIDs
 
-    println("Create FilterEvent(ID:" + id + "): " + inputEventIDs)
+    println("Create FilterEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
   }
   case class MergeEvent[A](parents: (Event[A],Event[A]), f: (Rep[A],Rep[A])=>Rep[A] ) extends EventNode[A,A] {
     val mergeFun: (Rep[In],Rep[In])=>Rep[Out] = f
-    val parentEvents: List[Event[In]] = parents._1::parents._2::Nil
+    //val parentEvents: List[Event[In]] = parents._1::parents._2::Nil
     val parentLeft: Event[In] = parents._1
     val parentRight: Event[In] = parents._2
     override val typIn: Typ[In] = parentLeft.typOut //TODO: fix if different typed Events can be merged
@@ -100,8 +106,11 @@ trait EventOpsImpl extends EventOps {
     val inputIDsLeft: Set[EventID] = parentLeft.inputEventIDs
     val inputIDsRight: Set[EventID] = parentRight.inputEventIDs
     override val inputEventIDs: Set[EventID] = inputIDsLeft ++ inputIDsRight
+    override val ancestorEventIDs: List[EventID] = (parents._1.id::parents._1.ancestorEventIDs)++(parents._2.id::parents._2.ancestorEventIDs)
+    val leftAncestors = parents._1.id::parents._1.ancestorEventIDs
+    val rightAncestors = parents._2.id::parents._2.ancestorEventIDs
 
-    println("Create MergeEvent(ID:" + id + "): " + inputEventIDs + ". Left: " + inputIDsLeft + ", Right: " + inputIDsRight)
+    println("Create MergeEvent(ID:" + id + "): " + inputEventIDs + ". Left: " + inputIDsLeft + ", Right: " + inputIDsRight + ": " + ancestorEventIDs)
   }
 
   trait EventImpl[A] extends Event[A] {
