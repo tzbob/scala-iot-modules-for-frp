@@ -11,7 +11,7 @@ import scala.lms.common._
 trait CFRPDSLImpl extends FRPDSLImpl
     with ScalaOpsPkgExp with TupledFunctionsRecursiveExp with UncheckedOpsExp { self =>
 
-  val codegen = new CCodeGenPkg with CGenVariables with CGenTupledFunctions with CGenUncheckedOps { val IR: self.type = self }
+  val codegen = new CCodeGenPkgExtended with CGenVariables with CGenTupledFunctions with CGenUncheckedOps { val IR: self.type = self }
 
   def emitAll(): Unit = {
     assert(codegen ne null) //careful about initialization order
@@ -29,10 +29,7 @@ trait CFRPDSLImpl extends FRPDSLImpl
       val stream = new PrintWriter(System.out)
       stream.println("/* FILE: " + x.name + ".c */")
       emitForwardDefs(stream)
-
-      //TODO: ideal solution = implement in GenericCodegen.scala
-      val body = codegen.reifyBlock(x.f())(mtype(x.mB))
-      codegen.emitSource(Nil, body, x.name, stream)(mtype(x.mB))
+      codegen.emitSource0(x.f, x.name, stream)(mtype(x.mB))
     }
 
     rec1.foreach { case (k,x) =>
