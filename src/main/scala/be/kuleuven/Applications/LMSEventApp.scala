@@ -119,6 +119,24 @@ trait LMSEventMerge3App extends FRPDSLApplication {
   }
 }
 
+trait LMSEventMerge3bApp extends FRPDSLApplication {
+
+  override def createMainFun {
+    val t1: Event[Int] = TimerEvent(5)
+    val t2: Event[Int] = TimerEvent(10)
+
+    val m1 = t1.merge(t2, (x: Rep[Int], y: Rep[Int]) => x * y)
+    val map1 = m1.map((x: Rep[Int]) => x * 3)
+
+    val c2 = t2.constant(2)
+
+    val m2 = map1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
+    val n1 = m2.map((x: Rep[Int]) => x * 2)
+
+    generator(n1)
+  }
+}
+
 trait LMSEventMerge4App extends FRPDSLApplication {
 
   override def createMainFun {
@@ -205,16 +223,44 @@ trait LMSEventMerge7App extends FRPDSLApplication {
     val t: Event[Int] = TimerEvent(5)
 
     val c1: Event[Int] = t.constant(1)
-    val f1: Event[Int] = c1.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
-    val f1b: Event[Int] = f1.filter((i: Rep[Int]) => infix_%(i, 3) == 0)
+    val f1: Event[Int] = c1.filter((i: Rep[Int]) => i == 1)
+    val f1b: Event[Int] = f1.filter((i: Rep[Int]) => i == 2)
     val map1: Event[Int] = f1b.map((i: Rep[Int]) => i + 1)
 
     val c2 = t.constant(2)
-    val f2: Event[Int] = c2.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
-    val map2: Event[Int] = f2.map((i: Rep[Int]) => i + 1)
+    val f2: Event[Int] = c2.filter((i: Rep[Int]) => i == 3)
+    val map2: Event[Int] = f2.map((i: Rep[Int]) => i * 3)
 
     val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val map3 = m.map((x: Rep[Int]) => x * 2)
+
+    generator(map3)
+  }
+}
+
+trait LMSEventMerge8App extends FRPDSLApplication {
+
+  override def createMainFun {
+    val t: Event[Int] = TimerEvent(2)
+
+    //big left
+    val m1: Event[Int] = t.map((i: Rep[Int]) => { println("map2"); i + 1 })
+    //small left
+    val f1: Event[Int] = m1.filter((i: Rep[Int]) => { println("filter3"); i == 1 })
+    val c1: Event[Int] = f1.map((i: Rep[Int]) => { println("constant4"); 2 })
+    //small right
+    val f2: Event[Int] = m1.filter((i: Rep[Int]) => { println("filter5"); i == 1 })
+    val m2: Event[Int] = f2.map( (i:Rep[Int])=> { println("map6"); i*2 })
+
+    val merge1: Event[Int] = c1.merge(m2, (x: Rep[Int], y: Rep[Int]) => { println("merge7"); x + y })
+    val m3: Event[Int] = merge1.map((i: Rep[Int]) => { println("map8"); i + 3 })
+
+    //big right
+    val m4: Event[Int] = t.map((i: Rep[Int]) => { println("map9"); i + 10 })
+
+
+    val m = m3.merge(m4, (x: Rep[Int], y: Rep[Int]) => { println("merge10"); x + y })
+    val map3 = m.map((x: Rep[Int]) => {println("map11"); x * 2})
 
     generator(map3)
   }
@@ -225,6 +271,7 @@ import OutputGenerator.withOutFile
 object LMSEventAppRunner {
 
   def main(args: Array[String]): Unit = {
+    /*
     withOutFile("LMSEventApp.c") {
       new LMSEventApp with CFRPDSLApplicationRunner {
         createMainFun
@@ -234,168 +281,197 @@ object LMSEventAppRunner {
 
     withOutFile("LMSEventMapApp.c") {
       new LMSEventMapApp with CFRPDSLApplicationRunner {
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("MapApp:")
-        System.out.println("Creating flow graph...")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("MapApp:")
+        System.err.println("Creating flow graph...")
         createMainFun
-        System.out.println("\n")
+        System.err.println("\n")
         emitAll()
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("\n\n")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
       }
     }
 
     withOutFile("LMSEventFilterApp.c") {
       new LMSEventFilterApp with CFRPDSLApplicationRunner {
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("FilterApp:")
-        System.out.println("Creating flow graph...")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("FilterApp:")
+        System.err.println("Creating flow graph...")
         createMainFun
-        System.out.println("\n")
+        System.err.println("\n")
         emitAll()
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("\n\n")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
       }
     }
 
     withOutFile("LMSEventConstantApp.c") {
       new LMSEventConstantApp with CFRPDSLApplicationRunner {
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("ConstantApp:")
-        System.out.println("Creating flow graph...")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("ConstantApp:")
+        System.err.println("Creating flow graph...")
         createMainFun
-        System.out.println("\n")
+        System.err.println("\n")
         emitAll()
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("\n\n")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
       }
     }
 
     withOutFile("LMSEventMerge1App.c") {
       new LMSEventMerge1App with CFRPDSLApplicationRunner {
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("MergeApp1:")
-        System.out.println("Creating flow graph...")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("MergeApp1:")
+        System.err.println("Creating flow graph...")
         createMainFun
-        System.out.println("\n")
+        System.err.println("\n")
         emitAll()
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("\n\n")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
       }
     }
 
     withOutFile("LMSEventMerge2App.c") {
       new LMSEventMerge2App with CFRPDSLApplicationRunner {
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("MergeApp2:")
-        System.out.println("Creating flow graph...")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("MergeApp2:")
+        System.err.println("Creating flow graph...")
         createMainFun
-        System.out.println("\n")
+        System.err.println("\n")
         emitAll()
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("\n\n")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
       }
     }
 
     withOutFile("LMSEventMerge2bApp.c") {
       new LMSEventMerge2bApp with CFRPDSLApplicationRunner {
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("MergeApp2b:")
-        System.out.println("Creating flow graph...")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("MergeApp2b:")
+        System.err.println("Creating flow graph...")
         createMainFun
-        System.out.println("\n")
+        System.err.println("\n")
         emitAll()
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("\n\n")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
       }
     }
 
     withOutFile("LMSEventMerge3App.c") {
       new LMSEventMerge3App with CFRPDSLApplicationRunner {
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("MergeApp3:")
-        System.out.println("Creating flow graph...")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("MergeApp3:")
+        System.err.println("Creating flow graph...")
         createMainFun
-        System.out.println("\n")
+        System.err.println("\n")
         //printEventTree()
-        //System.out.println("\n")
+        //System.err.println("\n")
         emitAll()
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("\n\n")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
+      }
+    }
+
+    withOutFile("LMSEventMerge3bApp.c") {
+      new LMSEventMerge3bApp with CFRPDSLApplicationRunner {
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("MergeApp3b:")
+        System.err.println("Creating flow graph...")
+        createMainFun
+        System.err.println("\n")
+        //printEventTree()
+        //System.err.println("\n")
+        emitAll()
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
       }
     }
 
     withOutFile("LMSEventMerge4App.c") {
       new LMSEventMerge4App with CFRPDSLApplicationRunner {
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("MergeApp4:")
-        System.out.println("Creating flow graph...")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("MergeApp4:")
+        System.err.println("Creating flow graph...")
         createMainFun
-        System.out.println("\n")
+        System.err.println("\n")
         //printEventTree()
-        //System.out.println("\n")
+        //System.err.println("\n")
         emitAll()
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("\n\n")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
       }
     }
 
     withOutFile("LMSEventMerge5App.c") {
       new LMSEventMerge5App with CFRPDSLApplicationRunner {
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("MergeApp5:")
-        System.out.println("Creating flow graph...")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("MergeApp5:")
+        System.err.println("Creating flow graph...")
         createMainFun
-        System.out.println("\n")
+        System.err.println("\n")
         //printEventTree()
-        //System.out.println("\n")
+        //System.err.println("\n")
         emitAll()
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("\n\n")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
       }
     }
 
     withOutFile("LMSEventMerge6aApp.c") {
       new LMSEventMerge6aApp with CFRPDSLApplicationRunner {
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("MergeApp6a:")
-        System.out.println("Creating flow graph...")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("MergeApp6a:")
+        System.err.println("Creating flow graph...")
         createMainFun
-        System.out.println("\n")
+        System.err.println("\n")
         //printEventTree()
-        //System.out.println("\n")
+        //System.err.println("\n")
         emitAll()
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("\n\n")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
       }
     }
 
     withOutFile("LMSEventMerge6bApp.c") {
       new LMSEventMerge6bApp with CFRPDSLApplicationRunner {
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("MergeApp6b:")
-        System.out.println("Creating flow graph...")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("MergeApp6b:")
+        System.err.println("Creating flow graph...")
         createMainFun
-        System.out.println("\n")
+        System.err.println("\n")
         //printEventTree()
-        //System.out.println("\n")
+        //System.err.println("\n")
         emitAll()
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("\n\n")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
       }
     }
 
     withOutFile("LMSEventMerge7App.c") {
       new LMSEventMerge7App with CFRPDSLApplicationRunner {
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.out.println("MergeApp7:")
-        System.out.println("Creating flow graph...")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("MergeApp7:")
+        System.err.println("Creating flow graph...")
         createMainFun
-        System.out.println("\n")
+        System.err.println("\n")
         //printEventTree()
-        //System.out.println("\n")
+        //System.err.println("\n")
         emitAll()
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+      }
+    }
+    */
+    withOutFile("LMSEventMerge8App.c") {
+      new LMSEventMerge8App with CFRPDSLApplicationRunner {
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("MergeApp8:")
+        System.err.println("Creating flow graph...")
+        createMainFun
+        System.err.println("\n")
+        //printEventTree()
+        //System.err.println("\n")
+        emitAll()
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }
     }
 

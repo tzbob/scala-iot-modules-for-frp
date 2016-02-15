@@ -78,8 +78,31 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     for(l <- left) {
       if(right.contains(l)) return l
     }
-
     throw new IllegalStateException("Getting index of splitting node failed.")
+  }
+
+  def hasDirectPath(e: Event[_], splitID: EventID): Boolean = {
+    if(e.id == splitID) true
+    else {
+      e match {
+        case en @ FilterEvent(_,_) => false
+        case en @ ConstantEvent(_,_) => hasDirectPath(en.parent, splitID)
+        case en @ MapEvent(_,_) => hasDirectPath(en.parent, splitID)
+        case en @ MergeEvent(_,_) =>
+          val l = if(en.leftAncestors.contains(splitID)){
+            hasDirectPath(en.parentLeft, splitID)
+          } else { false }
+          val r = if(en.rightAncestors.contains(splitID)){
+            hasDirectPath(en.parentRight, splitID)
+          } else { false }
+          (l || r)
+
+        case en @ InputEvent(_) =>
+          throw new IllegalStateException("Searching for filter failed because of Input Event type")
+        case _ =>
+          throw new IllegalStateException("Searching for filter failed because of Unknown Event type")
+      }
+    }
   }
 
   //NOTE: One propagation considers only 1 active input!
@@ -105,7 +128,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
               else generateCombRec(en.parentRight, f, initBranch, setBranchFalse, inputID, splitID)
             }
             else {
-              System.out.println("MergeEvent(ID:" + en.id + ") ID=" + inputID + ": Non-Disjoint")
+              System.err.println("MergeEvent(ID:" + en.id + ") ID=" + inputID + ": Non-Disjoint")
 
               val innerSplitID = getSplitNode(en.leftAncestors, en.rightAncestors)
               val splitNode: Event[_] =
@@ -136,7 +159,10 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
                   val leftval = leftfun(x)
                   val rightval = rightfun(x)
 
-                  if(!leftOk() && !rightOk()) setBranchFalse()
+                  if(!leftOk() && !rightOk()) {
+                    initBranch()
+                    setBranchFalse()
+                  }
 
                   if(leftOk() && rightOk()) {
                     mergefun(leftval,rightval)
@@ -148,7 +174,10 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
               val g: Rep[splitNode.Out]=>Rep[en.Out] =
                 createConditional(leftfun, rightfun, mergeFun, initLeft, initRight)(en.typIn)
 
-              val x: Rep[splitNode.Out] => Rep[MergeIn] = myComposeCheckedFunction(f, g, initBranch)
+              val x: Rep[splitNode.Out] => Rep[MergeIn] = myComposeCheckedFunction(f,g, initBranch)
+                /*if(hasDirectPath(en.parentLeft,splitID) || hasDirectPath(en.parentRight, splitID)) {
+                  myComposeFunction(f,g)
+                } else { myComposeCheckedFunction(f, g, initBranch) }*/
               generateCombRec(splitNode, x.asInstanceOf[Rep[Any]=>Rep[MergeIn]], initBranch, setBranchFalse, inputID, splitID)
               //x.asInstanceOf[Rep[InputOut]=>Rep[MergeIn]] //TODO: fix typecast (because of InputOut type -> totally useless)
             }
@@ -165,7 +194,9 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
               if (!filterfun(x)) setBranchFalse()
               x
             }
-            val x: Rep[en.In] => Rep[MergeIn] = myComposeCheckedFunction(f, g, initBranch)
+            val x: Rep[en.In] => Rep[MergeIn] =
+              if(hasDirectPath(en.parent, splitID)) { myComposeFunction(f,g) }
+              else {myComposeCheckedFunction(f, g, initBranch)}
             generateCombRec(en.parent, x, initBranch, setBranchFalse, inputID, splitID)
           }
 
@@ -175,7 +206,9 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
           }
           else {
             val g: (Rep[en.In] => Rep[en.Out]) = toplevel1("constantfun" + en.id)(en.constFun)(en.typIn, en.typOut)
-            val x: (Rep[en.In] => Rep[MergeIn]) = myComposeCheckedFunction(f, g, initBranch)
+            val x: (Rep[en.In] => Rep[MergeIn]) =
+              if(hasDirectPath(en.parent, splitID)) { myComposeFunction(f,g) }
+              else {myComposeCheckedFunction(f, g, initBranch)}
             generateCombRec(en.parent, x, initBranch, setBranchFalse, inputID, splitID)
           }
 
@@ -185,7 +218,9 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
           }
           else {
             val g: (Rep[en.In] => Rep[en.Out]) = toplevel1("mapfun" + en.id)(en.mapFun)(en.typIn, en.typOut)
-            val x: (Rep[en.In] => Rep[MergeIn]) = myComposeCheckedFunction(f,g,initBranch)
+            val x: (Rep[en.In] => Rep[MergeIn]) =
+              if(hasDirectPath(en.parent, splitID)) { myComposeFunction(f,g) }
+              else {myComposeCheckedFunction(f, g, initBranch)}
             generateCombRec(en.parent, x, initBranch, setBranchFalse, inputID, splitID)
           }
 
@@ -201,11 +236,11 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
       e match {
         case en @ MergeEvent(_,_) =>
           if(isDisjointFor(inputID, en.inputIDsLeft, en.inputIDsRight)){
-            System.out.println("MergeEvent(ID:" + en.id + ") ID=" + inputID + ": Disjoint")
+            System.err.println("MergeEvent(ID:" + en.id + ") ID=" + inputID + ": Disjoint")
             if(en.inputIDsLeft.contains(inputID)) generateLinRec(en.parentLeft, f, inputID)
             else generateLinRec(en.parentRight, f, inputID)
           } else {
-            System.out.println("MergeEvent(ID:" + en.id + ") ID=" + inputID + ": Non-Disjoint")
+            System.err.println("MergeEvent(ID:" + en.id + ") ID=" + inputID + ": Non-Disjoint")
 
             val splitID = getSplitNode(en.leftAncestors, en.rightAncestors)
             val splitNode: Event[_] =
@@ -282,9 +317,10 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
       }
     }
 
-    val voidretfun = {x:Rep[X] => unitToRepUnit( () )}
+    //val m: Rep[String] = "res:"
+    val voidretfun = {x:Rep[X] => { println(x); unitToRepUnit( () ) } }
     for(inputID <- e.inputEventIDs)
-    generateLinRec(e, voidretfun, inputID)
+      generateLinRec(e, voidretfun, inputID)
   }
 
   def ifUnsafe[T:Typ](cond: Rep[Boolean])(ifp: Rep[T]): Rep[T] = {

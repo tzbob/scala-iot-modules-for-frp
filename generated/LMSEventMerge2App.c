@@ -1,14 +1,3 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%
-MergeApp2:
-Creating flow graph...
-Create InputEvent(ID:1): Set(1): List()
-Create ConstantEvent(ID:2): Set(1): List(1)
-Create ConstantEvent(ID:3): Set(1): List(1)
-Create MergeEvent(ID:4): Set(1). Left: Set(1), Right: Set(1): List(2, 1, 3, 1)
-Create MapEvent(ID:5): Set(1): List(4, 2, 1, 3, 1)
-MergeEvent(ID:4) ID=1: Non-Disjoint
-
-
 /* FILE: top1.c */
 void top1();
 int32_t inputfun1();
@@ -25,46 +14,35 @@ int32_t mergefun4(int32_t, int32_t);
 #include <stdbool.h>
 void top1() {
 int32_t x0 = inputfun1();
-bool x1 = true;
-bool x2 = x1;
-int32_t x5;
-if (x2) {
-int32_t x3 = constantfun2(x0);
-x5 = x3;
-} else {
-x5 = 0;
-}
+int32_t x1 = constantfun2(x0);
+int32_t x2 = constantfun3(x0);
+bool x3 = true;
+bool x4 = x3;
 bool x6 = true;
 bool x7 = x6;
-int32_t x10;
-if (x7) {
-int32_t x8 = constantfun3(x0);
-x10 = x8;
-} else {
-x10 = 0;
-}
-bool x11 = !x2;
-bool x12 = !x7;
-bool x13 = x11 && x12;
-if (x13) {
+bool x5 = !x4;
+bool x8 = !x7;
+bool x9 = x5 && x8;
+if (x9) {
 return;
 } else {
 }
-bool x17 = x2 && x7;
-int32_t x21;
-if (x17) {
-int32_t x18 = mergefun4(x5,x10);
-x21 = x18;
+bool x13 = x4 && x7;
+int32_t x17;
+if (x13) {
+int32_t x14 = mergefun4(x1,x2);
+x17 = x14;
 } else {
-int32_t x20;
-if (x2) {
-x20 = x5;
+int32_t x16;
+if (x4) {
+x16 = x1;
 } else {
-x20 = x10;
+x16 = x2;
 }
-x21 = x20;
+x17 = x16;
 }
-int32_t x22 = mapfun5(x21);
+int32_t x18 = mapfun5(x17);
+printf("%d\n",x18);
 }
 /*****************************************
   End of C Generated Code                  
@@ -103,9 +81,9 @@ int32_t mergefun4(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t mapfun5(int32_t  x24) {
-int32_t x25 = x24 * 2;
-return x25;
+int32_t mapfun5(int32_t  x21) {
+int32_t x22 = x21 * 2;
+return x22;
 }
 /*****************************************
   End of C Generated Code                  
@@ -124,7 +102,7 @@ int32_t mergefun4(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t constantfun3(int32_t  x26) {
+int32_t constantfun3(int32_t  x23) {
 return 2;
 }
 /*****************************************
@@ -144,7 +122,7 @@ int32_t mergefun4(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t constantfun2(int32_t  x27) {
+int32_t constantfun2(int32_t  x24) {
 return 1;
 }
 /*****************************************
@@ -164,14 +142,10 @@ int32_t mergefun4(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t mergefun4(int32_t  x28, int32_t  x29) {
-int32_t x30 = x28 + x29;
-return x30;
+int32_t mergefun4(int32_t  x25, int32_t  x26) {
+int32_t x27 = x25 + x26;
+return x27;
 }
 /*****************************************
   End of C Generated Code                  
 *******************************************/
-%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-

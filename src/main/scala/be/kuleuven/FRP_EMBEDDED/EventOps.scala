@@ -67,7 +67,7 @@ trait EventOpsImpl extends EventOps {
     override val inputEventIDs: Set[EventID] = HashSet(this.id)
     override val ancestorEventIDs: List[EventID] = Nil
 
-    println("Create InputEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
+    System.err.println("Create InputEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
   }
   case class ConstantEvent[A,B](parent: Event[A], c : Rep[B])(implicit tB:Typ[B]) extends EventNode[A,B] {
     val constFun: Rep[In]=>Rep[Out] = _ => c
@@ -76,7 +76,7 @@ trait EventOpsImpl extends EventOps {
     override val inputEventIDs: Set[EventID] = parent.inputEventIDs
     override val ancestorEventIDs: List[EventID] = parent.id::parent.ancestorEventIDs
 
-    println("Create ConstantEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
+    System.err.println("Create ConstantEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
   }
   case class MapEvent[A,B](parent: Event[A], f: Rep[A] => Rep[B])(implicit tB:Typ[B]) extends EventNode[A,B] {
     val mapFun: Rep[In]=>Rep[Out] = f
@@ -85,7 +85,7 @@ trait EventOpsImpl extends EventOps {
     override val inputEventIDs: Set[EventID] = parent.inputEventIDs
     override val ancestorEventIDs: List[EventID] = parent.id::parent.ancestorEventIDs
 
-    println("Create MapEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
+    System.err.println("Create MapEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
   }
   case class FilterEvent[A](parent: Event[A], f: Rep[A] => Rep[Boolean]) extends EventNode[A,A] {
     val filterFun: Rep[In]=>Rep[Boolean] = f
@@ -94,7 +94,7 @@ trait EventOpsImpl extends EventOps {
     override val inputEventIDs: Set[EventID] = parent.inputEventIDs
     override val ancestorEventIDs: List[EventID] = parent.id::parent.ancestorEventIDs
 
-    println("Create FilterEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
+    System.err.println("Create FilterEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
   }
   case class MergeEvent[A](parents: (Event[A],Event[A]), f: (Rep[A],Rep[A])=>Rep[A] ) extends EventNode[A,A] {
     val mergeFun: (Rep[In],Rep[In])=>Rep[Out] = f
@@ -110,7 +110,7 @@ trait EventOpsImpl extends EventOps {
     val leftAncestors = parents._1.id::parents._1.ancestorEventIDs
     val rightAncestors = parents._2.id::parents._2.ancestorEventIDs
 
-    println("Create MergeEvent(ID:" + id + "): " + inputEventIDs + ". Left: " + inputIDsLeft + ", Right: " + inputIDsRight + ": " + ancestorEventIDs)
+    System.err.println("Create MergeEvent(ID:" + id + "): " + inputEventIDs + ". Left: " + inputIDsLeft + ", Right: " + inputIDsRight + ": " + ancestorEventIDs)
   }
 
   trait EventImpl[A] extends Event[A] {

@@ -1,6 +1,6 @@
 package be.kuleuven.FRP_EMBEDDED
 
-import java.io.{FileOutputStream, PrintStream, File}
+import java.io.{OutputStream, FileOutputStream, PrintStream, File}
 
 object OutputGenerator {
 
@@ -17,7 +17,11 @@ object OutputGenerator {
     val oldStdErr = System.err
     try {
       System.setOut(out)
-      System.setErr(out)
+      //System.setErr(out) //to set to same file
+      System.setErr(new PrintStream(new OutputStream() { //to suppress
+        override def write(b: Int) {}}))
+      // comment both to direct to terminal
+
       Console.withOut(out)(Console.withErr(out)(func))
     } finally {
       out.flush()

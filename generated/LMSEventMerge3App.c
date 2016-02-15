@@ -1,17 +1,3 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%
-MergeApp3:
-Creating flow graph...
-Create InputEvent(ID:1): Set(1): List()
-Create InputEvent(ID:2): Set(2): List()
-Create MergeEvent(ID:3): Set(1, 2). Left: Set(1), Right: Set(2): List(1, 2)
-Create ConstantEvent(ID:4): Set(2): List(2)
-Create MergeEvent(ID:5): Set(1, 2). Left: Set(1, 2), Right: Set(2): List(3, 1, 2, 4, 2)
-Create MapEvent(ID:6): Set(1, 2): List(5, 3, 1, 2, 4, 2)
-MergeEvent(ID:5) ID=1: Disjoint
-MergeEvent(ID:3) ID=1: Disjoint
-MergeEvent(ID:5) ID=2: Non-Disjoint
-
-
 /* FILE: top1.c */
 void top1();
 int32_t inputfun2();
@@ -30,6 +16,7 @@ int32_t mergefun5(int32_t, int32_t);
 void top1() {
 int32_t x0 = inputfun1();
 int32_t x1 = mapfun6(x0);
+printf("%d\n",x1);
 }
 /*****************************************
   End of C Generated Code                  
@@ -71,40 +58,35 @@ int32_t mergefun5(int32_t, int32_t);
 #include <string.h>
 #include <stdbool.h>
 void top2() {
-int32_t x3 = inputfun2();
-bool x4 = true;
-bool x5 = x4;
-int32_t x8;
-if (x5) {
-int32_t x6 = constantfun4(x3);
-x8 = x6;
-} else {
-x8 = 0;
-}
+int32_t x4 = inputfun2();
+int32_t x5 = constantfun4(x4);
+bool x6 = true;
+bool x7 = x6;
 bool x9 = true;
 bool x10 = x9;
+bool x8 = !x7;
 bool x11 = !x10;
-bool x12 = !x5;
-bool x13 = x11 && x12;
-if (x13) {
+bool x12 = x8 && x11;
+if (x12) {
 return;
 } else {
 }
-bool x17 = x10 && x5;
-int32_t x21;
-if (x17) {
-int32_t x18 = mergefun5(x3,x8);
-x21 = x18;
-} else {
+bool x16 = x7 && x10;
 int32_t x20;
-if (x10) {
-x20 = x3;
+if (x16) {
+int32_t x17 = mergefun5(x4,x5);
+x20 = x17;
 } else {
-x20 = x8;
+int32_t x19;
+if (x7) {
+x19 = x4;
+} else {
+x19 = x5;
 }
-x21 = x20;
+x20 = x19;
 }
-int32_t x22 = mapfun6(x21);
+int32_t x21 = mapfun6(x20);
+printf("%d\n",x21);
 }
 /*****************************************
   End of C Generated Code                  
@@ -195,7 +177,3 @@ return x29;
 /*****************************************
   End of C Generated Code                  
 *******************************************/
-%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
