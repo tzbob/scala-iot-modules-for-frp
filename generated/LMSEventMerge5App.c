@@ -122,9 +122,10 @@ int32_t mergefun8(int32_t, int32_t);
 #include <string.h>
 #include <stdbool.h>
 bool filterfun6(int32_t  x45) {
-int32_t x46 = x45 % 2;
-bool x47 = x46 == 0;
-return x47;
+printf("%s\n",string("filter6").c_str());
+int32_t x47 = x45 % 2;
+bool x48 = x47 == 0;
+return x48;
 }
 /*****************************************
   End of C Generated Code                  
@@ -147,9 +148,10 @@ int32_t mergefun8(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t mapfun9(int32_t  x48) {
-int32_t x49 = x48 * 2;
-return x49;
+int32_t mapfun9(int32_t  x50) {
+printf("%s\n",string("map9").c_str());
+int32_t x52 = x50 * 2;
+return x52;
 }
 /*****************************************
   End of C Generated Code                  
@@ -172,9 +174,10 @@ int32_t mergefun8(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t mapfun7(int32_t  x50) {
-int32_t x51 = x50 + 1;
-return x51;
+int32_t mapfun7(int32_t  x54) {
+printf("%s\n",string("map7").c_str());
+int32_t x56 = x54 + 1;
+return x56;
 }
 /*****************************************
   End of C Generated Code                  
@@ -197,7 +200,7 @@ int32_t mergefun8(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t constantfun2(int32_t  x52) {
+int32_t constantfun2(int32_t  x58) {
 return 1;
 }
 /*****************************************
@@ -221,7 +224,7 @@ int32_t mergefun8(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t constantfun5(int32_t  x53) {
+int32_t constantfun5(int32_t  x59) {
 return 2;
 }
 /*****************************************
@@ -245,9 +248,10 @@ int32_t mergefun8(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t mapfun4(int32_t  x54) {
-int32_t x55 = x54 + 1;
-return x55;
+int32_t mapfun4(int32_t  x60) {
+printf("%s\n",string("map4").c_str());
+int32_t x62 = x60 + 1;
+return x62;
 }
 /*****************************************
   End of C Generated Code                  
@@ -270,10 +274,11 @@ int32_t mergefun8(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-bool filterfun3(int32_t  x56) {
-int32_t x57 = x56 % 2;
-bool x58 = x57 == 0;
-return x58;
+bool filterfun3(int32_t  x64) {
+printf("%s\n",string("filter3").c_str());
+int32_t x66 = x64 % 2;
+bool x67 = x66 == 0;
+return x67;
 }
 /*****************************************
   End of C Generated Code                  
@@ -296,9 +301,10 @@ int32_t mergefun8(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t mergefun8(int32_t  x59, int32_t  x60) {
-int32_t x61 = x59 + x60;
-return x61;
+int32_t mergefun8(int32_t  x69, int32_t  x70) {
+printf("%s\n",string("merge8").c_str());
+int32_t x72 = x69 + x70;
+return x72;
 }
 /*****************************************
   End of C Generated Code                  

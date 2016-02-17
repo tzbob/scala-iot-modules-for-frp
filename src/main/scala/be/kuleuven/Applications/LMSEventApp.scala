@@ -26,8 +26,8 @@ trait LMSEventMapApp extends FRPDSLApplication {
 
   override def createMainFun {
     val t1: Event[Int] = TimerEvent(5) // every 5 sec
-    val n1 = t1.map[Int]( (i:Rep[Int]) => 2*i )
-    val n2 = n1.map[Boolean]( (i:Rep[Int]) => infix_%(i,2)==0 )
+    val n1 = t1.map[Int]( (i) => 2*i )
+    val n2 = n1.map[Boolean]( (i) => infix_%(i,2)==0 )
 
     generator(n2)
   }
@@ -162,15 +162,15 @@ trait LMSEventMerge5App extends FRPDSLApplication {
     val t: Event[Int] = TimerEvent(5)
 
     val c1: Event[Int] = t.constant(1)
-    val f1: Event[Int] = c1.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
-    val map1: Event[Int] = f1.map((i: Rep[Int]) => i + 1)
+    val f1: Event[Int] = c1.filter((i: Rep[Int]) => { println("filter3"); infix_%(i, 2) == 0 })
+    val map1: Event[Int] = f1.map((i: Rep[Int]) => { println("map4"); i + 1 })
 
     val c2 = t.constant(2)
-    val f2: Event[Int] = c2.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
-    val map2: Event[Int] = f2.map((i: Rep[Int]) => i + 1)
+    val f2: Event[Int] = c2.filter((i: Rep[Int]) => { println("filter6"); infix_%(i, 2) == 0 })
+    val map2: Event[Int] = f2.map((i: Rep[Int]) => { println("map7"); i + 1 })
 
-    val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
-    val map3 = m.map((x: Rep[Int]) => x * 2)
+    val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => { println("merge8") ; x + y })
+    val map3 = m.map((x: Rep[Int]) => { println("map9"); x * 2 })
 
     generator(map3)
   }
@@ -244,23 +244,23 @@ trait LMSEventMerge8App extends FRPDSLApplication {
     val t: Event[Int] = TimerEvent(2)
 
     //big left
-    val m1: Event[Int] = t.map((i: Rep[Int]) => { println("map2"); i + 1 })
+    val m1: Event[Int] = t.map((i) => { println("map2"); i + 1 })
     //small left
-    val f1: Event[Int] = m1.filter((i: Rep[Int]) => { println("filter3"); i == 1 })
-    val c1: Event[Int] = f1.map((i: Rep[Int]) => { println("constant4"); 2 })
+    val f1: Event[Int] = m1.filter((i) => { println("filter3"); i == 1 })
+    val c1: Event[Int] = f1.map((i) => { println("constant4"); 2 })
     //small right
-    val f2: Event[Int] = m1.filter((i: Rep[Int]) => { println("filter5"); i == 1 })
-    val m2: Event[Int] = f2.map( (i:Rep[Int])=> { println("map6"); i*2 })
+    val f2: Event[Int] = m1.filter((i) => { println("filter5"); i == 1 })
+    val m2: Event[Int] = f2.map( (i)=> { println("map6"); i*2 })
 
-    val merge1: Event[Int] = c1.merge(m2, (x: Rep[Int], y: Rep[Int]) => { println("merge7"); x + y })
-    val m3: Event[Int] = merge1.map((i: Rep[Int]) => { println("map8"); i + 3 })
+    val merge1: Event[Int] = c1.merge(m2, (x, y) => { println("merge7"); x + y })
+    val m3: Event[Int] = merge1.map((i) => { println("map8"); i + 3 })
 
     //big right
-    val m4: Event[Int] = t.map((i: Rep[Int]) => { println("map9"); i + 10 })
+    val m4: Event[Int] = t.map((i) => { println("map9"); i + 10 })
 
 
-    val m = m3.merge(m4, (x: Rep[Int], y: Rep[Int]) => { println("merge10"); x + y })
-    val map3 = m.map((x: Rep[Int]) => {println("map11"); x * 2})
+    val m = m3.merge(m4, (x, y) => { println("merge10"); x + y })
+    val map3 = m.map((x) => {println("map11"); x * 2})
 
     generator(map3)
   }
