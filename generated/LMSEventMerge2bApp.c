@@ -23,40 +23,40 @@ if (x4) {
 x1 = false;
 } else {
 }
-bool x8 = x1;
-int32_t x11;
-if (x8) {
-int32_t x9 = constantfun3(x0);
-x11 = x9;
+int32_t  x8;
+bool x9 = x1;
+if (x9) {
+int32_t x10 = constantfun3(x0);
+x8 = x10;
 } else {
-x11 = 0;
 }
-int32_t x12 = constantfun4(x0);
-bool x14 = true;
-bool x15 = x14;
-bool x13 = !x8;
-bool x16 = !x15;
-bool x17 = x13 && x16;
-if (x17) {
+int32_t x14 = x8;
+int32_t x15 = constantfun4(x0);
+bool x17 = true;
+bool x18 = x17;
+bool x16 = !x9;
+bool x19 = !x18;
+bool x20 = x16 && x19;
+if (x20) {
 return;
 } else {
 }
-bool x21 = x8 && x15;
-int32_t x25;
-if (x21) {
-int32_t x22 = mergefun5(x11,x12);
-x25 = x22;
+bool x24 = x9 && x18;
+int32_t x28;
+if (x24) {
+int32_t x25 = mergefun5(x14,x15);
+x28 = x25;
 } else {
-int32_t x24;
-if (x8) {
-x24 = x11;
+int32_t x27;
+if (x9) {
+x27 = x14;
 } else {
-x24 = x12;
+x27 = x15;
 }
-x25 = x24;
+x28 = x27;
 }
-int32_t x26 = mapfun6(x25);
-printf("%d\n",x26);
+int32_t x29 = mapfun6(x28);
+printf("%d\n",x29);
 }
 /*****************************************
   End of C Generated Code                  
@@ -97,9 +97,9 @@ int32_t mergefun5(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t mapfun6(int32_t  x29) {
-int32_t x30 = x29 * 2;
-return x30;
+int32_t mapfun6(int32_t  x32) {
+int32_t x33 = x32 * 2;
+return x33;
 }
 /*****************************************
   End of C Generated Code                  
@@ -119,7 +119,7 @@ int32_t mergefun5(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t constantfun4(int32_t  x31) {
+int32_t constantfun4(int32_t  x34) {
 return 2;
 }
 /*****************************************
@@ -140,10 +140,10 @@ int32_t mergefun5(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-bool filterfun2(int32_t  x32) {
-int32_t x33 = x32 % 2;
-bool x34 = x33 == 0;
-return x34;
+bool filterfun2(int32_t  x35) {
+int32_t x36 = x35 % 2;
+bool x37 = x36 == 0;
+return x37;
 }
 /*****************************************
   End of C Generated Code                  
@@ -163,7 +163,7 @@ int32_t mergefun5(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t constantfun3(int32_t  x35) {
+int32_t constantfun3(int32_t  x38) {
 return 1;
 }
 /*****************************************
@@ -184,9 +184,9 @@ int32_t mergefun5(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t mergefun5(int32_t  x36, int32_t  x37) {
-int32_t x38 = x36 + x37;
-return x38;
+int32_t mergefun5(int32_t  x39, int32_t  x40) {
+int32_t x41 = x39 + x40;
+return x41;
 }
 /*****************************************
   End of C Generated Code                  

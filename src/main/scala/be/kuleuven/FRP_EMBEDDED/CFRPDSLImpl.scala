@@ -9,9 +9,9 @@ import scala.lms.common._
  * Implementation of the FRP DSL to generate C code
  */
 trait CFRPDSLImpl extends FRPDSLImpl
-    with ScalaOpsPkgExp with TupledFunctionsRecursiveExp with UncheckedOpsExp { self =>
+    with ScalaOpsPkgExpExt with TupledFunctionsRecursiveExp with UncheckedOpsExp { self =>
 
-  val codegen = new CCodeGenPkgExtended with CGenVariables with CGenTupledFunctions with CGenUncheckedOps { val IR: self.type = self }
+  val codegen = new CCodeGenPkgExtended with CGenTupledFunctions with CGenUncheckedOps { val IR: self.type = self }
 
   def emitAll(): Unit = {
     assert(codegen ne null) //careful about initialization order

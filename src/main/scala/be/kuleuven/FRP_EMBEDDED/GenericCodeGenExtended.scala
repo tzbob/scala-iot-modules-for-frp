@@ -2,10 +2,9 @@ package be.kuleuven.FRP_EMBEDDED
 
 import java.io.PrintWriter
 
-import scala.lms.common.{ScalaOpsPkgExp, CCodeGenPkg}
 import scala.lms.internal.{Expressions, GenericCodegen}
 
-trait GenericCodeGenExtended extends GenericCodegen {
+trait GenericCodeGenExt extends GenericCodegen {
 
   val IR: Expressions
   import IR._
@@ -15,5 +14,3 @@ trait GenericCodeGenExtended extends GenericCodegen {
     emitSource(Nil, body, className, stream)
   }
 }
-
-trait CCodeGenPkgExtended extends CCodeGenPkg with GenericCodeGenExtended { val IR: ScalaOpsPkgExp  }

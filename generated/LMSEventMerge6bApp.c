@@ -31,54 +31,54 @@ if (x7) {
 x4 = false;
 } else {
 }
-bool x11 = x4;
-int32_t x14;
-if (x11) {
-int32_t x12 = mapfun6(x3);
-x14 = x12;
-} else {
-x14 = 0;
-}
-int32_t x15 = constantfun7(x2);
-bool x16 = true;
-bool x17 = x16;
-bool x18 = filterfun8(x15);
-bool x19 = !x18;
-if (x19) {
-x16 = false;
+int32_t  x11;
+bool x12 = x4;
+if (x12) {
+int32_t x13 = mapfun6(x3);
+x11 = x13;
 } else {
 }
-bool x23 = x16;
-int32_t x26;
-if (x23) {
-int32_t x24 = mapfun9(x15);
-x26 = x24;
+int32_t x17 = x11;
+int32_t x18 = constantfun7(x2);
+bool x19 = true;
+bool x20 = x19;
+bool x21 = filterfun8(x18);
+bool x22 = !x21;
+if (x22) {
+x19 = false;
 } else {
-x26 = 0;
 }
-bool x27 = !x11;
-bool x28 = !x23;
-bool x29 = x27 && x28;
-if (x29) {
+int32_t  x26;
+bool x27 = x19;
+if (x27) {
+int32_t x28 = mapfun9(x18);
+x26 = x28;
+} else {
+}
+int32_t x32 = x26;
+bool x33 = !x12;
+bool x34 = !x27;
+bool x35 = x33 && x34;
+if (x35) {
 return;
 } else {
 }
-bool x33 = x11 && x23;
-int32_t x37;
-if (x33) {
-int32_t x34 = mergefun10(x14,x26);
-x37 = x34;
+bool x39 = x12 && x27;
+int32_t x43;
+if (x39) {
+int32_t x40 = mergefun10(x17,x32);
+x43 = x40;
 } else {
-int32_t x36;
-if (x11) {
-x36 = x14;
+int32_t x42;
+if (x12) {
+x42 = x17;
 } else {
-x36 = x26;
+x42 = x32;
 }
-x37 = x36;
+x43 = x42;
 }
-int32_t x38 = mapfun11(x37);
-printf("%d\n",x38);
+int32_t x44 = mapfun11(x43);
+printf("%d\n",x44);
 }
 /*****************************************
   End of C Generated Code                  
@@ -129,9 +129,9 @@ int32_t mergefun10(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t mapfun6(int32_t  x41) {
-int32_t x42 = x41 + 1;
-return x42;
+int32_t mapfun6(int32_t  x47) {
+int32_t x48 = x47 + 1;
+return x48;
 }
 /*****************************************
   End of C Generated Code                  
@@ -156,9 +156,9 @@ int32_t mergefun10(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t mapfun9(int32_t  x43) {
-int32_t x44 = x43 + 1;
-return x44;
+int32_t mapfun9(int32_t  x49) {
+int32_t x50 = x49 + 1;
+return x50;
 }
 /*****************************************
   End of C Generated Code                  
@@ -183,7 +183,7 @@ int32_t mergefun10(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t constantfun4(int32_t  x45) {
+int32_t constantfun4(int32_t  x51) {
 return 1;
 }
 /*****************************************
@@ -209,9 +209,9 @@ int32_t mergefun10(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t mapfun3(int32_t  x46) {
-int32_t x47 = x46 * 2;
-return x47;
+int32_t mapfun3(int32_t  x52) {
+int32_t x53 = x52 * 2;
+return x53;
 }
 /*****************************************
   End of C Generated Code                  
@@ -236,7 +236,7 @@ int32_t mergefun10(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t constantfun7(int32_t  x48) {
+int32_t constantfun7(int32_t  x54) {
 return 2;
 }
 /*****************************************
@@ -262,10 +262,10 @@ int32_t mergefun10(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-bool filterfun5(int32_t  x49) {
-int32_t x50 = x49 % 2;
-bool x51 = x50 == 0;
-return x51;
+bool filterfun5(int32_t  x55) {
+int32_t x56 = x55 % 2;
+bool x57 = x56 == 0;
+return x57;
 }
 /*****************************************
   End of C Generated Code                  
@@ -290,10 +290,10 @@ int32_t mergefun10(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-bool filterfun8(int32_t  x52) {
-int32_t x53 = x52 % 2;
-bool x54 = x53 == 0;
-return x54;
+bool filterfun8(int32_t  x58) {
+int32_t x59 = x58 % 2;
+bool x60 = x59 == 0;
+return x60;
 }
 /*****************************************
   End of C Generated Code                  
@@ -318,9 +318,9 @@ int32_t mergefun10(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t mapfun2(int32_t  x55) {
-int32_t x56 = x55 + 1;
-return x56;
+int32_t mapfun2(int32_t  x61) {
+int32_t x62 = x61 + 1;
+return x62;
 }
 /*****************************************
   End of C Generated Code                  
@@ -345,9 +345,9 @@ int32_t mergefun10(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t mapfun11(int32_t  x57) {
-int32_t x58 = x57 * 2;
-return x58;
+int32_t mapfun11(int32_t  x63) {
+int32_t x64 = x63 * 2;
+return x64;
 }
 /*****************************************
   End of C Generated Code                  
@@ -372,9 +372,9 @@ int32_t mergefun10(int32_t, int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-int32_t mergefun10(int32_t  x59, int32_t  x60) {
-int32_t x61 = x59 + x60;
-return x61;
+int32_t mergefun10(int32_t  x65, int32_t  x66) {
+int32_t x67 = x65 + x66;
+return x67;
 }
 /*****************************************
   End of C Generated Code                  

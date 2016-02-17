@@ -4,7 +4,7 @@ import scala.lms.common._
 import java.lang.{Integer => JInteger}
 
 trait FRPDSL
-    extends ScalaOpsPkg with TupledFunctions with UncheckedOps with LiftPrimitives with LiftString with LiftVariables with LiftBoolean
+    extends ScalaOpsPkgExt with TupledFunctions with UncheckedOps with LiftPrimitives with LiftString with LiftVariables
     with EventOps with BehaviorOps {
 
   def printEvent[A](e: Event[A]): String
@@ -47,9 +47,12 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
   def myComposeCheckedFunction[A:Typ,B,C,D]
   (f:Rep[B] => Rep[A], g:Rep[C] => Rep[B], initBranch: () => Rep[Boolean]): Rep[C] => Rep[A]  = {
     x: Rep[C] =>
-      if (initBranch()) f(g(x))
-      else unit(0).asInstanceOf[Rep[A]]
-      //ifUnsafe(initBranch())(f(g(x)))
+      // Actually an unsafe if !
+      // We need to make sure ourself this new variable is never used if initBranch bool is false
+      val v: Var[A] = vardecl_new()
+      if (initBranch()) v = f(g(x))
+
+      v
   }
 
   def myComposeUnit[A,B]
@@ -139,14 +142,14 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
               //build left function until target input
               val idfun: Rep[en.In] => Rep[en.In] = (x: Rep[en.In]) => x
-              lazy val leftOk: Var[Boolean] = var_new(true)
+              lazy val leftOk: Var[Boolean] = var_new(unit(true))
               val initLeft: ()=>Rep[Boolean] = { () => leftOk }
-              val setLeftFalse:()=>Rep[Unit] = { () => var_assign(leftOk, false) }
+              val setLeftFalse:()=>Rep[Unit] = { () => var_assign(leftOk, unit(false)) }
               val leftfun: Rep[splitNode.Out] => Rep[en.In] = generateCombRec(en.parentLeft, idfun, initLeft, setLeftFalse, inputID, innerSplitID)(en.typIn)
               //build right function until target input
-              lazy val rightOk: Var[Boolean] = var_new(true)
+              lazy val rightOk: Var[Boolean] = var_new(unit(true))
               val initRight: ()=>Rep[Boolean] = { () => rightOk }
-              val setRightFalse: ()=>Rep[Unit] = { () => var_assign(rightOk, false) }
+              val setRightFalse: ()=>Rep[Unit] = { () => var_assign(rightOk, unit(false)) }
               val rightfun: Rep[splitNode.Out] => Rep[en.In] = generateCombRec(en.parentRight, idfun, initRight, setRightFalse, inputID, innerSplitID)(en.typIn)
               val mergeFun: (Rep[en.In], Rep[en.In]) => Rep[en.Out] = toplevel2("mergefun" + en.id)(en.mergeFun)(en.typIn, en.typOut)
 
@@ -251,14 +254,14 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
             val idfun: Rep[en.In]=>Rep[en.In] = (x:Rep[en.In])=>x
             //build left function until target input
-            lazy val leftOk: Var[Boolean] = var_new(true)
+            lazy val leftOk: Var[Boolean] = var_new(unit(true))
             val initLeft: ()=>Rep[Boolean] = { () => leftOk }
-            val setLeftFalse:()=>Rep[Unit] = { () => var_assign(leftOk, false) }
+            val setLeftFalse:()=>Rep[Unit] = { () => var_assign(leftOk, unit(false)) }
             val leftfun: Rep[splitNode.Out]=>Rep[en.In] = generateCombRec(en.parentLeft, idfun, initLeft, setLeftFalse, inputID, splitID)(en.typIn)
             //build right function until target input
-            lazy val rightOk: Var[Boolean] = var_new(true)
+            lazy val rightOk: Var[Boolean] = var_new(unit(true))
             val initRight: ()=>Rep[Boolean] = { () => rightOk }
-            val setRightFalse: ()=>Rep[Unit] = { () => var_assign(rightOk, false) }
+            val setRightFalse: ()=>Rep[Unit] = { () => var_assign(rightOk, unit(false)) }
             val rightfun: Rep[splitNode.Out]=>Rep[en.In] = generateCombRec(en.parentRight, idfun, initRight, setRightFalse, inputID, splitID)(en.typIn)
 
             val mergeFun: (Rep[en.In],Rep[en.In])=>Rep[en.Out] = toplevel2("mergefun"+en.id)(en.mergeFun)(en.typIn,en.typOut)
