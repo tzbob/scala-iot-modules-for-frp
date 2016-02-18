@@ -262,7 +262,11 @@ trait LMSEventMerge8App extends FRPDSLApplication {
     val m = m3.merge(m4, (x, y) => { println("merge10"); x + y })
     val map3 = m.map((x) => {println("map11"); x * 2})
 
+    val map4 = m.map((x) => {println("map12"); x * 2})
+
     generator(map3)
+    generator(map4)
+    //TODO: solve!
   }
 }
 
