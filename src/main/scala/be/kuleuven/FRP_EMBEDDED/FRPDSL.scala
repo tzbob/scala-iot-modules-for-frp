@@ -4,12 +4,13 @@ import scala.lms.common._
 import java.lang.{Integer => JInteger}
 
 trait FRPDSL
-    extends ScalaOpsPkgExt with TupledFunctions with UncheckedOps with LiftPrimitives with LiftString with LiftVariables
+    extends ScalaOpsPkgExt with TupledFunctions with UncheckedOps with LiftPrimitives with LiftString with LiftVariables with LiftBoolean
     with EventOps with BehaviorOps {
 
   def printEvent[A](e: Event[A]): String
 
   def generator[A](e: Event[A]): Unit
+  def generator[A](b: Behavior[A]): Unit
 
   // keep track of top level functions
   // TODO: can be removed eventually, user won't need to define them
@@ -49,9 +50,8 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     x: Rep[C] =>
       // Actually an unsafe if !
       // We need to make sure ourself this new variable is never used if initBranch bool is false
-      val v: Var[A] = vardecl_new()
+      val v: Var[A] = vardecl_new[A]()
       if (initBranch()) v = f(g(x))
-
       v
   }
 
@@ -326,9 +326,12 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
       generateLinRec(e, voidretfun, inputID)
   }
 
-  def ifUnsafe[T:Typ](cond: Rep[Boolean])(ifp: Rep[T]): Rep[T] = {
-    unchecked[T]("if (", cond, ") {", ifp , "}")
+  override def generator[X](b: Behavior[X]): Unit = {
+
+
   }
+
+
 
   case class TopLevel0[B](name: String, mB:Typ[B], f: () => Rep[B])
   val rec0 = new scala.collection.mutable.HashMap[String,TopLevel0[_]]

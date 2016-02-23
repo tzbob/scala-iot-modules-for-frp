@@ -12,13 +12,14 @@ trait ScalaOpsPkgExt extends Base
   with ImplicitOps with NumericOps with FractionalOps with OrderingOps with StringOps
   with RangeOps with IOOps with ArrayOps with BooleanOps with PrimitiveOps with MiscOps
   with Equal with IfThenElse with VariablesExt with While with TupleOps with ListOps
-  with SeqOps with MathOps with CastingOps with SetOps with ObjectOps with ArrayBufferOps
+  with SeqOps with MathOps with CastingOps with SetOps with ObjectOps with ArrayBufferOps with StructOps
 
 trait ScalaOpsPkgExpExt extends ScalaOpsPkg
   with ImplicitOpsExp with NumericOpsExp with FractionalOpsExp with OrderingOpsExp with StringOpsExp
   with RangeOpsExp with IOOpsExp with ArrayOpsExp with BooleanOpsExp with PrimitiveOpsExp with MiscOpsExp
   with FunctionsExp with EqualExp with IfThenElseExp with VariablesExpExt with WhileExp with TupleOpsExp with ListOpsExp
   with SeqOpsExp with DSLOpsExp with MathOpsExp with CastingOpsExp with SetOpsExp with ObjectOpsExp with ArrayBufferOpsExp
+  with StructExp
 
 /**
  * Code gen: each target must define a code generator package.
@@ -43,7 +44,7 @@ trait CCodeGenPkgExt extends CGenImplicitOps with CGenNumericOps with CGenFracti
   with CGenPrimitiveOps with CGenMiscOps with CGenFunctions with CGenEqual with CGenIfThenElse
   with CGenVariablesExt with CGenWhile with CGenTupleOps with CGenListOps
   with CGenSeqOps with CGenDSLOps with CGenMathOps with CGenCastingOps with CGenSetOps
-  with CGenObjectOps with CGenArrayBufferOps
+  with CGenObjectOps with CGenArrayBufferOps with CGenStruct
   { val IR: ScalaOpsPkgExpExt  }
 
 trait CCodeGenPkgExtended extends CCodeGenPkgExt with GenericCodeGenExt { val IR: ScalaOpsPkgExpExt }
