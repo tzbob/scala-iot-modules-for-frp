@@ -48,3 +48,4 @@ trait CCodeGenPkgExt extends CGenImplicitOps with CGenNumericOps with CGenFracti
   { val IR: ScalaOpsPkgExpExt  }
 
 trait CCodeGenPkgExtended extends CCodeGenPkgExt with GenericCodeGenExt { val IR: ScalaOpsPkgExpExt }
+trait ScalaCodeGenPkgExtended extends ScalaCodeGenPkgExt with GenericCodeGenExt { val IR: ScalaOpsPkgExpExt }

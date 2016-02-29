@@ -9,9 +9,9 @@ import scala.lms.common._
  * Implementation of the FRP DSL to generate Scala code
  */
 trait ScalaFRPDSLImpl extends FRPDSLImpl
-    with ScalaOpsPkgExp with TupledFunctionsRecursiveExp with UncheckedOpsExp { self =>
+    with ScalaOpsPkgExpExt with TupledFunctionsRecursiveExp with UncheckedOpsExp { self =>
 
-  val codegen = new ScalaCodeGenPkg with ScalaGenVariables with ScalaGenTupledFunctions with ScalaGenUncheckedOps { val IR: self.type = self}
+  val codegen = new ScalaCodeGenPkgExtended with ScalaGenTupledFunctions with ScalaGenUncheckedOps { val IR: self.type = self}
 
   def emitAll(): Unit = {
     assert(codegen ne null) //careful about initialization order
