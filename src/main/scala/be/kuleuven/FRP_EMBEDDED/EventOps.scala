@@ -1,9 +1,8 @@
 package be.kuleuven.FRP_EMBEDDED
 
-import scala.lms.common.Base
 import scala.collection.immutable.HashSet
 
-trait EventOps extends Base {
+trait EventOps extends ScalaOpsPkgExt {
   behavior: BehaviorOps =>
 
   type EventID = Int
@@ -31,7 +30,7 @@ trait EventOps extends Base {
     def foldp[B]( fun:((A,B) => B), init:B): Behavior[B]
   }
 
-  def TimerEvent(i: Rep[Int])(implicit tI:Typ[Int]): Event[Int]
+  def TimerEvent(i: Rep[Int])/*(implicit tI:Typ[Int])*/: Event[Int]
 
 }
 
@@ -40,9 +39,9 @@ trait EventOpsImpl extends EventOps {
 
   val nodeMap: scala.collection.mutable.Map[EventID,Event[_]] = scala.collection.mutable.HashMap()
 
-  override def TimerEvent(i: Rep[Int])(implicit tI:Typ[Int]) = InputEvent[Int](i)  // only conceptual
+  override def TimerEvent(i: Rep[Int]) = InputEvent[Int](i)  // only conceptual
 
-  abstract class EventNode[A,B] extends EventImpl[B] {
+  abstract class EventNode[A,B:Typ] extends EventImpl[B] {
     override val id = EventNode.nextid
     nodeMap += ((id, this))
     override type In = A
@@ -50,6 +49,8 @@ trait EventOpsImpl extends EventOps {
     def addChild(id: EventID): Unit = {
       childEventIDs.add(id)
     }
+    lazy val fired = vardecl_new[Boolean]()
+    lazy val value = vardecl_new[B]()
     // NOT GENERAL ANYMORE
     //val updateFunc: Rep[In] => Rep[Out]
     //val parentEvents: List[Event[In]]
@@ -95,7 +96,7 @@ trait EventOpsImpl extends EventOps {
 
     System.err.println("Create MapEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
   }
-  case class FilterEvent[A](parent: Event[A], f: Rep[A] => Rep[Boolean]) extends EventNode[A,A] {
+  case class FilterEvent[A](parent: Event[A], f: Rep[A] => Rep[Boolean])(implicit tA:Typ[A]) extends EventNode[A,A] {
     val filterFun: Rep[In]=>Rep[Boolean] = f
     override val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = typIn
@@ -104,7 +105,7 @@ trait EventOpsImpl extends EventOps {
 
     System.err.println("Create FilterEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
   }
-  case class MergeEvent[A](parents: (Event[A],Event[A]), f: (Rep[A],Rep[A])=>Rep[A] ) extends EventNode[A,A] {
+  case class MergeEvent[A](parents: (Event[A],Event[A]), f: (Rep[A],Rep[A])=>Rep[A] )(implicit tA:Typ[A]) extends EventNode[A,A] {
     val mergeFun: (Rep[In],Rep[In])=>Rep[Out] = f
     //val parentEvents: List[Event[In]] = parents._1::parents._2::Nil
     val parentLeft: Event[In] = parents._1
@@ -124,8 +125,8 @@ trait EventOpsImpl extends EventOps {
   trait EventImpl[A] extends Event[A] {
     override def constant[B:Typ](c: Rep[B]): Event[B] = ConstantEvent[A,B](this, c)
     override def map[B:Typ](f: Rep[A] => Rep[B]): Event[B] = MapEvent[A,B](this, f)
-    override def filter(f: Rep[A] => Rep[Boolean]): Event[A] = FilterEvent[A](this, f)
-    override def merge(e: Event[A], f: (Rep[A],Rep[A])=>Rep[A]) = MergeEvent[A]( (this, e), f)
+    override def filter(f: Rep[A] => Rep[Boolean]): Event[A] = FilterEvent[A](this, f)(typOut)
+    override def merge(e: Event[A], f: (Rep[A],Rep[A])=>Rep[A]) = MergeEvent[A]( (this, e), f)(typOut)
 
     override def startsWith(i: Rep[A]): Behavior[A] = ??? // TODO: implement
     override def foldp[B](fun: (A, B) => B, init: B): Behavior[B] = ??? // TODO: implement
