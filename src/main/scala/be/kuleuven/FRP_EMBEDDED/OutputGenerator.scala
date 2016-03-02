@@ -16,11 +16,14 @@ object OutputGenerator {
     val oldStdOut = System.out
     val oldStdErr = System.err
     try {
+      // OUT stream
       System.setOut(out)
-      //System.setErr(out) //to set to same file
-      System.setErr(new PrintStream(new OutputStream() { //to suppress
-        override def write(b: Int) {}}))
-      // comment both to direct to terminal
+
+      // ERR stream (comment both to direct to terminal)
+      //to set to same file
+      //System.setErr(out)
+      //to suppress
+      System.setErr(new PrintStream(new OutputStream() { override def write(b: Int) {}}))
 
       Console.withOut(out)(Console.withErr(out)(func))
     } finally {
