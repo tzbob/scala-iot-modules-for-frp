@@ -10,6 +10,7 @@ trait FRPDSL
   def printEvent[A](e: Event[A]): String
 
   def generator[A](e: Event[A]): Unit
+  def generatorNew[A](e: Event[A]): Unit
   def generator[A](b: Behavior[A]): Unit
 
   // keep track of top level functions
@@ -37,7 +38,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
   }
 
   def printEventTree(): Unit = {
-    System.out.println(nodeMap)
+    System.err.println(nodeMap)
   }
 
   def myComposeFunction[A,B,C,D]
@@ -331,6 +332,37 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
   }
 
+  def buildGraphTopDown[X](e: Event[X]): Unit = {
+    e match {
+      case en @ MergeEvent(_,_) =>
+        en.parentLeft.addChild(e.id)
+        buildGraphTopDown(en.parentLeft)
+        en.parentRight.addChild(e.id)
+        buildGraphTopDown(en.parentRight)
+      case en @ ConstantEvent(_,_) =>
+        en.parent.addChild(e.id)
+        buildGraphTopDown(en.parent)
+      case en @ FilterEvent(_,_) =>
+        en.parent.addChild(e.id)
+        buildGraphTopDown(en.parent)
+      case en @ FilterEvent(_,_) =>
+        en.parent.addChild(e.id)
+        buildGraphTopDown(en.parent)
+      case en @ MapEvent(_,_) =>
+        en.parent.addChild(e.id)
+        buildGraphTopDown(en.parent)
+      case en @ InputEvent(_) =>
+        // no parents
+        printEventTree()
+      case _ => throw new IllegalStateException("Unsupported Event type")
+
+    }
+  }
+
+  override def generatorNew[X](e: Event[X]): Unit = {
+   buildGraphTopDown(e)
+
+  }
 
 
   case class TopLevel0[B](name: String, mB:Typ[B], f: () => Rep[B])

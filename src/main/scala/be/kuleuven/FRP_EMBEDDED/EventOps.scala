@@ -12,12 +12,16 @@ trait EventOps extends Base {
     type In
     type Out = A
 
-    val typIn: Typ[In]  //TODO: make private[FRP_EMBEDDED]
+    //TODO: make private[FRP_EMBEDDED]
+    val typIn: Typ[In]
     val typOut: Typ[Out]
     val id: EventID
     val inputEventIDs: Set[EventID]
     val ancestorEventIDs: List[EventID]
+    val childEventIDs: scala.collection.mutable.Set[EventID]
+    def addChild(id: EventID): Unit //TODO: can be removed? Depends on FRPDSLImpl
 
+    // Public part
     def constant[B:Typ] (c: Rep[B]): Event[B]
     def map[B:Typ] (f: Rep[A] => Rep[B]): Event[B]
     def filter (f: Rep[A] => Rep[Boolean]): Event[A]
@@ -42,6 +46,10 @@ trait EventOpsImpl extends EventOps {
     override val id = EventNode.nextid
     nodeMap += ((id, this))
     override type In = A
+    override val childEventIDs = scala.collection.mutable.HashSet[EventID]()
+    def addChild(id: EventID): Unit = {
+      childEventIDs.add(id)
+    }
     // NOT GENERAL ANYMORE
     //val updateFunc: Rep[In] => Rep[Out]
     //val parentEvents: List[Event[In]]
