@@ -10,7 +10,7 @@ trait FRPDSL
   def printEvent[A](e: Event[A]): String
 
   def generator[A](e: Event[A]): Unit
-  def generatorNew[A](e: Event[A]): Unit
+  def generatorNew[A](e: Event[A]*): Unit
   def generator[A](b: Behavior[A]): Unit
 
   // keep track of top level functions
@@ -345,23 +345,25 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
       case en @ FilterEvent(_,_) =>
         en.parent.addChild(e.id)
         buildGraphTopDown(en.parent)
-      case en @ FilterEvent(_,_) =>
-        en.parent.addChild(e.id)
-        buildGraphTopDown(en.parent)
       case en @ MapEvent(_,_) =>
         en.parent.addChild(e.id)
         buildGraphTopDown(en.parent)
       case en @ InputEvent(_) =>
         // no parents
-        printEventTree()
       case _ => throw new IllegalStateException("Unsupported Event type")
 
     }
   }
 
-  override def generatorNew[X](e: Event[X]): Unit = {
-   buildGraphTopDown(e)
+  override def generatorNew[X](es: Event[X]*): Unit = {
+    for(e <- es) {
+      buildGraphTopDown(e)
+    }
 
+    //get all input events
+    val inputMap = nodeMap.filter( x => x match { case (y,InputEvent(_)) => true case _ => false })
+
+    //for(in <- inputMap.values)
   }
 
 
