@@ -17,7 +17,7 @@ trait ScalaOpsPkgExt extends Base
 trait ScalaOpsPkgExpExt extends ScalaOpsPkg
   with ImplicitOpsExp with NumericOpsExp with FractionalOpsExp with OrderingOpsExp with StringOpsExp
   with RangeOpsExp with IOOpsExp with ArrayOpsExp with BooleanOpsExp with PrimitiveOpsExp with MiscOpsExp
-  with FunctionsExp with EqualExp with IfThenElseExp with VariablesExpExt with WhileExp with TupleOpsExp with ListOpsExp
+  with FunctionsExpExt with EqualExp with IfThenElseExp with VariablesExpExt with WhileExp with TupleOpsExp with ListOpsExp
   with SeqOpsExp with DSLOpsExp with MathOpsExp with CastingOpsExp with SetOpsExp with ObjectOpsExp with ArrayBufferOpsExp
   with StructExp
 
@@ -41,7 +41,7 @@ trait ScalaCodeGenPkgExt extends ScalaGenImplicitOps with ScalaGenNumericOps wit
 // C
 trait CCodeGenPkgExt extends CGenImplicitOps with CGenNumericOps with CGenFractionalOps with CGenOrderingOps
   with CGenStringOps with CGenRangeOps with CGenIOOps with CGenArrayOps with CGenBooleanOps
-  with CGenPrimitiveOps with CGenMiscOps with CGenFunctions with CGenEqual with CGenIfThenElse
+  with CGenPrimitiveOps with CGenMiscOps with CGenFunctionsExt with CGenEqual with CGenIfThenElse
   with CGenVariablesExt with CGenWhile with CGenTupleOps with CGenListOps
   with CGenSeqOps with CGenDSLOps with CGenMathOps with CGenCastingOps with CGenSetOps
   with CGenObjectOps with CGenArrayBufferOps with CGenStruct
