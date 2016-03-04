@@ -15,6 +15,11 @@ trait CFRPDSLImpl extends FRPDSLImpl
 
   def emitProgram(): Unit = {
     val stream = new PrintWriter(System.out)
+
+    //get all end nodes
+    val outputevents = getOutputNodes.values.toList
+    val program = generatorNew(outputevents:_*)
+
     codegen.emitProgram(program, stream)
   }
 

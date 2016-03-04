@@ -28,8 +28,6 @@ trait LMSEventMapApp extends FRPDSLApplication {
     val t1: Event[Int] = TimerEvent(5) // every 5 sec
     val n1 = t1.map[Int]( (i) => 2*i )
     val n2 = n1.map[Boolean]( (i) => infix_%(i,2)==0 )
-
-    generatorNew(n2)
   }
 }
 
@@ -40,8 +38,6 @@ trait LMSEventFilterApp extends FRPDSLApplication {
     val n1 = t1.map[Int]( (i:Rep[Int]) => 2*i )
     val n2 = n1.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
     val n3 = n2.map[Int]( (i:Rep[Int]) => i+1)
-
-    generatorNew(n3)
   }
 }
 
@@ -51,8 +47,6 @@ trait LMSEventConstantApp extends FRPDSLApplication {
     val t1: Event[Int] = TimerEvent(5)
     val c1: Event[Int] = t1.constant(10)
     val m1 = c1.map[Int]( (i:Rep[Int]) => 2*i )
-
-    generatorNew(m1)
   }
 }
 
@@ -67,8 +61,6 @@ trait LMSEventMerge1App extends FRPDSLApplication {
 
     val m = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val n1 = m.map((x: Rep[Int]) => x * 2)
-
-    generatorNew(n1)
   }
 }
 
@@ -82,8 +74,6 @@ trait LMSEventMerge2App extends FRPDSLApplication {
 
     val m = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val n1 = m.map((x: Rep[Int]) => x * 2)
-
-    generatorNew(n1)
   }
 }
 
@@ -98,8 +88,6 @@ trait LMSEventMerge2bApp extends FRPDSLApplication {
 
     val m = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val n1 = m.map((x: Rep[Int]) => x * 2)
-
-    generatorNew(n1)
   }
 }
 
@@ -114,8 +102,6 @@ trait LMSEventMerge3App extends FRPDSLApplication {
 
     val m2 = m1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val n1 = m2.map((x: Rep[Int]) => x * 2)
-
-    generatorNew(n1)
   }
 }
 
@@ -132,8 +118,6 @@ trait LMSEventMerge3bApp extends FRPDSLApplication {
 
     val m2 = map1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val n1 = m2.map((x: Rep[Int]) => x * 2)
-
-    generatorNew(n1)
   }
 }
 
@@ -151,8 +135,6 @@ trait LMSEventMerge4App extends FRPDSLApplication {
     val m2 = n2.merge(c3, (x: Rep[Int], y: Rep[Int]) => x + y)
 
     val n1 = m2.map((x: Rep[Int]) => x * 2)
-
-    generatorNew(n1)
   }
 }
 
@@ -171,8 +153,6 @@ trait LMSEventMerge5App extends FRPDSLApplication {
 
     val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => { println("merge8") ; x + y })
     val map3 = m.map((x: Rep[Int]) => { println("map9"); x * 2 })
-
-    generatorNew(map3)
   }
 }
 
@@ -190,8 +170,6 @@ trait LMSEventMerge6aApp extends FRPDSLApplication {
 
     val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val map3 = m.map((x: Rep[Int]) => x * 2)
-
-    generatorNew(map3)
   }
 }
 
@@ -212,8 +190,6 @@ trait LMSEventMerge6bApp extends FRPDSLApplication {
 
     val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val map3 = m.map((x: Rep[Int]) => x * 2)
-
-    generatorNew(map3)
   }
 }
 
@@ -233,8 +209,6 @@ trait LMSEventMerge7App extends FRPDSLApplication {
 
     val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val map3 = m.map((x: Rep[Int]) => x * 2)
-
-    generatorNew(map3)
   }
 }
 
@@ -263,8 +237,6 @@ trait LMSEventMerge8App extends FRPDSLApplication {
     val map3 = m.map((x) => {println("map11"); x * 2})
 
     val map4 = m.map((x) => {println("map12"); x * 2})
-
-    generatorNew(map3, map4)
   }
 }
 
@@ -278,8 +250,6 @@ trait LMSEventMerge9aApp extends FRPDSLApplication {
 
     val merge4 = m2.merge(m3, (x, y) => { println("merge4"); x + y })
     val merge5 = merge4.merge(m3, (x, y) => { println("merge5"); x + y })
-
-    generatorNew(merge5)
   }
 }
 
@@ -293,8 +263,6 @@ trait LMSEventMerge9bApp extends FRPDSLApplication {
 
     val merge4 = m2.merge(m3, (x, y) => { println("merge4"); x + y })
     val merge5 = m3.merge(merge4, (x, y) => { println("merge5"); x + y })
-
-    generatorNew(merge5)
   }
 }
 
@@ -311,8 +279,6 @@ trait LMSEventMerge10App extends FRPDSLApplication {
 
     val mright = t.map( x => {println("mright"); x+3})
     val e2 = mleftmerge.merge(mright, (x,y)=> {println("e2"); x+y})
-
-    generatorNew(e1,e2)
   }
 }
 

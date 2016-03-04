@@ -12,7 +12,7 @@ using namespace std;
 // => printf("res: %d\n",x??);
 
 int main() {
-	x140();
-	printf("e1: %d\n",x127);
-	printf("e2: %d\n",x97);
+	x132();
+	printf("e1: %d\n",x120);
+	printf("e2: %d\n",x91);
 }

@@ -7,81 +7,81 @@
 #include <stdbool.h>
 bool  x0;
 int32_t  x1;
+bool  x6;
+int32_t  x7;
+bool  x18;
+int32_t  x19;
+bool  x30;
+int32_t  x31;
+bool  x58;
+int32_t  x59;
 void x2 () {
 x0 = true;
 x1 = 5;
 };
-bool  x7;
-int32_t  x8;
-void x9 () {
-bool x10 = x0;
-if (x10) {
-x7 = true;
-int32_t x12 = x1;
-x8 = 1;
+void x8 () {
+bool x9 = x0;
+if (x9) {
+x6 = true;
+int32_t x11 = x1;
+x7 = 1;
 } else {
-x7 = false;
+x6 = false;
 }
 };
-bool  x20;
-int32_t  x21;
-void x22 () {
-bool x23 = x0;
-if (x23) {
-x20 = true;
-int32_t x25 = x1;
-x21 = 2;
+void x20 () {
+bool x21 = x0;
+if (x21) {
+x18 = true;
+int32_t x23 = x1;
+x19 = 2;
 } else {
-x20 = false;
+x18 = false;
 }
 };
-bool  x33;
-int32_t  x34;
-void x35 () {
-bool x36 = x7;
-bool x37 = x20;
-bool x38 = x36 && x37;
-if (x38) {
-x33 = true;
-int32_t x40 = x8;
-int32_t x41 = x21;
-int32_t x42 = x40 + x41;
-x34 = x42;
+void x32 () {
+bool x33 = x6;
+bool x34 = x18;
+bool x35 = x33 && x34;
+if (x35) {
+x30 = true;
+int32_t x37 = x7;
+int32_t x38 = x19;
+int32_t x39 = x37 + x38;
+x31 = x39;
 } else {
-if (x36) {
-x33 = true;
-int32_t x46 = x8;
-x34 = x46;
+if (x33) {
+x30 = true;
+int32_t x43 = x7;
+x31 = x43;
 } else {
-if (x37) {
-x33 = true;
-int32_t x50 = x21;
-x34 = x50;
+if (x34) {
+x30 = true;
+int32_t x47 = x19;
+x31 = x47;
 } else {
-x33 = false;
+x30 = false;
 }
 }
 }
 };
-bool  x62;
-int32_t  x63;
-void x64 () {
-bool x65 = x33;
-if (x65) {
-x62 = true;
-int32_t x67 = x34;
-int32_t x68 = x67 * 2;
-x63 = x68;
+void x60 () {
+bool x61 = x30;
+if (x61) {
+x58 = true;
+int32_t x63 = x31;
+int32_t x64 = x63 * 2;
+x59 = x64;
 } else {
-x62 = false;
+x58 = false;
 }
 };
-void x76 () {
+void x71 () {
 x2();
-x9();
-x22();
-x35();
-x64();
+x8();
+x20();
+x32();
+x60();
 };
 /*****************************************
   End of C Generated Code                  

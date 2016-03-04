@@ -7,96 +7,96 @@
 #include <stdbool.h>
 bool  x0;
 int32_t  x1;
+bool  x6;
+int32_t  x7;
+bool  x12;
+int32_t  x13;
+bool  x24;
+int32_t  x25;
+bool  x36;
+int32_t  x37;
+bool  x64;
+int32_t  x65;
 void x2 () {
 x0 = true;
 x1 = 5;
 };
-bool  x7;
-int32_t  x8;
-void x9 () {
-x7 = true;
-x8 = 10;
+void x8 () {
+x6 = true;
+x7 = 10;
 };
-bool  x14;
-int32_t  x15;
-void x16 () {
-bool x17 = x0;
-if (x17) {
-x14 = true;
-int32_t x19 = x1;
-x15 = 1;
+void x14 () {
+bool x15 = x0;
+if (x15) {
+x12 = true;
+int32_t x17 = x1;
+x13 = 1;
 } else {
-x14 = false;
+x12 = false;
 }
 };
-bool  x27;
-int32_t  x28;
-void x29 () {
-bool x30 = x7;
-if (x30) {
-x27 = true;
-int32_t x32 = x8;
-x28 = 2;
+void x26 () {
+bool x27 = x6;
+if (x27) {
+x24 = true;
+int32_t x29 = x7;
+x25 = 2;
 } else {
-x27 = false;
+x24 = false;
 }
 };
-bool  x40;
-int32_t  x41;
-void x42 () {
-bool x43 = x14;
-bool x44 = x27;
-bool x45 = x43 && x44;
-if (x45) {
-x40 = true;
-int32_t x47 = x15;
-int32_t x48 = x28;
-int32_t x49 = x47 + x48;
-x41 = x49;
+void x38 () {
+bool x39 = x12;
+bool x40 = x24;
+bool x41 = x39 && x40;
+if (x41) {
+x36 = true;
+int32_t x43 = x13;
+int32_t x44 = x25;
+int32_t x45 = x43 + x44;
+x37 = x45;
 } else {
-if (x43) {
-x40 = true;
-int32_t x53 = x15;
-x41 = x53;
+if (x39) {
+x36 = true;
+int32_t x49 = x13;
+x37 = x49;
 } else {
-if (x44) {
-x40 = true;
-int32_t x57 = x28;
-x41 = x57;
+if (x40) {
+x36 = true;
+int32_t x53 = x25;
+x37 = x53;
 } else {
-x40 = false;
+x36 = false;
 }
 }
 }
 };
-bool  x69;
-int32_t  x70;
-void x71 () {
-bool x72 = x40;
-if (x72) {
-x69 = true;
-int32_t x74 = x41;
-int32_t x75 = x74 * 2;
-x70 = x75;
+void x66 () {
+bool x67 = x36;
+if (x67) {
+x64 = true;
+int32_t x69 = x37;
+int32_t x70 = x69 * 2;
+x65 = x70;
 } else {
-x69 = false;
+x64 = false;
 }
 };
-void x83 () {
+void x77 () {
 x2();
-x9();
-x16();
-x29();
-x42();
-x71();
+x8();
+x14();
+x26();
+x38();
+x66();
 };
-void x92 () {
+void x86 () {
 x2();
-x9();
-x16();
-x29();
-x42();
-x71();
+x8();
+x14();
+x26();
+x38();
+x66();
 };
 /*****************************************
   End of C Generated Code                  

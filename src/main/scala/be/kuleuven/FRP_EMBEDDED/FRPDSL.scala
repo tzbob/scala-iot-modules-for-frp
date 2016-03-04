@@ -10,7 +10,7 @@ trait FRPDSL
   def printEvent[A](e: Event[A]): String
 
   def generator[A](e: Event[A]): Unit
-  def generatorNew[A](e: Event[A]*): Unit
+  def generatorNew[A](e: Event[A]*): () => Rep[Unit]
   def generator[A](b: Behavior[A]): Unit
 
   // keep track of top level functions
@@ -329,7 +329,6 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
   override def generator[X](b: Behavior[X]): Unit = {
 
-
   }
 
   def buildGraphTopDown[X](e: Event[X]): Unit = {
@@ -364,8 +363,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
           en.fired // global decls
           en.value // global decls
           implicit val tO = en.typOut
-          val ff = en.eventfun
-          doApplyDecl(ff)
+          en.eventfun
           unitToRepUnit( () )
         }
 
@@ -376,8 +374,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
           en.value // global decls
           implicit val tIn = en.typIn
           implicit val tOut = en.typOut
-          val ff = en.eventfun
-          doApplyDecl(ff)
+          en.eventfun
           unitToRepUnit( () )
         }
 
@@ -387,8 +384,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
           en.fired // global decls
           en.value // global decls
           implicit val tO = en.typOut
-          val ff = en.eventfun
-          doApplyDecl(ff)
+          en.eventfun
           unitToRepUnit( () )
         }
       case en @ ConstantEvent(_,_) =>
@@ -397,8 +393,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
           en.fired // global decls
           en.value // global decls
           implicit val tO = en.typOut
-          val ff = en.eventfun
-          doApplyDecl(ff)
+          en.eventfun
           unitToRepUnit( () )
         }
       case en @ MergeEvent(_,_) =>
@@ -407,8 +402,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
           en.fired // global decls
           en.value // global decls
           implicit val tO = en.typOut
-          val ff = en.eventfun
-          doApplyDecl(ff)
+          en.eventfun
           unitToRepUnit( () )
         }
       case _ => throw new IllegalStateException("Unsupported Event type")
@@ -423,6 +417,20 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
           case (y,InputEvent(_)) => true
           case _ => false
         }
+    ).toMap
+  }
+
+  // TODO: maybe move to eventOps
+  def getOutputNodes: Map[EventID,Event[_]] = {
+    nodeMap.filter(
+      x => x match {
+        case (_, en @ InputEvent(_)) => if(en.childEventIDs.size == 0) true else false
+        case (_, en @ MapEvent(_,_)) => if(en.childEventIDs.size == 0) true else false
+        case (_, en @ ConstantEvent(_,_)) => if(en.childEventIDs.size == 0) true else false
+        case (_, en @ FilterEvent(_,_)) => if(en.childEventIDs.size == 0) true else false
+        case (_, en @ MergeEvent(_,_)) => if(en.childEventIDs.size == 0) true else false
+        case _ => throw new IllegalStateException("Unsupported Event type")
+      }
     ).toMap
   }
 
@@ -456,10 +464,11 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     maxlevel
   }
 
-  var program: () => Rep[Unit] = () => unitToRepUnit( () )
-  override def generatorNew[X](es: Event[X]*): Unit = {
+  override def generatorNew[X](es: Event[X]*): () => Rep[Unit] = {
+    var program: () => Rep[Unit] = () => unitToRepUnit( () )
+
     for(e <- es) {
-      buildGraphTopDown(e) //TODO: investigate -> childs actually needed?
+      buildGraphTopDown(e) //TODO: only used to search for end nodes
     }
 
     // generate per level
@@ -477,16 +486,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
       System.err.println("Generate dependencies of inputnode " + i)
       program = generateTopFunction(j, program)
     }
-
-    /*for( child <- en.childEventIDs){
-          val childnode = nodeMap.get(child) match {
-            case Some(e) => e
-            case _ => throw new IllegalStateException("child node not found")
-          }
-          newf = generateTopDown(childnode, newf)
-        }
-        newf*/
-
+    program
   }
 
   def generateTopFunction[X](e: Event[X], f: () => Rep[Unit]): () => Rep[Unit] = {
@@ -507,7 +507,6 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
       unitToRepUnit( () )
     }
   }
-
 
   case class TopLevel0[B](name: String, mB:Typ[B], f: () => Rep[B])
   val rec0 = new scala.collection.mutable.HashMap[String,TopLevel0[_]]

@@ -7,145 +7,145 @@
 #include <stdbool.h>
 bool  x0;
 int32_t  x1;
+bool  x6;
+int32_t  x7;
+bool  x20;
+int32_t  x21;
+bool  x34;
+int32_t  x35;
+bool  x47;
+int32_t  x48;
+bool  x61;
+int32_t  x62;
+bool  x90;
+int32_t  x91;
+bool  x119;
+int32_t  x120;
 void x2 () {
 x0 = true;
 x1 = 5;
 };
-bool  x7;
-int32_t  x8;
-void x9 () {
-bool x10 = x0;
-if (x10) {
-x7 = true;
-int32_t x12 = x1;
+void x8 () {
+bool x9 = x0;
+if (x9) {
+x6 = true;
+int32_t x11 = x1;
 printf("%s\n",string("mleft").c_str());
-int32_t x14 = x12 * 2;
-x8 = x14;
+int32_t x13 = x11 * 2;
+x7 = x13;
 } else {
-x7 = false;
+x6 = false;
 }
 };
-bool  x22;
-int32_t  x23;
-void x24 () {
-bool x25 = x0;
-if (x25) {
-x22 = true;
-int32_t x27 = x1;
+void x22 () {
+bool x23 = x0;
+if (x23) {
+x20 = true;
+int32_t x25 = x1;
 printf("%s\n",string("mright").c_str());
-int32_t x29 = x27 + 3;
-x23 = x29;
+int32_t x27 = x25 + 3;
+x21 = x27;
 } else {
-x22 = false;
+x20 = false;
 }
 };
-bool  x37;
-int32_t  x38;
-void x39 () {
-bool x40 = x7;
-if (x40) {
-x37 = true;
-int32_t x42 = x8;
+void x36 () {
+bool x37 = x6;
+if (x37) {
+x34 = true;
+int32_t x39 = x7;
 printf("%s\n",string("mleftright").c_str());
-x38 = x42;
+x35 = x39;
 } else {
-x37 = false;
+x34 = false;
 }
 };
-bool  x51;
-int32_t  x52;
-void x53 () {
-bool x54 = x7;
-if (x54) {
-x51 = true;
-int32_t x56 = x8;
+void x49 () {
+bool x50 = x6;
+if (x50) {
+x47 = true;
+int32_t x52 = x7;
 printf("%s\n",string("mleftleft").c_str());
-int32_t x58 = x56 * 2;
-x52 = x58;
+int32_t x54 = x52 * 2;
+x48 = x54;
 } else {
-x51 = false;
+x47 = false;
 }
 };
-bool  x66;
-int32_t  x67;
-void x68 () {
-bool x69 = x51;
-bool x70 = x37;
-bool x71 = x69 && x70;
-if (x71) {
-x66 = true;
-int32_t x73 = x52;
-int32_t x74 = x38;
+void x63 () {
+bool x64 = x47;
+bool x65 = x34;
+bool x66 = x64 && x65;
+if (x66) {
+x61 = true;
+int32_t x68 = x48;
+int32_t x69 = x35;
 printf("%s\n",string("mleftmerge").c_str());
-int32_t x76 = x73 + x74;
-x67 = x76;
+int32_t x71 = x68 + x69;
+x62 = x71;
 } else {
-if (x69) {
-x66 = true;
-int32_t x80 = x52;
-x67 = x80;
+if (x64) {
+x61 = true;
+int32_t x75 = x48;
+x62 = x75;
 } else {
-if (x70) {
-x66 = true;
-int32_t x84 = x38;
-x67 = x84;
+if (x65) {
+x61 = true;
+int32_t x79 = x35;
+x62 = x79;
 } else {
-x66 = false;
+x61 = false;
 }
 }
 }
 };
-bool  x96;
-int32_t  x97;
-void x98 () {
-bool x99 = x66;
-bool x100 = x22;
-bool x101 = x99 && x100;
-if (x101) {
-x96 = true;
-int32_t x103 = x67;
-int32_t x104 = x23;
+void x92 () {
+bool x93 = x61;
+bool x94 = x20;
+bool x95 = x93 && x94;
+if (x95) {
+x90 = true;
+int32_t x97 = x62;
+int32_t x98 = x21;
 printf("%s\n",string("e2").c_str());
-int32_t x106 = x103 + x104;
-x97 = x106;
+int32_t x100 = x97 + x98;
+x91 = x100;
 } else {
-if (x99) {
-x96 = true;
-int32_t x110 = x67;
-x97 = x110;
+if (x93) {
+x90 = true;
+int32_t x104 = x62;
+x91 = x104;
 } else {
-if (x100) {
-x96 = true;
-int32_t x114 = x23;
-x97 = x114;
+if (x94) {
+x90 = true;
+int32_t x108 = x21;
+x91 = x108;
 } else {
-x96 = false;
+x90 = false;
 }
 }
 }
 };
-bool  x126;
-int32_t  x127;
-void x128 () {
-bool x129 = x66;
-if (x129) {
-x126 = true;
-int32_t x131 = x67;
+void x121 () {
+bool x122 = x61;
+if (x122) {
+x119 = true;
+int32_t x124 = x62;
 printf("%s\n",string("e1").c_str());
-x127 = x131;
+x120 = x124;
 } else {
-x126 = false;
+x119 = false;
 }
 };
-void x140 () {
+void x132 () {
 x2();
-x9();
-x24();
-x39();
-x53();
-x68();
-x98();
-x128();
+x8();
+x22();
+x36();
+x49();
+x63();
+x92();
+x121();
 };
 /*****************************************
   End of C Generated Code                  

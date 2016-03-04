@@ -7,41 +7,41 @@
 #include <stdbool.h>
 bool  x0;
 int32_t  x1;
+bool  x6;
+int32_t  x7;
+bool  x19;
+bool  x20;
 void x2 () {
 x0 = true;
 x1 = 5;
 };
-bool  x7;
-int32_t  x8;
-void x9 () {
-bool x10 = x0;
-if (x10) {
-x7 = true;
-int32_t x12 = x1;
-int32_t x13 = 2 * x12;
-x8 = x13;
+void x8 () {
+bool x9 = x0;
+if (x9) {
+x6 = true;
+int32_t x11 = x1;
+int32_t x12 = 2 * x11;
+x7 = x12;
 } else {
-x7 = false;
+x6 = false;
 }
 };
-bool  x21;
-bool  x22;
-void x23 () {
-bool x24 = x7;
-if (x24) {
-x21 = true;
-int32_t x26 = x8;
-int32_t x27 = x26 % 2;
-bool x28 = x27 == 0;
-x22 = x28;
+void x21 () {
+bool x22 = x6;
+if (x22) {
+x19 = true;
+int32_t x24 = x7;
+int32_t x25 = x24 % 2;
+bool x26 = x25 == 0;
+x20 = x26;
 } else {
-x21 = false;
+x19 = false;
 }
 };
-void x36 () {
+void x33 () {
 x2();
-x9();
-x23();
+x8();
+x21();
 };
 /*****************************************
   End of C Generated Code                  
