@@ -25,9 +25,9 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
   }
 }
 
-//trait TupledFunctionsExt extends TupledFunctions with FunctionsExt with TupleOps
-//trait TupledFunctionsExpExt extends TupledFunctionsExp with TupledFunctionsExt with FunctionsExpExt with TupleOpsExp
-trait TupledFunctionsExpExt extends TupledFunctionsExp with FunctionsExpExt
+trait TupledFunctionsExt extends TupledFunctions with FunctionsExt
+trait TupledFunctionsExpExt extends TupledFunctionsExp with TupledFunctionsExt with FunctionsExpExt
+//trait TupledFunctionsExpExt extends TupledFunctionsExp with FunctionsExpExt
 trait TupledFunctionsRecursiveExpExt extends TupledFunctionsRecursiveExp with TupledFunctionsExpExt
 
 trait CGenFunctionsExt extends CGenFunctions {

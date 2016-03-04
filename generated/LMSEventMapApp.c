@@ -1,8 +1,3 @@
-/* FILE: top1.c */
-void top1();
-int32_t inputfun1();
-bool mapfun3(int32_t);
-int32_t mapfun2(int32_t);
 /*****************************************
   Emitting C Generated Code                  
 *******************************************/
@@ -10,69 +5,44 @@ int32_t mapfun2(int32_t);
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-void top1() {
-int32_t x0 = inputfun1();
-int32_t x1 = mapfun2(x0);
-bool x2 = mapfun3(x1);
-printf("%d\n",x2);
+bool  x0;
+int32_t  x1;
+void x2 () {
+x0 = true;
+x1 = 5;
+};
+bool  x7;
+int32_t  x8;
+void x9 () {
+bool x10 = x0;
+if (x10) {
+x7 = true;
+int32_t x12 = x1;
+int32_t x13 = 2 * x12;
+x8 = x13;
+} else {
+x7 = false;
 }
-/*****************************************
-  End of C Generated Code                  
-*******************************************/
-/* FILE: inputfun1.c */
-void top1();
-int32_t inputfun1();
-bool mapfun3(int32_t);
-int32_t mapfun2(int32_t);
-/*****************************************
-  Emitting C Generated Code                  
-*******************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-int32_t inputfun1() {
-return 5;
+};
+bool  x21;
+bool  x22;
+void x23 () {
+bool x24 = x7;
+if (x24) {
+x21 = true;
+int32_t x26 = x8;
+int32_t x27 = x26 % 2;
+bool x28 = x27 == 0;
+x22 = x28;
+} else {
+x21 = false;
 }
-/*****************************************
-  End of C Generated Code                  
-*******************************************/
-/* FILE: mapfun3.c */
-void top1();
-int32_t inputfun1();
-bool mapfun3(int32_t);
-int32_t mapfun2(int32_t);
-/*****************************************
-  Emitting C Generated Code                  
-*******************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-bool mapfun3(int32_t  x5) {
-int32_t x6 = x5 % 2;
-bool x7 = x6 == 0;
-return x7;
-}
-/*****************************************
-  End of C Generated Code                  
-*******************************************/
-/* FILE: mapfun2.c */
-void top1();
-int32_t inputfun1();
-bool mapfun3(int32_t);
-int32_t mapfun2(int32_t);
-/*****************************************
-  Emitting C Generated Code                  
-*******************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-int32_t mapfun2(int32_t  x8) {
-int32_t x9 = 2 * x8;
-return x9;
-}
+};
+void x36 () {
+x2();
+x9();
+x23();
+};
 /*****************************************
   End of C Generated Code                  
 *******************************************/

@@ -1,8 +1,9 @@
 package be.kuleuven.FRP_EMBEDDED
 
 import scala.collection.immutable.HashSet
+import scala.lms.common.Base
 
-trait EventOps extends ScalaOpsPkgExt {
+trait EventOps extends Base {
   behavior: BehaviorOps =>
 
   type EventID = Int
@@ -12,9 +13,10 @@ trait EventOps extends ScalaOpsPkgExt {
     type Out = A
 
     //TODO: make private[FRP_EMBEDDED]
-    val typIn: Typ[In]
+    implicit val typIn: Typ[In]
     val typOut: Typ[Out]
     val id: EventID
+    val level: Int
     val inputEventIDs: Set[EventID]
     val ancestorEventIDs: List[EventID]
     val childEventIDs: scala.collection.mutable.Set[EventID]
@@ -34,7 +36,7 @@ trait EventOps extends ScalaOpsPkgExt {
 
 }
 
-trait EventOpsImpl extends EventOps {
+trait EventOpsImpl extends EventOps with ScalaOpsPkgExt with TupledFunctionsExt {
   behaviorImpl: BehaviorOpsImpl =>
 
   val nodeMap: scala.collection.mutable.Map[EventID,Event[_]] = scala.collection.mutable.HashMap()
@@ -69,8 +71,48 @@ trait EventOpsImpl extends EventOps {
     private def nextid = {id += 1;id}
   }
 
-  case class InputEvent[A] (i: Rep[A]) (implicit tA:Typ[A]) extends EventNode[Unit,A] {
+  def getEventValue[X](e: Event[X]) = {
+    e match {
+      case en @ MergeEvent(_,_) => en.value
+      case en @ ConstantEvent(_,_) => en.value
+      case en @ FilterEvent(_,_) => en.value
+      case en @ MapEvent(_,_) => en.value
+      case en @ InputEvent(_) => en.value
+      case _ => throw new IllegalStateException("Unsupported Event type")
+    }
+  }
+
+  def getEventFired[X](e: Event[X]) = {
+    e match {
+      case en @ MergeEvent(_,_) => en.fired
+      case en @ ConstantEvent(_,_) => en.fired
+      case en @ FilterEvent(_,_) => en.fired
+      case en @ MapEvent(_,_) => en.fired
+      case en @ InputEvent(_) => en.fired
+      case _ => throw new IllegalStateException("Unsupported Event type")
+    }
+  }
+
+  def getEventFunction[X](e: Event[X]) = {
+    e match {
+      case en @ MergeEvent(_,_) => en.eventfun
+      case en @ ConstantEvent(_,_) => en.eventfun
+      case en @ FilterEvent(_,_) => en.eventfun
+      case en @ MapEvent(_,_) => en.eventfun
+      case en @ InputEvent(_) => en.eventfun
+      case _ => throw new IllegalStateException("Unsupported Event type")
+    }
+  }
+
+  case class InputEvent[A] (i: Rep[A])(implicit tA:Typ[A]) extends EventNode[Unit,A] {
     val inputFun: () => Rep[Out] = () => i
+    lazy val eventfun: Rep[(Unit)=>Unit] = {
+      fun { () =>
+        var_assign(fired, unit(true))
+        var_assign(value, inputFun())
+      }
+    }
+    val level = 0
     override val typIn: Typ[In] = typ[Unit]
     override val typOut: Typ[Out] = tA
     override val inputEventIDs: Set[EventID] = HashSet(this.id)
@@ -79,27 +121,73 @@ trait EventOpsImpl extends EventOps {
     System.err.println("Create InputEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
   }
   case class ConstantEvent[A,B](parent: Event[A], c : Rep[B])(implicit tB:Typ[B]) extends EventNode[A,B] {
-    val constFun: Rep[In]=>Rep[Out] = _ => c
-    override val typIn: Typ[In] = parent.typOut
+    override implicit val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = tB
+    val constFun: Rep[In]=>Rep[Out] = _ => c
+    lazy val parentvalue: Var[In] = getEventValue(parent)
+    lazy val parentfired: Var[Boolean] = getEventFired(parent)
+    lazy val eventfun: Rep[(Unit)=>Unit] = {
+      fun { () =>
+        if(readVar(parentfired)) {
+          var_assign(fired, unit(true))
+          var_assign[Out](value, constFun(readVar(parentvalue)))
+        } else {
+          var_assign(fired, unit(false))
+        }
+      }
+    }
+    val level = parent.level + 1
+
     override val inputEventIDs: Set[EventID] = parent.inputEventIDs
     override val ancestorEventIDs: List[EventID] = parent.id::parent.ancestorEventIDs
 
     System.err.println("Create ConstantEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
   }
   case class MapEvent[A,B](parent: Event[A], f: Rep[A] => Rep[B])(implicit tB:Typ[B]) extends EventNode[A,B] {
-    val mapFun: Rep[In]=>Rep[Out] = f
-    override val typIn: Typ[In] = parent.typOut
+    override implicit val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = tB
+    val mapFun: Rep[In]=>Rep[Out] = f
+    lazy val parentvalue: Var[In] = getEventValue(parent)
+    lazy val parentfired: Var[Boolean] = getEventFired(parent)
+    lazy val eventfun: Rep[(Unit)=>Unit] = {
+      fun { () =>
+        if(readVar(parentfired)) {
+          var_assign(fired, unit(true))
+          var_assign[Out](value, mapFun(readVar(parentvalue)))
+        } else {
+          var_assign(fired, unit(false))
+        }
+      }
+    }
+    val level = parent.level + 1
     override val inputEventIDs: Set[EventID] = parent.inputEventIDs
     override val ancestorEventIDs: List[EventID] = parent.id::parent.ancestorEventIDs
 
     System.err.println("Create MapEvent(ID:" + id + "): " + inputEventIDs + ": " + ancestorEventIDs)
   }
   case class FilterEvent[A](parent: Event[A], f: Rep[A] => Rep[Boolean])(implicit tA:Typ[A]) extends EventNode[A,A] {
-    val filterFun: Rep[In]=>Rep[Boolean] = f
     override val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = typIn
+    val filterFun: Rep[In]=>Rep[Boolean] = f
+    lazy val parentvalue: Var[In] = getEventValue(parent)
+    lazy val parentfired: Var[Boolean] = getEventFired(parent)
+    lazy val eventfun: Rep[(Unit)=>Unit] = {
+      fun { () =>
+        if(readVar(parentfired)) {
+          if( filterFun(readVar(parentvalue)) ) {
+            var_assign(fired, unit(true))
+            var_assign[In](value, readVar(parentvalue))
+          } else {
+            var_assign(fired, unit(false))
+
+          }
+        } else {
+          var_assign(fired, unit(false))
+        }
+      }
+    }
+    val level = parent.level + 1
+
     override val inputEventIDs: Set[EventID] = parent.inputEventIDs
     override val ancestorEventIDs: List[EventID] = parent.id::parent.ancestorEventIDs
 
@@ -110,6 +198,7 @@ trait EventOpsImpl extends EventOps {
     //val parentEvents: List[Event[In]] = parents._1::parents._2::Nil
     val parentLeft: Event[In] = parents._1
     val parentRight: Event[In] = parents._2
+    val level = scala.math.max(parentLeft.level, parentRight.level) + 1
     override val typIn: Typ[In] = parentLeft.typOut //TODO: fix if different typed Events can be merged
     override val typOut: Typ[Out] = typIn
     val inputIDsLeft: Set[EventID] = parentLeft.inputEventIDs
@@ -118,6 +207,30 @@ trait EventOpsImpl extends EventOps {
     override val ancestorEventIDs: List[EventID] = (parents._1.id::parents._1.ancestorEventIDs)++(parents._2.id::parents._2.ancestorEventIDs)
     val leftAncestors = parents._1.id::parents._1.ancestorEventIDs
     val rightAncestors = parents._2.id::parents._2.ancestorEventIDs
+
+    lazy val parentleftvalue: Var[In] = getEventValue(parentLeft)
+    lazy val parentleftfired: Var[Boolean] = getEventFired(parentLeft)
+    lazy val parentrightvalue: Var[In] = getEventValue(parentRight)
+    lazy val parentrightfired: Var[Boolean] = getEventFired(parentRight)
+    lazy val eventfun: Rep[(Unit)=>Unit] = {
+      fun { () =>
+        if(readVar(parentleftfired) && readVar(parentrightfired) ) {
+          var_assign(fired, unit(true))
+          var_assign[Out](value, mergeFun(readVar(parentleftvalue),readVar(parentrightvalue)))
+        }
+        else if (readVar(parentleftfired)) {
+          var_assign(fired, unit(true))
+          var_assign[Out](value, readVar(parentleftvalue))
+        }
+        else if (readVar(parentrightfired)) {
+          var_assign(fired, unit(true))
+          var_assign[Out](value, readVar(parentrightvalue))
+        }
+        else {
+          var_assign(fired, unit(false))
+        }
+      }
+    }
 
     System.err.println("Create MergeEvent(ID:" + id + "): " + inputEventIDs + ". Left: " + inputIDsLeft + ", Right: " + inputIDsRight + ": " + ancestorEventIDs)
   }

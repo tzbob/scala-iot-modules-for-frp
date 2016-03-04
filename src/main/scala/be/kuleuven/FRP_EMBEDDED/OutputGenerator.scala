@@ -23,7 +23,7 @@ object OutputGenerator {
       //to set to same file
       //System.setErr(out)
       //to suppress
-      System.setErr(new PrintStream(new OutputStream() { override def write(b: Int) {}}))
+      //System.setErr(new PrintStream(new OutputStream() { override def write(b: Int) {}}))
 
       Console.withOut(out)(Console.withErr(out)(func))
     } finally {

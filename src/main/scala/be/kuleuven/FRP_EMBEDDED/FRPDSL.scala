@@ -4,7 +4,7 @@ import scala.lms.common._
 import java.lang.{Integer => JInteger}
 
 trait FRPDSL
-    extends ScalaOpsPkgExt with TupledFunctions with UncheckedOps with LiftPrimitives with LiftString with LiftVariables with LiftBoolean
+    extends ScalaOpsPkgExt with TupledFunctionsExt with UncheckedOps with LiftPrimitives with LiftString with LiftVariables with LiftBoolean
     with EventOps with BehaviorOps {
 
   def printEvent[A](e: Event[A]): String
@@ -355,15 +355,157 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     }
   }
 
+  def generateEventNode[X](e: Event[X], f: () => Rep[Unit]): () => Rep[Unit] = {
+    //TODO: fix this nasty code duplication
+    e match {
+      case en @ InputEvent(_) =>
+        () => {
+          f()
+          en.fired // global decls
+          en.value // global decls
+          implicit val tO = en.typOut
+          val ff = en.eventfun
+          doApplyDecl(ff)
+          unitToRepUnit( () )
+        }
+
+      case en @ MapEvent(_,_) =>
+        () => {
+          f()
+          en.fired // global decls
+          en.value // global decls
+          implicit val tIn = en.typIn
+          implicit val tOut = en.typOut
+          val ff = en.eventfun
+          doApplyDecl(ff)
+          unitToRepUnit( () )
+        }
+
+      case en @ FilterEvent(_,_) =>
+        () => {
+          f()
+          en.fired // global decls
+          en.value // global decls
+          implicit val tO = en.typOut
+          val ff = en.eventfun
+          doApplyDecl(ff)
+          unitToRepUnit( () )
+        }
+      case en @ ConstantEvent(_,_) =>
+        () => {
+          f()
+          en.fired // global decls
+          en.value // global decls
+          implicit val tO = en.typOut
+          val ff = en.eventfun
+          doApplyDecl(ff)
+          unitToRepUnit( () )
+        }
+      case en @ MergeEvent(_,_) =>
+        () => {
+          f()
+          en.fired // global decls
+          en.value // global decls
+          implicit val tO = en.typOut
+          val ff = en.eventfun
+          doApplyDecl(ff)
+          unitToRepUnit( () )
+        }
+      case _ => throw new IllegalStateException("Unsupported Event type")
+    }
+
+  }
+
+  // TODO: maybe move to eventOps
+  def getInputNodes: Map[EventID,Event[_]] = {
+    nodeMap.filter(
+      x => x match {
+          case (y,InputEvent(_)) => true
+          case _ => false
+        }
+    ).toMap
+  }
+
+  // TODO: maybe move to eventOps
+  def getNodesOnLevel(level: Int): Map[EventID,Event[_]] = {
+    nodeMap.filter(
+      x => x match {
+        case (_, en @ InputEvent(_)) => if(en.level == level) true else false
+        case (_, en @ MapEvent(_,_)) => if(en.level == level) true else false
+        case (_, en @ ConstantEvent(_,_)) => if(en.level == level) true else false
+        case (_, en @ FilterEvent(_,_)) => if(en.level == level) true else false
+        case (_, en @ MergeEvent(_,_)) => if(en.level == level) true else false
+        case _ => throw new IllegalStateException("Unsupported Event type")
+      }
+    ).toMap
+  }
+
+  // TODO: maybe move to eventOps
+  def getMaxLevel: Int = {
+    var maxlevel: Int = 0
+    nodeMap.foreach(
+      x => x match {
+        case (_, en @ InputEvent(_)) => maxlevel = scala.math.max(maxlevel, en.level)
+        case (_, en @ MapEvent(_,_)) => maxlevel = scala.math.max(maxlevel, en.level)
+        case (_, en @ ConstantEvent(_,_)) => maxlevel = scala.math.max(maxlevel, en.level)
+        case (_, en @ FilterEvent(_,_)) => maxlevel = scala.math.max(maxlevel, en.level)
+        case (_, en @ MergeEvent(_,_)) => maxlevel = scala.math.max(maxlevel, en.level)
+        case _ => throw new IllegalStateException("Unsupported Event type")
+      }
+    )
+    maxlevel
+  }
+
+  var program: () => Rep[Unit] = () => unitToRepUnit( () )
   override def generatorNew[X](es: Event[X]*): Unit = {
     for(e <- es) {
-      buildGraphTopDown(e)
+      buildGraphTopDown(e) //TODO: investigate -> childs actually needed?
+    }
+
+    // generate per level
+    System.err.println("max level :"+ getMaxLevel)
+    for( i <- 0 to getMaxLevel){
+      val nodes = getNodesOnLevel(i)
+      nodes.foreach { case (_,x) => program = generateEventNode(x, program) }
     }
 
     //get all input events
-    val inputMap = nodeMap.filter( x => x match { case (y,InputEvent(_)) => true case _ => false })
+    val inputMap = getInputNodes
 
-    //for(in <- inputMap.values)
+    // generate top functions
+    for( (i,j) <- inputMap) {
+      System.err.println("Generate dependencies of inputnode " + i)
+      program = generateTopFunction(j, program)
+    }
+
+    /*for( child <- en.childEventIDs){
+          val childnode = nodeMap.get(child) match {
+            case Some(e) => e
+            case _ => throw new IllegalStateException("child node not found")
+          }
+          newf = generateTopDown(childnode, newf)
+        }
+        newf*/
+
+  }
+
+  def generateTopFunction[X](e: Event[X], f: () => Rep[Unit]): () => Rep[Unit] = {
+    System.err.println("top")
+    // get topological ordering
+    val listbuilder = scala.collection.mutable.ListBuffer.empty[Event[_]]
+    for( i <- 0 to getMaxLevel)
+      listbuilder ++= getNodesOnLevel(i).values.toList
+    val eventsTO = listbuilder.toList
+    eventsTO.foreach(x => System.err.println(x.id))
+
+    () => {
+      f()
+      val top = fun { () =>
+        eventsTO.foreach( x => {(getEventFunction(x))( () ) } )
+      }
+      doApplyDecl(top)
+      unitToRepUnit( () )
+    }
   }
 
 

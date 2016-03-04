@@ -6,9 +6,13 @@
 
 using namespace std;
 
-#include "LMSEventMerge9bApp.c"
+//#include "LMSEventMerge9bApp.c"
+#include "LMSEventMerge10App.c"
+//#include "LMSEventMapApp.c"
 // => printf("res: %d\n",x??);
 
 int main() {
-	top1();
+	x140();
+	printf("e1: %d\n",x127);
+	printf("e2: %d\n",x97);
 }

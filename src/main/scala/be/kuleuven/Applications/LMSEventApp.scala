@@ -29,7 +29,7 @@ trait LMSEventMapApp extends FRPDSLApplication {
     val n1 = t1.map[Int]( (i) => 2*i )
     val n2 = n1.map[Boolean]( (i) => infix_%(i,2)==0 )
 
-    generator(n2)
+    generatorNew(n2)
   }
 }
 
@@ -41,7 +41,7 @@ trait LMSEventFilterApp extends FRPDSLApplication {
     val n2 = n1.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
     val n3 = n2.map[Int]( (i:Rep[Int]) => i+1)
 
-    generator(n3)
+    generatorNew(n3)
   }
 }
 
@@ -52,7 +52,7 @@ trait LMSEventConstantApp extends FRPDSLApplication {
     val c1: Event[Int] = t1.constant(10)
     val m1 = c1.map[Int]( (i:Rep[Int]) => 2*i )
 
-    generator(m1)
+    generatorNew(m1)
   }
 }
 
@@ -68,7 +68,7 @@ trait LMSEventMerge1App extends FRPDSLApplication {
     val m = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val n1 = m.map((x: Rep[Int]) => x * 2)
 
-    generator(n1)
+    generatorNew(n1)
   }
 }
 
@@ -83,7 +83,7 @@ trait LMSEventMerge2App extends FRPDSLApplication {
     val m = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val n1 = m.map((x: Rep[Int]) => x * 2)
 
-    generator(n1)
+    generatorNew(n1)
   }
 }
 
@@ -99,7 +99,7 @@ trait LMSEventMerge2bApp extends FRPDSLApplication {
     val m = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val n1 = m.map((x: Rep[Int]) => x * 2)
 
-    generator(n1)
+    generatorNew(n1)
   }
 }
 
@@ -115,7 +115,7 @@ trait LMSEventMerge3App extends FRPDSLApplication {
     val m2 = m1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val n1 = m2.map((x: Rep[Int]) => x * 2)
 
-    generator(n1)
+    generatorNew(n1)
   }
 }
 
@@ -133,7 +133,7 @@ trait LMSEventMerge3bApp extends FRPDSLApplication {
     val m2 = map1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val n1 = m2.map((x: Rep[Int]) => x * 2)
 
-    generator(n1)
+    generatorNew(n1)
   }
 }
 
@@ -152,7 +152,7 @@ trait LMSEventMerge4App extends FRPDSLApplication {
 
     val n1 = m2.map((x: Rep[Int]) => x * 2)
 
-    generator(n1)
+    generatorNew(n1)
   }
 }
 
@@ -172,7 +172,7 @@ trait LMSEventMerge5App extends FRPDSLApplication {
     val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => { println("merge8") ; x + y })
     val map3 = m.map((x: Rep[Int]) => { println("map9"); x * 2 })
 
-    generator(map3)
+    generatorNew(map3)
   }
 }
 
@@ -191,7 +191,7 @@ trait LMSEventMerge6aApp extends FRPDSLApplication {
     val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val map3 = m.map((x: Rep[Int]) => x * 2)
 
-    generator(map3)
+    generatorNew(map3)
   }
 }
 
@@ -213,7 +213,7 @@ trait LMSEventMerge6bApp extends FRPDSLApplication {
     val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val map3 = m.map((x: Rep[Int]) => x * 2)
 
-    generator(map3)
+    generatorNew(map3)
   }
 }
 
@@ -234,7 +234,7 @@ trait LMSEventMerge7App extends FRPDSLApplication {
     val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
     val map3 = m.map((x: Rep[Int]) => x * 2)
 
-    generator(map3)
+    generatorNew(map3)
   }
 }
 
@@ -264,9 +264,7 @@ trait LMSEventMerge8App extends FRPDSLApplication {
 
     val map4 = m.map((x) => {println("map12"); x * 2})
 
-    generator(map3)
-    generator(map4)
-    //TODO: solve!
+    generatorNew(map3, map4)
   }
 }
 
@@ -281,7 +279,7 @@ trait LMSEventMerge9aApp extends FRPDSLApplication {
     val merge4 = m2.merge(m3, (x, y) => { println("merge4"); x + y })
     val merge5 = merge4.merge(m3, (x, y) => { println("merge5"); x + y })
 
-    generator(merge5)
+    generatorNew(merge5)
   }
 }
 
@@ -296,7 +294,25 @@ trait LMSEventMerge9bApp extends FRPDSLApplication {
     val merge4 = m2.merge(m3, (x, y) => { println("merge4"); x + y })
     val merge5 = m3.merge(merge4, (x, y) => { println("merge5"); x + y })
 
-    generator(merge5)
+    generatorNew(merge5)
+  }
+}
+
+trait LMSEventMerge10App extends FRPDSLApplication {
+
+  override def createMainFun: Unit = {
+    val t = TimerEvent(5)
+    val mleft = t.map( x => {println("mleft"); x*2})
+    val mleftleft = mleft.map( x => {println("mleftleft"); x*2})
+    val mleftright = mleft.map( x => {println("mleftright"); x })
+    val mleftmerge = mleftleft.merge(mleftright, (x,y) => {println("mleftmerge"); x+y} )
+
+    val e1 = mleftmerge.map(x => {println("e1"); x})
+
+    val mright = t.map( x => {println("mright"); x+3})
+    val e2 = mleftmerge.merge(mright, (x,y)=> {println("e2"); x+y})
+
+    generatorNew(e1,e2)
   }
 }
 
@@ -306,10 +322,11 @@ object LMSEventAppRunner {
 
   def main(args: Array[String]): Unit = {
 
+
     withOutFile("LMSEventApp.c") {
       new LMSEventApp with CFRPDSLApplicationRunner {
         createMainFun
-        emitAll()
+        emitProgram()
       }
     }
 
@@ -320,7 +337,7 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        emitAll()
+        emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -333,7 +350,7 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        emitAll()
+        emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -346,7 +363,7 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        emitAll()
+        emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -359,7 +376,7 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        emitAll()
+        emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -372,7 +389,7 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        emitAll()
+        emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -385,7 +402,7 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        emitAll()
+        emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -400,7 +417,7 @@ object LMSEventAppRunner {
         System.err.println("\n")
         //printEventTree()
         //System.err.println("\n")
-        emitAll()
+        emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -415,7 +432,7 @@ object LMSEventAppRunner {
         System.err.println("\n")
         //printEventTree()
         //System.err.println("\n")
-        emitAll()
+        emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -430,7 +447,7 @@ object LMSEventAppRunner {
         System.err.println("\n")
         //printEventTree()
         //System.err.println("\n")
-        emitAll()
+        emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -445,7 +462,7 @@ object LMSEventAppRunner {
         System.err.println("\n")
         //printEventTree()
         //System.err.println("\n")
-        emitAll()
+        emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -460,7 +477,7 @@ object LMSEventAppRunner {
         System.err.println("\n")
         //printEventTree()
         //System.err.println("\n")
-        emitAll()
+        emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -475,7 +492,7 @@ object LMSEventAppRunner {
         System.err.println("\n")
         //printEventTree()
         //System.err.println("\n")
-        emitAll()
+        emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -490,7 +507,7 @@ object LMSEventAppRunner {
         System.err.println("\n")
         //printEventTree()
         //System.err.println("\n")
-        emitAll()
+        emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }
     }
@@ -504,7 +521,7 @@ object LMSEventAppRunner {
         System.err.println("\n")
         //printEventTree()
         //System.err.println("\n")
-        emitAll()
+        emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }
     }
@@ -518,7 +535,7 @@ object LMSEventAppRunner {
         System.err.println("\n")
         //printEventTree()
         //System.err.println("\n")
-        emitAll()
+        emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }
     }
@@ -532,9 +549,24 @@ object LMSEventAppRunner {
         System.err.println("\n")
         //printEventTree()
         //System.err.println("\n")
-        emitAll()
+        emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }
     }
+
+    withOutFile("LMSEventMerge10App.c") {
+      new LMSEventMerge10App with CFRPDSLApplicationRunner {
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("MergeApp10:")
+        System.err.println("Creating flow graph...")
+        createMainFun
+        System.err.println("\n")
+        //printEventTree()
+        //System.err.println("\n")
+        emitProgram()
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+      }
+    }
+
   }
 }
