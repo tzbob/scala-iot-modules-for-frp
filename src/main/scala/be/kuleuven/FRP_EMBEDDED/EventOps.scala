@@ -39,7 +39,50 @@ trait EventOps extends Base {
 trait EventOpsImpl extends EventOps with ScalaOpsPkgExt with TupledFunctionsExt {
   behaviorImpl: BehaviorOpsImpl =>
 
-  val nodeMap: scala.collection.mutable.Map[EventID,Event[_]] = scala.collection.mutable.HashMap()
+  //TODO: make private and supply getter to immutable map
+  private val nodeMap: scala.collection.mutable.Map[EventID,Event[_]] = scala.collection.mutable.HashMap()
+
+  def getNodeMap: Map[EventID,Event[_]] = {
+    nodeMap.toMap
+  }
+
+  def getInputNodes: Map[EventID,Event[_]] = {
+    getNodeMap.filter(
+      x => x match {
+        case (_,InputEvent(_)) => true
+        case _ => false
+      }
+    )
+  }
+
+  def getOutputNodes: Map[EventID,Event[_]] = {
+    getNodeMap.filter(
+      x => x match {
+        case (_, e) => if(e.childEventIDs.size == 0) true else false
+        case _ => throw new IllegalStateException("Unsupported Event type")
+      }
+    )
+  }
+
+  def getMaxLevel: Int = {
+    var maxlevel: Int = 0
+    getNodeMap.foreach(
+      x => x match {
+        case (_, e) => maxlevel = scala.math.max(maxlevel, e.level)
+        case _ => throw new IllegalStateException("Unsupported Event type")
+      }
+    )
+    maxlevel
+  }
+
+  def getNodesOnLevel(nodes: Map[EventID,Event[_]], level: Int): Map[EventID,Event[_]] = {
+    nodes.filter(
+      x => x match {
+        case (_, e) => if(e.level == level) true else false
+        case _ => throw new IllegalStateException("Unsupported Event type")
+      }
+    )
+  }
 
   override def TimerEvent(i: Rep[Int]) = InputEvent[Int](i)  // only conceptual
 
@@ -71,7 +114,7 @@ trait EventOpsImpl extends EventOps with ScalaOpsPkgExt with TupledFunctionsExt 
     private def nextid = {id += 1;id}
   }
 
-  def getEventValue[X](e: Event[X]) = {
+  def getEventValue[X](e: Event[X]): Var[X] = {
     e match {
       case en @ MergeEvent(_,_) => en.value
       case en @ ConstantEvent(_,_) => en.value
@@ -82,7 +125,7 @@ trait EventOpsImpl extends EventOps with ScalaOpsPkgExt with TupledFunctionsExt 
     }
   }
 
-  def getEventFired[X](e: Event[X]) = {
+  def getEventFired[X](e: Event[X]): Var[Boolean] = {
     e match {
       case en @ MergeEvent(_,_) => en.fired
       case en @ ConstantEvent(_,_) => en.fired
@@ -93,7 +136,7 @@ trait EventOpsImpl extends EventOps with ScalaOpsPkgExt with TupledFunctionsExt 
     }
   }
 
-  def getEventFunction[X](e: Event[X]) = {
+  def getEventFunction[X](e: Event[X]): Rep[(Unit)=>Unit] = {
     e match {
       case en @ MergeEvent(_,_) => en.eventfun
       case en @ ConstantEvent(_,_) => en.eventfun

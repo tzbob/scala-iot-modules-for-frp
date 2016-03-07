@@ -32,7 +32,7 @@ bool x9 = x0;
 if (x9) {
 x6 = true;
 int32_t x11 = x1;
-x7 = 1;
+x7 = 2;
 } else {
 x6 = false;
 }
@@ -42,7 +42,7 @@ bool x21 = x0;
 if (x21) {
 x18 = true;
 int32_t x23 = x1;
-x19 = 2;
+x19 = 1;
 } else {
 x18 = false;
 }
@@ -51,7 +51,7 @@ void x32 () {
 bool x33 = x6;
 if (x33) {
 int32_t x34 = x7;
-printf("%s\n",string("filter3").c_str());
+printf("%s\n",string("filter6").c_str());
 int32_t x36 = x34 % 2;
 bool x37 = x36 == 0;
 if (x37) {
@@ -68,7 +68,7 @@ void x51 () {
 bool x52 = x18;
 if (x52) {
 int32_t x53 = x19;
-printf("%s\n",string("filter6").c_str());
+printf("%s\n",string("filter3").c_str());
 int32_t x55 = x53 % 2;
 bool x56 = x55 == 0;
 if (x56) {
@@ -86,7 +86,7 @@ bool x71 = x30;
 if (x71) {
 x68 = true;
 int32_t x73 = x31;
-printf("%s\n",string("map4").c_str());
+printf("%s\n",string("map7").c_str());
 int32_t x75 = x73 + 1;
 x69 = x75;
 } else {
@@ -98,7 +98,7 @@ bool x85 = x49;
 if (x85) {
 x82 = true;
 int32_t x87 = x50;
-printf("%s\n",string("map7").c_str());
+printf("%s\n",string("map4").c_str());
 int32_t x89 = x87 + 1;
 x83 = x89;
 } else {
@@ -106,25 +106,25 @@ x82 = false;
 }
 };
 void x98 () {
-bool x99 = x68;
-bool x100 = x82;
+bool x99 = x82;
+bool x100 = x68;
 bool x101 = x99 && x100;
 if (x101) {
 x96 = true;
-int32_t x103 = x69;
-int32_t x104 = x83;
+int32_t x103 = x83;
+int32_t x104 = x69;
 printf("%s\n",string("merge8").c_str());
 int32_t x106 = x103 + x104;
 x97 = x106;
 } else {
 if (x99) {
 x96 = true;
-int32_t x110 = x69;
+int32_t x110 = x83;
 x97 = x110;
 } else {
 if (x100) {
 x96 = true;
-int32_t x114 = x83;
+int32_t x114 = x69;
 x97 = x114;
 } else {
 x96 = false;

@@ -21,10 +21,6 @@ void x2 () {
 x0 = true;
 x1 = 5;
 };
-void x8 () {
-x6 = true;
-x7 = 10;
-};
 void x14 () {
 bool x15 = x0;
 if (x15) {
@@ -33,16 +29,6 @@ int32_t x17 = x1;
 x13 = 1;
 } else {
 x12 = false;
-}
-};
-void x26 () {
-bool x27 = x6;
-if (x27) {
-x24 = true;
-int32_t x29 = x7;
-x25 = 2;
-} else {
-x24 = false;
 }
 };
 void x38 () {
@@ -84,16 +70,26 @@ x64 = false;
 };
 void x77 () {
 x2();
-x8();
 x14();
-x26();
 x38();
 x66();
 };
-void x86 () {
-x2();
+void x8 () {
+x6 = true;
+x7 = 10;
+};
+void x26 () {
+bool x27 = x6;
+if (x27) {
+x24 = true;
+int32_t x29 = x7;
+x25 = 2;
+} else {
+x24 = false;
+}
+};
+void x84 () {
 x8();
-x14();
 x26();
 x38();
 x66();

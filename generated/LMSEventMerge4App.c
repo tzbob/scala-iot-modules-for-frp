@@ -40,7 +40,7 @@ bool x21 = x0;
 if (x21) {
 x18 = true;
 int32_t x23 = x1;
-x19 = 3;
+x19 = 2;
 } else {
 x18 = false;
 }
@@ -50,19 +50,19 @@ bool x33 = x0;
 if (x33) {
 x30 = true;
 int32_t x35 = x1;
-x31 = 2;
+x31 = 3;
 } else {
 x30 = false;
 }
 };
 void x44 () {
 bool x45 = x6;
-bool x46 = x30;
+bool x46 = x18;
 bool x47 = x45 && x46;
 if (x47) {
 x42 = true;
 int32_t x49 = x7;
-int32_t x50 = x31;
+int32_t x50 = x19;
 int32_t x51 = x49 + x50;
 x43 = x51;
 } else {
@@ -73,7 +73,7 @@ x43 = x55;
 } else {
 if (x46) {
 x42 = true;
-int32_t x59 = x31;
+int32_t x59 = x19;
 x43 = x59;
 } else {
 x42 = false;
@@ -94,12 +94,12 @@ x70 = false;
 };
 void x85 () {
 bool x86 = x70;
-bool x87 = x18;
+bool x87 = x30;
 bool x88 = x86 && x87;
 if (x88) {
 x83 = true;
 int32_t x90 = x71;
-int32_t x91 = x19;
+int32_t x91 = x31;
 int32_t x92 = x90 + x91;
 x84 = x92;
 } else {
@@ -110,7 +110,7 @@ x84 = x96;
 } else {
 if (x87) {
 x83 = true;
-int32_t x100 = x19;
+int32_t x100 = x31;
 x84 = x100;
 } else {
 x83 = false;

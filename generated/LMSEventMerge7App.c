@@ -34,7 +34,7 @@ bool x9 = x0;
 if (x9) {
 x6 = true;
 int32_t x11 = x1;
-x7 = 1;
+x7 = 2;
 } else {
 x6 = false;
 }
@@ -44,15 +44,15 @@ bool x21 = x0;
 if (x21) {
 x18 = true;
 int32_t x23 = x1;
-x19 = 2;
+x19 = 1;
 } else {
 x18 = false;
 }
 };
 void x32 () {
-bool x33 = x18;
+bool x33 = x6;
 if (x33) {
-int32_t x34 = x19;
+int32_t x34 = x7;
 bool x35 = x34 == 3;
 if (x35) {
 x30 = true;
@@ -65,9 +65,9 @@ x30 = false;
 }
 };
 void x49 () {
-bool x50 = x6;
+bool x50 = x18;
 if (x50) {
-int32_t x51 = x7;
+int32_t x51 = x19;
 bool x52 = x51 == 1;
 if (x52) {
 x47 = true;

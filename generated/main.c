@@ -7,12 +7,12 @@
 using namespace std;
 
 //#include "LMSEventMerge9bApp.c"
-#include "LMSEventMerge10App.c"
+#include "LMSEventMerge8App.c"
 //#include "LMSEventMapApp.c"
 // => printf("res: %d\n",x??);
 
 int main() {
-	x132();
-	printf("e1: %d\n",x120);
-	printf("e2: %d\n",x91);
+	x197();
+	printf("map11: %d\n",x170);
+	printf("map12: %d\n",x184);
 }

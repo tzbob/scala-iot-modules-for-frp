@@ -215,7 +215,7 @@ trait LMSEventMerge7App extends FRPDSLApplication {
 trait LMSEventMerge8App extends FRPDSLApplication {
 
   override def createMainFun {
-    val t: Event[Int] = TimerEvent(2)
+    val t: Event[Int] = TimerEvent(0)
 
     //big left
     val m1: Event[Int] = t.map((i) => { println("map2"); i + 1 })
@@ -279,6 +279,16 @@ trait LMSEventMerge10App extends FRPDSLApplication {
 
     val mright = t.map( x => {println("mright"); x+3})
     val e2 = mleftmerge.merge(mright, (x,y)=> {println("e2"); x+y})
+  }
+}
+
+trait LMSEventDoubleInputApp extends FRPDSLApplication {
+
+  override def createMainFun: Unit = {
+    val t1 = TimerEvent(5)
+    val m1 = t1.map( x => {println("m1"); x*2})
+    val t2 = TimerEvent(5)
+    val m2 = t2.map( x => {println("m2"); x*2})
   }
 }
 
@@ -524,6 +534,20 @@ object LMSEventAppRunner {
       new LMSEventMerge10App with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp10:")
+        System.err.println("Creating flow graph...")
+        createMainFun
+        System.err.println("\n")
+        //printEventTree()
+        //System.err.println("\n")
+        emitProgram()
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+      }
+    }
+
+    withOutFile("LMSEventDoubleInputApp.c") {
+      new LMSEventDoubleInputApp with CFRPDSLApplicationRunner {
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("DoubleInputApp:")
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
