@@ -20,7 +20,7 @@ trait EventOps extends Base {
     val inputEventIDs: Set[EventID]
     val ancestorEventIDs: List[EventID]
     val childEventIDs: scala.collection.mutable.Set[EventID]
-    def addChild(id: EventID): Unit //TODO: can be removed? Depends on FRPDSLImpl
+    def addChild(id: EventID): Unit
 
     // Public part
     def constant[B:Typ] (c: Rep[B]): Event[B]

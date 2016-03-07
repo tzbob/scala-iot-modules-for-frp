@@ -11,5 +11,3 @@ trait FRPDSLApplication extends FRPDSL {
 
 trait FRPDSLApplicationRunner extends FRPDSLImpl
 trait CFRPDSLApplicationRunner extends CFRPDSLImpl
-trait ScalaFRPDSLApplicationRunner extends ScalaFRPDSLImpl
-

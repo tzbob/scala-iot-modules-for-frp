@@ -2,26 +2,6 @@ package be.kuleuven.Applications
 
 import be.kuleuven.FRP_EMBEDDED.{CFRPDSLApplicationRunner, OutputGenerator, FRPDSLApplication}
 
-/*
- * Hard coded representation of a user program
- */
-trait LMSEventApp extends FRPDSLApplication {
-
-  override def createMainFun {
-    val mapfun = toplevel1("mapevent") { x: Rep[Int] =>
-      2 * x
-    }
-
-    toplevel1("main") { x: Rep[Int] =>
-      printf("Result of mapping: %d\n", mapfun(x))
-    }
-    ()
-  }
-}
-
-/*
- * More realistic representation of the user program
- */
 trait LMSEventMapApp extends FRPDSLApplication {
 
   override def createMainFun {
@@ -297,14 +277,6 @@ import OutputGenerator.withOutFile
 object LMSEventAppRunner {
 
   def main(args: Array[String]): Unit = {
-
-
-    withOutFile("LMSEventApp.c") {
-      new LMSEventApp with CFRPDSLApplicationRunner {
-        createMainFun
-        emitProgram()
-      }
-    }
 
     withOutFile("LMSEventMapApp.c") {
       new LMSEventMapApp with CFRPDSLApplicationRunner {

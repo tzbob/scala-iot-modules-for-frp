@@ -18,45 +18,9 @@ trait CFRPDSLImpl extends FRPDSLImpl
 
     //get all end nodes
     val outputevents = getOutputNodes.values.toList
-    val program = generatorNew(outputevents:_*)
+    val program = generator(outputevents:_*)
 
     codegen.emitProgram(program, stream)
   }
 
-  def emitAll(): Unit = {
-    assert(codegen ne null) //careful about initialization order
-
-    def emitForwardDefs(stream: PrintWriter): Unit = {
-      for ((_,v) <- rec0) codegen.emitForwardDef(Nil, v.name, stream)(mtype(v.mB))
-      for ((_,v) <- rec1) codegen.emitForwardDef(mtype(v.mA)::Nil, v.name, stream)(mtype(v.mB))
-      for ((_,v) <- rec2) codegen.emitForwardDef(mtype(v.mA)::mtype(v.mA)::Nil, v.name, stream)(mtype(v.mB))
-    }
-
-    //val source = new java.io.StringWriter()
-    //val stream = new java.io.PrintWriter(source,true)
-
-    rec0.foreach { case (k,x) =>
-      val stream = new PrintWriter(System.out)
-      stream.println("/* FILE: " + x.name + ".c */")
-      emitForwardDefs(stream)
-      codegen.emitSource0(x.f, x.name, stream)(mtype(x.mB))
-    }
-
-    rec1.foreach { case (k,x) =>
-      val stream = new PrintWriter(System.out)
-      stream.println("/* FILE: " + x.name + ".c */")
-      emitForwardDefs(stream)
-      codegen.emitSource(x.f, x.name, stream)(mtype(x.mA), mtype(x.mB))
-    }
-
-    rec2.foreach { case (k,x) =>
-      val stream = new PrintWriter(System.out)
-      stream.println("/* FILE: " + x.name + ".c */")
-      emitForwardDefs(stream)
-      codegen.emitSource2(x.f, x.name, stream)(mtype(x.mA), mtype(x.mA), mtype(x.mB))
-    }
-
-    //System.out.println(source.toString)
-  }
-  //emitAll()
 }
