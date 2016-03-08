@@ -20,7 +20,7 @@ trait EventOps extends NodeOps {
     def merge (e: Event[A], f:(Rep[A],Rep[A])=>Rep[A]): Event[A]
 
     def startsWith(i: Rep[A]): Behavior[A]
-    def foldp[B]( fun:((A,B) => B), init:B): Behavior[B]
+    def foldp[B:Typ]( fun:((Rep[B],Rep[A]) => Rep[B]), init: Rep[B]): Behavior[B]
   }
 
   def TimerEvent(i: Rep[Int])/*(implicit tI:Typ[Int])*/: Event[Int]
@@ -268,6 +268,9 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
     override def merge(e: Event[A], f: (Rep[A],Rep[A])=>Rep[A]) = MergeEvent[A]( (this, e), f)(typOut)
 
     override def startsWith(i: Rep[A]): Behavior[A] = StartsWithBehavior(this, i)(typOut)
-    override def foldp[B](fun: (A, B) => B, init: B): Behavior[B] = ??? // TODO:
+    override def foldp[B:Typ](fun: (Rep[B], Rep[A]) => Rep[B], init: Rep[B]): Behavior[B] = {
+      implicit val tOut = typOut
+      FoldpBehavior[B,A](this, fun, init)
+    }
   }
 }

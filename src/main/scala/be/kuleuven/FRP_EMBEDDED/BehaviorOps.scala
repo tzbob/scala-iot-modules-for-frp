@@ -37,6 +37,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
   def getBehaviorFunction[X](b: Behavior[X]): Rep[(Unit)=>Unit] = {
     b match {
       case bn @ StartsWithBehavior(_,_) => bn.behaviorfun
+      case bn @ FoldpBehavior(_,_,_) => bn.behaviorfun
       case _ => throw new IllegalStateException("Unsupported Behavior type")
     }
   }
@@ -44,6 +45,9 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
   def buildGraphTopDownBehavior[X](b: Behavior[X]): Unit = {
     b match {
       case bn @ StartsWithBehavior(_,_) =>
+        bn.parent.addChild(b.id)
+        bn.parent.buildGraphTopDown()
+      case bn @ FoldpBehavior(_,_,_) =>
         bn.parent.addChild(b.id)
         bn.parent.buildGraphTopDown()
       case _ => throw new IllegalStateException("Unsupported Behavior type")
@@ -67,12 +71,44 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
     }
   }
 
-  case class StartsWithBehavior[A:Typ](parent: Event[A], start: Rep[A]) extends BehaviorNode[A] {
+  case class FoldpBehavior[A:Typ,B:Typ](parent: Event[B], f: (Rep[A],Rep[B])=>Rep[A], init: Rep[A]) extends BehaviorNode[A] {
     override val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
     override val ancestorNodeIDs: List[NodeID] = parent.id::parent.ancestorNodeIDs
 
-    lazy val value = var_new[A](start)
+    lazy val value = var_new[A](init)
+
+    lazy val parentvalue: Var[B] = getEventValue(parent)
+    lazy val parentfired: Var[Boolean] = getEventFired(parent)
+    lazy val behaviorfun: Rep[(Unit)=>Unit] = {
+      fun { () =>
+        if(readVar(parentfired)) {
+          var_assign[A](value, f(readVar(value), readVar(parentvalue)))
+        }
+        unitToRepUnit( () )
+      }
+    }
+
+    override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
+      () => {
+        f()
+        value
+        behaviorfun
+        unitToRepUnit( () )
+      }
+    }
+
+    override def valueNow(): Rep[A] = readVar(value)
+
+    System.err.println("Create StartsWithBehavior(ID:" + id + "): " + inputNodeIDs + ": " + ancestorNodeIDs)
+  }
+
+  case class StartsWithBehavior[A:Typ](parent: Event[A], init: Rep[A]) extends BehaviorNode[A] {
+    override val level = parent.level + 1
+    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
+    override val ancestorNodeIDs: List[NodeID] = parent.id::parent.ancestorNodeIDs
+
+    lazy val value = var_new[A](init)
 
     lazy val parentvalue: Var[A] = getEventValue(parent)
     lazy val parentfired: Var[Boolean] = getEventFired(parent)
