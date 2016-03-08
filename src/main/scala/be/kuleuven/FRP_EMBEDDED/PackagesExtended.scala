@@ -13,6 +13,7 @@ trait ScalaOpsPkgExt extends Base
   with RangeOps with IOOps with ArrayOps with BooleanOps with PrimitiveOps with MiscOps
   with Equal with IfThenElse with VariablesExt with While with TupleOps with ListOps
   with SeqOps with MathOps with CastingOps with SetOps with ObjectOps with ArrayBufferOps with StructOps
+  with TupledFunctionsExt
 
 trait ScalaOpsPkgExpExt extends ScalaOpsPkg
   with ImplicitOpsExp with NumericOpsExp with FractionalOpsExp with OrderingOpsExp with StringOpsExp

@@ -17,8 +17,9 @@ trait CFRPDSLImpl extends FRPDSLImpl
     val stream = new PrintWriter(System.out)
 
     //get all end nodes
-    val outputevents = getOutputNodes.values.toList
-    val program = generator(outputevents:_*)
+    val outputNodes = getOutputNodes.values.toList
+    System.err.println("Outputnodes: " + outputNodes)
+    val program = generator(outputNodes:_*)
 
     codegen.emitProgram(program, stream)
   }

@@ -9,8 +9,7 @@ trait FRPDSL
 
   def printEvent[A](e: Event[A]): String
 
-  def generator[A](e: Event[A]*): () => Rep[Unit]
-  def generator[A](b: Behavior[A]): Unit
+  def generator[A](e: Node[A]*): () => Rep[Unit]
 }
 
 trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
@@ -32,7 +31,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     }
   }
 
-  def isDisjointFor(target: EventID, left: Set[EventID], right: Set[EventID]): Boolean = {
+  def isDisjointFor(target: NodeID, left: Set[NodeID], right: Set[NodeID]): Boolean = {
     var b: Boolean = true
     for(l <- left if l==target) {
       if(right.contains(l)) b = false
@@ -40,14 +39,14 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     b
   }
 
-  def getSplitNode(left: List[EventID], right: List[EventID]): EventID = {
+  def getSplitNode(left: List[NodeID], right: List[NodeID]): NodeID = {
     for(l <- left) {
       if(right.contains(l)) return l
     }
     throw new IllegalStateException("Getting index of splitting node failed.")
   }
 
-  def hasDirectPath(e: Event[_], splitID: EventID): Boolean = {
+  def hasDirectPath(e: Event[_], splitID: NodeID): Boolean = {
     if(e.id == splitID) true
     else {
       e match {
@@ -71,60 +70,22 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     }
   }
 
-  override def generator[X](b: Behavior[X]): Unit = {
-
-  }
-
-  def buildGraphTopDown[X](e: Event[X]): Unit = {
-    e match {
-      case en @ MergeEvent(_,_) =>
-        en.parentLeft.addChild(e.id)
-        buildGraphTopDown(en.parentLeft)
-        en.parentRight.addChild(e.id)
-        buildGraphTopDown(en.parentRight)
-      case en @ ConstantEvent(_,_) =>
-        en.parent.addChild(e.id)
-        buildGraphTopDown(en.parent)
-      case en @ FilterEvent(_,_) =>
-        en.parent.addChild(e.id)
-        buildGraphTopDown(en.parent)
-      case en @ MapEvent(_,_) =>
-        en.parent.addChild(e.id)
-        buildGraphTopDown(en.parent)
-      case en @ InputEvent(_) =>
-        // no parents
-      case _ => throw new IllegalStateException("Unsupported Event type")
-
-    }
-  }
-
-  def generateEventNode[X](e: Event[X], f: () => Rep[Unit]): () => Rep[Unit] = {
-    () => {
-      f()
-      getEventFired(e)
-      getEventValue(e)
-      implicit val tOut = e.typOut
-      getEventFunction(e)
-      unitToRepUnit( () )
-    }
-  }
-
-  override def generator[X](es: Event[X]*): () => Rep[Unit] = {
+  override def generator[X](ns: Node[X]*): () => Rep[Unit] = {
     var program: () => Rep[Unit] = () => unitToRepUnit( () )
 
-    for(e <- es) {
-      buildGraphTopDown(e)
+    for(n <- ns) {
+      n.buildGraphTopDown()
     }
 
     // generate per level
-    System.err.println("max level :"+ getMaxLevel)
+    System.err.println("max level : "+ getMaxLevel)
     for( i <- 0 to getMaxLevel){
       val nodes = getNodesOnLevel(getNodeMap, i)
-      nodes.foreach { case (_,x) => program = generateEventNode(x, program) }
+      nodes.foreach { case (_,x) => program = x.generateNode(program) }
     }
 
     //get all input events
-    val inputMap = getInputNodes
+    val inputMap = getInputEventNodes
 
     // generate top functions
     for( (i,j) <- inputMap) {
@@ -134,33 +95,14 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     program
   }
 
-  def getDecendantNodeIDs(node: Event[_]): List[EventID] = {
-    val listbuilder = scala.collection.mutable.ListBuffer.empty[EventID]
+  def generateTopFunction[X](n: NodeImpl[X], f: () => Rep[Unit]): () => Rep[Unit] = {
+    System.err.println("top" + n.id)
 
-    listbuilder += node.id
-    for(childid <- node.childEventIDs) {
-      val childevent = getNodeMap.get(childid) match {
-        case Some(e) => e
-        case None => throw new IllegalStateException("Unknown event ID") }
-      listbuilder ++= getDecendantNodeIDs(childevent)
-    }
-    listbuilder.toList
-  }
-
-  def getNodesWithIDs(ids: List[EventID]): Map[EventID, Event[_]] = {
-    getNodeMap.filter( x => x match {
-      case (id, e) => ids.contains(id)
-    })
-  }
-
-  def generateTopFunction[X](e: Event[X], f: () => Rep[Unit]): () => Rep[Unit] = {
-    System.err.println("top" + e.id)
-
-    val descendantIDs = getDecendantNodeIDs(e)
+    val descendantIDs = getDecendantNodeIDs(n)
     val descendantNodes = getNodesWithIDs(descendantIDs)
 
     // get topological ordering
-    val listbuilder = scala.collection.mutable.ListBuffer.empty[Event[_]]
+    val listbuilder = scala.collection.mutable.ListBuffer.empty[NodeImpl[_]]
     for( i <- 0 to getMaxLevel)
       listbuilder ++= getNodesOnLevel(descendantNodes,i).values.toList
     val eventsTO = listbuilder.toList
@@ -169,7 +111,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     () => {
       f()
       val top = fun { () =>
-        eventsTO.foreach( x => {(getEventFunction(x))( () ) } )
+        eventsTO.foreach( x => {(x.getFunction())( () ) } ) // apply the functions in this context
       }
       doApplyDecl(top)
       unitToRepUnit( () )

@@ -1,12 +1,12 @@
 package be.kuleuven.FRP_EMBEDDED
 
-import scala.lms.common.{Base}
+import scala.collection.immutable.HashSet
 
-trait BehaviorOps extends Base{
-  event: EventOps =>
+trait BehaviorOps extends NodeOps {
+  event: EventOps with NodeOps =>
 
-  trait Behavior[A] {
-    def valueNow (): A
+  trait Behavior[A] extends Node[A] {
+    def valueNow (): Rep[A]
 
     def delay (t: Rep[Int]): Behavior[A]
 
@@ -28,20 +28,96 @@ trait BehaviorOps extends Base{
     def changes (): Event[A]
   }
 
-  def constantB[A] (value: A): Behavior[A]
+  def constantB[A:Typ] (value: Rep[A]): Behavior[A]
 }
 
-trait BehaviorOpsImpl extends BehaviorOps {
+trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
   eventImpl: EventOpsImpl =>
 
-  override def constantB[A](value: A): Behavior[A] = new ConstantBehavior[A](value)
-
-  abstract class BehaviorNode[A] extends BehaviorImpl[A] {
-    val value: A
-    override def valueNow(): A = value
+  def getBehaviorFunction[X](b: Behavior[X]): Rep[(Unit)=>Unit] = {
+    b match {
+      case bn @ StartsWithBehavior(_,_) => bn.behaviorfun
+      case _ => throw new IllegalStateException("Unsupported Behavior type")
+    }
   }
 
-  case class ConstantBehavior[A](value: A) extends BehaviorNode[A]
+  def buildGraphTopDownBehavior[X](b: Behavior[X]): Unit = {
+    b match {
+      case bn @ StartsWithBehavior(_,_) =>
+        bn.parent.addChild(b.id)
+        bn.parent.buildGraphTopDown()
+      case _ => throw new IllegalStateException("Unsupported Behavior type")
+    }
+  }
+
+  override def constantB[A:Typ](c: Rep[A]): Behavior[A] = new ConstantBehavior[A](c)
+
+  case class ConstantBehavior[A:Typ](c: Rep[A]) extends BehaviorNode[A] {
+    val level = 0
+    override val inputNodeIDs: Set[NodeID] = HashSet(this.id)
+    override val ancestorNodeIDs: List[NodeID] = Nil
+    lazy val value = var_new[A](c)
+    override def valueNow(): Rep[A] = readVar(value)
+    override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
+      () => {
+        f()
+        value
+        unitToRepUnit( () )
+      }
+    }
+  }
+
+  case class StartsWithBehavior[A:Typ](parent: Event[A], start: Rep[A]) extends BehaviorNode[A] {
+    override val level = parent.level + 1
+    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
+    override val ancestorNodeIDs: List[NodeID] = parent.id::parent.ancestorNodeIDs
+
+    lazy val value = var_new[A](start)
+
+    lazy val parentvalue: Var[A] = getEventValue(parent)
+    lazy val parentfired: Var[Boolean] = getEventFired(parent)
+    lazy val behaviorfun: Rep[(Unit)=>Unit] = {
+      fun { () =>
+        if(readVar(parentfired)) {
+          var_assign[A](value, readVar(parentvalue))
+        }
+        unitToRepUnit( () )
+      }
+    }
+
+    override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
+      () => {
+        f()
+        value
+        behaviorfun
+        unitToRepUnit( () )
+      }
+    }
+
+    override def valueNow(): Rep[A] = readVar(value)
+
+    System.err.println("Create StartsWithBehavior(ID:" + id + "): " + inputNodeIDs + ": " + ancestorNodeIDs)
+  }
+
+  abstract class BehaviorNode[A] extends BehaviorImpl[A] with NodeImpl[A] {
+    nodeMap += ((id, this))
+
+    override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()
+    override def addChild(id: NodeID): Unit = {
+      childNodeIDs.add(id)
+    }
+
+
+    override def getFunction(): Rep[(Unit)=>Unit] = {
+      getBehaviorFunction(this)
+    }
+    override def buildGraphTopDown(): Unit = {
+      buildGraphTopDownBehavior(this)
+    }
+
+    //lazy val value = vardecl_new[A]()
+    //override def valueNow(): Rep[A] = readVar(value)
+  }
 
   trait BehaviorImpl[A] extends Behavior[A] {
     override def delay(t: Rep[Int]): Behavior[A] = ???
