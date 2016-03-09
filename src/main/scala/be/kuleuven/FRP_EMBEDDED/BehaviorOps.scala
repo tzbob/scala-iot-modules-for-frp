@@ -207,7 +207,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
     override def delay(t: Rep[Int]): Behavior[A] = ???
 
     override def snapshot[B](e: Event[B]): Event[A] = ???
-    override def changes(): Event[A] = ???
+    override def changes(): Event[A] = ChangesEvent(this)(typOut)
     override def map2[B:Typ, C:Typ](b: Behavior[B], f: (Rep[A], Rep[B]) => Rep[C]): Behavior[C] = {
       implicit val tOut: Typ[A] = typOut
       Map2Behavior((this, b), f)

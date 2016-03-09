@@ -24,6 +24,7 @@ int main() {
 	printf("behavior: %d\n",x18);
 }*/
 
+/*
 #include "LMSBehaviorMap2App.c"
 // => printf("res: %d\n",x??);
 
@@ -37,4 +38,17 @@ int main() {
 	printf("behavior: %d\n",x59);
 	x73();
 	printf("behavior: %d\n",x59);	
+}*/
+
+#include "LMSBehaviorChangesApp.c"
+// => printf("res: %d\n",x??);
+
+int main() {
+	printf("behavior: %d\n",x23);
+	x33();
+	printf("behavior: %d\n",x23);
+	x33();
+	printf("behavior: %d\n",x23);
+	
 }
+
