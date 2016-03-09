@@ -20,7 +20,7 @@ trait EventOps extends NodeOps {
     def merge (e: Event[A], f:(Rep[A],Rep[A])=>Rep[A]): Event[A]
 
     def startsWith(i: Rep[A]): Behavior[A]
-    def foldp[B:Typ]( fun:((Rep[B],Rep[A]) => Rep[B]), init: Rep[B]): Behavior[B]
+    def foldp[B:Typ]( f:((Rep[B],Rep[A]) => Rep[B]), init: Rep[B]): Behavior[B]
   }
 
   def TimerEvent(i: Rep[Int])/*(implicit tI:Typ[Int])*/: Event[Int]
@@ -39,7 +39,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
     )
   }
 
-  def buildGraphTopDownEvent[X](e: Event[X]): Unit = {
+  def buildGraphTopDownEvent[T](e: Event[T]): Unit = {
     e match {
       case en @ MergeEvent(_,_) =>
         en.parentLeft.addChild(e.id)
@@ -61,7 +61,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
     }
   }
 
-  def getEventValue[X](e: Event[X]): Var[X] = {
+  def getEventValue[T:Typ](e: Event[T]): Var[T] = {
     e match {
       case en @ MergeEvent(_,_) => en.value
       case en @ ConstantEvent(_,_) => en.value
@@ -108,22 +108,21 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
     override val typIn: Typ[In] = typ[Unit]
     override val typOut: Typ[Out] = tA
     override val inputNodeIDs: Set[NodeID] = HashSet(this.id)
-    override val ancestorNodeIDs: List[NodeID] = Nil
 
-    System.err.println("Create InputEvent(ID:" + id + "): " + inputNodeIDs + ": " + ancestorNodeIDs)
+    System.err.println("Create InputEvent(ID:" + id + "): " + inputNodeIDs)
   }
 
   case class ConstantEvent[A,B](parent: Event[A], c : Rep[B])(implicit tB:Typ[B]) extends EventNode[A,B] {
     override implicit val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = tB
     val constFun: Rep[In]=>Rep[Out] = _ => c
-    lazy val parentvalue: Var[In] = getEventValue(parent)
-    lazy val parentfired: Var[Boolean] = getEventFired(parent)
+    lazy val parentvalue: Rep[In] = getEventValue(parent)
+    lazy val parentfired: Rep[Boolean] = getEventFired(parent)
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       fun { () =>
-        if(readVar(parentfired)) {
+        if(parentfired) {
           var_assign(fired, unit(true))
-          var_assign[Out](value, constFun(readVar(parentvalue)))
+          var_assign[Out](value, constFun(parentvalue))
         } else {
           var_assign(fired, unit(false))
         }
@@ -132,22 +131,21 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
     val level = parent.level + 1
 
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
-    override val ancestorNodeIDs: List[NodeID] = parent.id::parent.ancestorNodeIDs
 
-    System.err.println("Create ConstantEvent(ID:" + id + "): " + inputNodeIDs + ": " + ancestorNodeIDs)
+    System.err.println("Create ConstantEvent(ID:" + id + "): " + inputNodeIDs)
   }
 
   case class MapEvent[A,B](parent: Event[A], f: Rep[A] => Rep[B])(implicit tB:Typ[B]) extends EventNode[A,B] {
     override implicit val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = tB
     val mapFun: Rep[In]=>Rep[Out] = f
-    lazy val parentvalue: Var[In] = getEventValue(parent)
-    lazy val parentfired: Var[Boolean] = getEventFired(parent)
+    lazy val parentvalue: Rep[In] = getEventValue(parent)
+    lazy val parentfired: Rep[Boolean] = getEventFired(parent)
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       fun { () =>
-        if(readVar(parentfired)) {
+        if(parentfired) {
           var_assign(fired, unit(true))
-          var_assign[Out](value, mapFun(readVar(parentvalue)))
+          var_assign[Out](value, mapFun(parentvalue))
         } else {
           var_assign(fired, unit(false))
         }
@@ -155,23 +153,22 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
     }
     val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
-    override val ancestorNodeIDs: List[NodeID] = parent.id::parent.ancestorNodeIDs
 
-    System.err.println("Create MapEvent(ID:" + id + "): " + inputNodeIDs + ": " + ancestorNodeIDs)
+    System.err.println("Create MapEvent(ID:" + id + "): " + inputNodeIDs)
   }
 
   case class FilterEvent[A](parent: Event[A], f: Rep[A] => Rep[Boolean])(implicit tA:Typ[A]) extends EventNode[A,A] {
     override val typIn: Typ[In] = parent.typOut //tA?
     override val typOut: Typ[Out] = typIn //tA?
     val filterFun: Rep[In]=>Rep[Boolean] = f
-    lazy val parentvalue: Var[In] = getEventValue(parent)
-    lazy val parentfired: Var[Boolean] = getEventFired(parent)
+    lazy val parentvalue: Rep[In] = getEventValue(parent)
+    lazy val parentfired: Rep[Boolean] = getEventFired(parent)
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       fun { () =>
-        if(readVar(parentfired)) {
-          if( filterFun(readVar(parentvalue)) ) {
+        if(parentfired) {
+          if( filterFun(parentvalue) ) {
             var_assign(fired, unit(true))
-            var_assign[In](value, readVar(parentvalue))
+            var_assign[In](value, parentvalue)
           } else {
             var_assign(fired, unit(false))
 
@@ -184,9 +181,8 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
     val level = parent.level + 1
 
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
-    override val ancestorNodeIDs: List[NodeID] = parent.id::parent.ancestorNodeIDs
 
-    System.err.println("Create FilterEvent(ID:" + id + "): " + inputNodeIDs + ": " + ancestorNodeIDs)
+    System.err.println("Create FilterEvent(ID:" + id + "): " + inputNodeIDs)
   }
 
   case class MergeEvent[A](parents: (Event[A],Event[A]), f: (Rep[A],Rep[A])=>Rep[A] )(implicit tA:Typ[A]) extends EventNode[A,A] {
@@ -200,27 +196,24 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
     val inputIDsLeft: Set[NodeID] = parentLeft.inputNodeIDs
     val inputIDsRight: Set[NodeID] = parentRight.inputNodeIDs
     override val inputNodeIDs: Set[NodeID] = inputIDsLeft ++ inputIDsRight
-    override val ancestorNodeIDs: List[NodeID] = (parents._1.id::parents._1.ancestorNodeIDs)++(parents._2.id::parents._2.ancestorNodeIDs)
-    val leftAncestors = parents._1.id::parents._1.ancestorNodeIDs
-    val rightAncestors = parents._2.id::parents._2.ancestorNodeIDs
 
-    lazy val parentleftvalue: Var[In] = getEventValue(parentLeft)
-    lazy val parentleftfired: Var[Boolean] = getEventFired(parentLeft)
-    lazy val parentrightvalue: Var[In] = getEventValue(parentRight)
-    lazy val parentrightfired: Var[Boolean] = getEventFired(parentRight)
+    lazy val parentleftvalue: Rep[In] = getEventValue(parentLeft)
+    lazy val parentleftfired: Rep[Boolean] = getEventFired(parentLeft)
+    lazy val parentrightvalue: Rep[In] = getEventValue(parentRight)
+    lazy val parentrightfired: Rep[Boolean] = getEventFired(parentRight)
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       fun { () =>
-        if(readVar(parentleftfired) && readVar(parentrightfired) ) {
+        if(parentleftfired && parentrightfired ) {
           var_assign(fired, unit(true))
-          var_assign[Out](value, mergeFun(readVar(parentleftvalue),readVar(parentrightvalue)))
+          var_assign[Out](value, mergeFun(parentleftvalue, parentrightvalue))
         }
-        else if (readVar(parentleftfired)) {
+        else if (parentleftfired) {
           var_assign(fired, unit(true))
-          var_assign[Out](value, readVar(parentleftvalue))
+          var_assign[Out](value, parentleftvalue)
         }
-        else if (readVar(parentrightfired)) {
+        else if (parentrightfired){
           var_assign(fired, unit(true))
-          var_assign[Out](value, readVar(parentrightvalue))
+          var_assign[Out](value, parentrightvalue)
         }
         else {
           var_assign(fired, unit(false))
@@ -228,7 +221,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
       }
     }
 
-    System.err.println("Create MergeEvent(ID:" + id + "): " + inputNodeIDs + ". Left: " + inputIDsLeft + ", Right: " + inputIDsRight + ": " + ancestorNodeIDs)
+    System.err.println("Create MergeEvent(ID:" + id + "): " + inputNodeIDs + ". Left: " + inputIDsLeft + ", Right: " + inputIDsRight)
   }
 
   abstract class EventNode[A,B:Typ] extends EventImpl[B] with NodeImpl[B] {
@@ -268,9 +261,9 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
     override def merge(e: Event[A], f: (Rep[A],Rep[A])=>Rep[A]) = MergeEvent[A]( (this, e), f)(typOut)
 
     override def startsWith(i: Rep[A]): Behavior[A] = StartsWithBehavior(this, i)(typOut)
-    override def foldp[B:Typ](fun: (Rep[B], Rep[A]) => Rep[B], init: Rep[B]): Behavior[B] = {
+    override def foldp[B:Typ](f: (Rep[B], Rep[A]) => Rep[B], init: Rep[B]): Behavior[B] = {
       implicit val tOut = typOut
-      FoldpBehavior[B,A](this, fun, init)
+      FoldpBehavior[B,A](this, f, init)
     }
   }
 }

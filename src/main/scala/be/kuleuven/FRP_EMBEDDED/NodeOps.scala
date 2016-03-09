@@ -12,7 +12,7 @@ trait NodeOps extends Base {
     val id: NodeID = Node.nextid
     val level: Int // for topological order
     val inputNodeIDs: Set[NodeID]
-    val ancestorNodeIDs: List[NodeID]
+    //val ancestorNodeIDs: List[NodeID] //TODO: remove, not needed anymore since no more split node needed
     val childNodeIDs: scala.collection.mutable.Set[NodeID]
     def addChild(id: NodeID): Unit
     def buildGraphTopDown(): Unit

@@ -25,8 +25,8 @@ bool  x105;
 int32_t  x106;
 bool  x118;
 int32_t  x119;
-bool  x146;
-int32_t  x147;
+bool  x144;
+int32_t  x145;
 void x2 () {
 x0 = true;
 x1 = 5;
@@ -140,31 +140,31 @@ x119 = x127;
 } else {
 if (x121) {
 x118 = true;
-int32_t x131 = x93;
-x119 = x131;
+int32_t x125 = x93;
+x119 = x125;
 } else {
 if (x122) {
 x118 = true;
-int32_t x135 = x106;
-x119 = x135;
+int32_t x126 = x106;
+x119 = x126;
 } else {
 x118 = false;
 }
 }
 }
 };
-void x148 () {
-bool x149 = x118;
-if (x149) {
-x146 = true;
-int32_t x151 = x119;
-int32_t x152 = x151 * 2;
-x147 = x152;
+void x146 () {
+bool x147 = x118;
+if (x147) {
+x144 = true;
+int32_t x149 = x119;
+int32_t x150 = x149 * 2;
+x145 = x150;
 } else {
-x146 = false;
+x144 = false;
 }
 };
-void x159 () {
+void x157 () {
 x2();
 x8();
 x21();
@@ -175,7 +175,7 @@ x76();
 x94();
 x107();
 x120();
-x148();
+x146();
 };
 /*****************************************
   End of C Generated Code                  

@@ -22,6 +22,22 @@ trait LMSBehaviorFoldp1App extends FRPDSLApplication {
   }
 }
 
+trait LMSBehaviorMap2App extends FRPDSLApplication {
+
+  override def createMainFun {
+    val t1: Event[Int] = TimerEvent(1) // every 5 sec
+    val m1 = t1.map[Int]( (i) => 1 )
+
+    val b1 = m1.foldp((x: Rep[Int], y: Rep[Int]) => x+y, 1)
+
+    val t2 = TimerEvent(2)
+    val m2 = t2.map( (i) => 2)
+    val b2 = m2.foldp( (x:Rep[Int],y:Rep[Int]) => x+y, 1)
+
+    val map2 = b1.map2(b2, (x:Rep[Int],y:Rep[Int]) => x*y)
+  }
+}
+
 import OutputGenerator.withOutFile
 
 object LMSBehaviorAppRunner {
@@ -44,6 +60,19 @@ object LMSBehaviorAppRunner {
       new LMSBehaviorFoldp1App with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("BehaviorFoldp1App:")
+        System.err.println("Creating flow graph...")
+        createMainFun
+        System.err.println("\n")
+        emitProgram()
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
+      }
+    }
+
+    withOutFile("LMSBehaviorMap2App.c") {
+      new LMSBehaviorMap2App with CFRPDSLApplicationRunner {
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("BehaviorMap2App:")
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")

@@ -17,10 +17,10 @@ bool  x48;
 int32_t  x49;
 bool  x61;
 int32_t  x62;
-bool  x90;
-int32_t  x91;
-bool  x103;
-int32_t  x104;
+bool  x88;
+int32_t  x89;
+bool  x101;
+int32_t  x102;
 void x2 () {
 x0 = true;
 x1 = 5;
@@ -86,66 +86,66 @@ x62 = x71;
 } else {
 if (x64) {
 x61 = true;
-int32_t x75 = x35;
-x62 = x75;
+int32_t x68 = x35;
+x62 = x68;
 } else {
 if (x65) {
 x61 = true;
-int32_t x79 = x49;
-x62 = x79;
+int32_t x69 = x49;
+x62 = x69;
 } else {
 x61 = false;
 }
 }
 }
 };
-void x92 () {
-bool x93 = x61;
-if (x93) {
-x90 = true;
-int32_t x95 = x62;
+void x90 () {
+bool x91 = x61;
+if (x91) {
+x88 = true;
+int32_t x93 = x62;
 printf("%s\n",string("e1").c_str());
-x91 = x95;
+x89 = x93;
 } else {
-x90 = false;
+x88 = false;
 }
 };
-void x105 () {
-bool x106 = x61;
-bool x107 = x20;
-bool x108 = x106 && x107;
-if (x108) {
-x103 = true;
-int32_t x110 = x62;
-int32_t x111 = x21;
-printf("%s\n",string("e2").c_str());
-int32_t x113 = x110 + x111;
-x104 = x113;
-} else {
+void x103 () {
+bool x104 = x61;
+bool x105 = x20;
+bool x106 = x104 && x105;
 if (x106) {
-x103 = true;
-int32_t x117 = x62;
-x104 = x117;
+x101 = true;
+int32_t x108 = x62;
+int32_t x109 = x21;
+printf("%s\n",string("e2").c_str());
+int32_t x111 = x108 + x109;
+x102 = x111;
 } else {
-if (x107) {
-x103 = true;
-int32_t x121 = x21;
-x104 = x121;
+if (x104) {
+x101 = true;
+int32_t x108 = x62;
+x102 = x108;
 } else {
-x103 = false;
+if (x105) {
+x101 = true;
+int32_t x109 = x21;
+x102 = x109;
+} else {
+x101 = false;
 }
 }
 }
 };
-void x132 () {
+void x128 () {
 x2();
 x8();
 x22();
 x36();
 x50();
 x63();
-x92();
-x105();
+x90();
+x103();
 };
 /*****************************************
   End of C Generated Code                  

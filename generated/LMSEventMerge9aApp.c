@@ -13,8 +13,8 @@ bool  x20;
 int32_t  x21;
 bool  x34;
 int32_t  x35;
-bool  x63;
-int32_t  x64;
+bool  x61;
+int32_t  x62;
 void x2 () {
 x0 = true;
 x1 = 2;
@@ -57,52 +57,52 @@ x35 = x44;
 } else {
 if (x37) {
 x34 = true;
-int32_t x48 = x7;
-x35 = x48;
+int32_t x41 = x7;
+x35 = x41;
 } else {
 if (x38) {
 x34 = true;
-int32_t x52 = x21;
-x35 = x52;
+int32_t x42 = x21;
+x35 = x42;
 } else {
 x34 = false;
 }
 }
 }
 };
-void x65 () {
-bool x66 = x34;
-bool x67 = x20;
-bool x68 = x66 && x67;
-if (x68) {
-x63 = true;
-int32_t x70 = x35;
-int32_t x71 = x21;
-printf("%s\n",string("merge5").c_str());
-int32_t x73 = x70 + x71;
-x64 = x73;
-} else {
+void x63 () {
+bool x64 = x34;
+bool x65 = x20;
+bool x66 = x64 && x65;
 if (x66) {
-x63 = true;
-int32_t x77 = x35;
-x64 = x77;
+x61 = true;
+int32_t x68 = x35;
+int32_t x69 = x21;
+printf("%s\n",string("merge5").c_str());
+int32_t x71 = x68 + x69;
+x62 = x71;
 } else {
-if (x67) {
-x63 = true;
-int32_t x81 = x21;
-x64 = x81;
+if (x64) {
+x61 = true;
+int32_t x68 = x35;
+x62 = x68;
 } else {
-x63 = false;
+if (x65) {
+x61 = true;
+int32_t x69 = x21;
+x62 = x69;
+} else {
+x61 = false;
 }
 }
 }
 };
-void x92 () {
+void x88 () {
 x2();
 x8();
 x22();
 x36();
-x65();
+x63();
 };
 /*****************************************
   End of C Generated Code                  

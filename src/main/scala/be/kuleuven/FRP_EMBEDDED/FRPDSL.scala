@@ -46,30 +46,6 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     throw new IllegalStateException("Getting index of splitting node failed.")
   }
 
-  def hasDirectPath(e: Event[_], splitID: NodeID): Boolean = {
-    if(e.id == splitID) true
-    else {
-      e match {
-        case en @ FilterEvent(_,_) => false
-        case en @ ConstantEvent(_,_) => hasDirectPath(en.parent, splitID)
-        case en @ MapEvent(_,_) => hasDirectPath(en.parent, splitID)
-        case en @ MergeEvent(_,_) =>
-          val l = if(en.leftAncestors.contains(splitID)){
-            hasDirectPath(en.parentLeft, splitID)
-          } else { false }
-          val r = if(en.rightAncestors.contains(splitID)){
-            hasDirectPath(en.parentRight, splitID)
-          } else { false }
-          (l || r)
-
-        case en @ InputEvent(_) =>
-          throw new IllegalStateException("Searching for filter failed because of Input Event type")
-        case _ =>
-          throw new IllegalStateException("Searching for filter failed because of Unknown Event type")
-      }
-    }
-  }
-
   override def generator[X](ns: Node[X]*): () => Rep[Unit] = {
     var program: () => Rep[Unit] = () => unitToRepUnit( () )
 

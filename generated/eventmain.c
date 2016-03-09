@@ -12,7 +12,7 @@ using namespace std;
 // => printf("res: %d\n",x??);
 
 int main() {
-	x197();
-	printf("map11: %d\n",x170);
-	printf("map12: %d\n",x184);
+	x193();
+	printf("map11: %d\n",x166);
+	printf("map12: %d\n",x180);
 }

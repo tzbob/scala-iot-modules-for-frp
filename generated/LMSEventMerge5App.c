@@ -21,8 +21,8 @@ bool  x82;
 int32_t  x83;
 bool  x96;
 int32_t  x97;
-bool  x125;
-int32_t  x126;
+bool  x123;
+int32_t  x124;
 void x2 () {
 x0 = true;
 x1 = 5;
@@ -119,32 +119,32 @@ x97 = x106;
 } else {
 if (x99) {
 x96 = true;
-int32_t x110 = x83;
-x97 = x110;
+int32_t x103 = x83;
+x97 = x103;
 } else {
 if (x100) {
 x96 = true;
-int32_t x114 = x69;
-x97 = x114;
+int32_t x104 = x69;
+x97 = x104;
 } else {
 x96 = false;
 }
 }
 }
 };
-void x127 () {
-bool x128 = x96;
-if (x128) {
-x125 = true;
-int32_t x130 = x97;
+void x125 () {
+bool x126 = x96;
+if (x126) {
+x123 = true;
+int32_t x128 = x97;
 printf("%s\n",string("map9").c_str());
-int32_t x132 = x130 * 2;
-x126 = x132;
+int32_t x130 = x128 * 2;
+x124 = x130;
 } else {
-x125 = false;
+x123 = false;
 }
 };
-void x139 () {
+void x137 () {
 x2();
 x8();
 x20();
@@ -153,7 +153,7 @@ x51();
 x70();
 x84();
 x98();
-x127();
+x125();
 };
 /*****************************************
   End of C Generated Code                  
