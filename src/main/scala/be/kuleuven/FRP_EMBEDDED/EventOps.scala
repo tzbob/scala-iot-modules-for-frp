@@ -58,6 +58,10 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
       case en @ ChangesEvent(_) =>
         en.parent.addChild(e.id)
         en.parent.buildGraphTopDown()
+      case en @ SnapshotEvent(_,_) =>
+        en.parentEvent.addChild(e.id)
+        en.parentEvent.buildGraphTopDown()
+        // Behaviorparent is left out!
       case en @ InputEvent(_) =>
       // no parents
       case _ => throw new IllegalStateException("Unsupported Event type")
@@ -72,6 +76,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
       case en @ MapEvent(_,_) => en.value
       case en @ InputEvent(_) => en.value
       case en @ ChangesEvent(_) => en.value
+      case en @ SnapshotEvent(_,_) => en.value
       case _ => throw new IllegalStateException("Unsupported Event type")
     }
   }
@@ -84,6 +89,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
       case en @ MapEvent(_,_) => en.fired
       case en @ InputEvent(_) => en.fired
       case en @ ChangesEvent(_) => en.fired
+      case en @ SnapshotEvent(_,_) => en.fired
       case _ => throw new IllegalStateException("Unsupported Event type")
     }
   }
@@ -96,6 +102,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
       case en @ MapEvent(_,_) => en.eventfun
       case en @ InputEvent(_) => en.eventfun
       case en @ ChangesEvent(_) => en.eventfun
+      case en @ SnapshotEvent(_,_) => en.eventfun
       case _ => throw new IllegalStateException("Unsupported Event type")
     }
   }
@@ -244,8 +251,33 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
     val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
-    System.err.println("Create MapEvent(ID:" + id + "): " + inputNodeIDs)
+    System.err.println("Create ChangesEvent(ID:" + id + "): " + inputNodeIDs)
 
+  }
+
+  case class SnapshotEvent[A:Typ,B:Typ](parentBeh: Behavior[A], parentEvent: Event[B]) extends EventNode[B,A] {
+    override val typIn: Typ[In] = parentEvent.typOut
+    override val typOut: Typ[Out] = parentBeh.typOut
+
+    lazy val parentvalue: Rep[Out] = getBehaviorValue(parentBeh)
+    lazy val parentEventFired: Rep[Boolean] = getEventFired(parentEvent)
+    lazy val eventfun: Rep[(Unit)=>Unit] = {
+      fun { () =>
+        if(parentEventFired) {
+          var_assign(fired, unit(true))
+          var_assign[Out](value, parentvalue)
+        } else {
+          var_assign(fired, unit(false))
+        }
+      }
+    }
+
+    // Important! This nodes is only tied to the chain of the event parent
+    // This is made explicit in buildGraphTopDown function
+    val level = parentEvent.level + 1
+    override val inputNodeIDs: Set[NodeID] = parentEvent.inputNodeIDs
+
+    System.err.println("Create SnapshotEvent(ID:" + id + "): " + inputNodeIDs)
   }
 
   abstract class EventNode[A,B:Typ] extends EventImpl[B] with NodeImpl[B] {

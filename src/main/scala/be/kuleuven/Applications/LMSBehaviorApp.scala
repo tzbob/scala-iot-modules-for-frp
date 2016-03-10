@@ -47,6 +47,19 @@ trait LMSBehaviorChangesApp extends FRPDSLApplication {
   }
 }
 
+trait LMSBehaviorSnapshotApp extends FRPDSLApplication {
+  override def createMainFun: Unit = {
+    val t = TimerEvent(10)
+    val fp1 = t.foldp( (x:Rep[Int],y:Rep[Int])=>x+y, 0)
+
+    val t2 = TimerEvent(5)
+
+    val ss = fp1.snapshot(t2)
+
+    val fp2 = ss.foldp( (x:Rep[Int],y:Rep[Int])=>x+y, 0)
+  }
+}
+
 import OutputGenerator.withOutFile
 
 object LMSBehaviorAppRunner {
@@ -95,6 +108,19 @@ object LMSBehaviorAppRunner {
       new LMSBehaviorChangesApp with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("BehaviorChangesApp:")
+        System.err.println("Creating flow graph...")
+        createMainFun
+        System.err.println("\n")
+        emitProgram()
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
+      }
+    }
+
+    withOutFile("LMSBehaviorSnapshotApp.c") {
+      new LMSBehaviorSnapshotApp with CFRPDSLApplicationRunner {
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("BehaviorSnapshotApp:")
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")

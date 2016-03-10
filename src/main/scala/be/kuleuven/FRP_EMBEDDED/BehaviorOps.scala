@@ -24,7 +24,7 @@ trait BehaviorOps extends NodeOps {
     def genSnapshot[B] (e: Event[A=>B]): Event[B]
     // Snapshot: Output event fires an event containing the current value of behavior,
     // each time input e fires an event
-    def snapshot[B] (e: Event[B]): Event[A]
+    def snapshot[B:Typ] (e: Event[B]): Event[A]
     // changes: create an event stream that fires an event each time the value of the behavior changes,
     // carrying the new value
     def changes (): Event[A]
@@ -206,7 +206,10 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
   trait BehaviorImpl[A] extends Behavior[A] {
     override def delay(t: Rep[Int]): Behavior[A] = ???
 
-    override def snapshot[B](e: Event[B]): Event[A] = ???
+    override def snapshot[B:Typ](e: Event[B]): Event[A] = {
+      implicit val tOut = typOut
+      SnapshotEvent(this, e)
+    }
     override def changes(): Event[A] = ChangesEvent(this)(typOut)
     override def map2[B:Typ, C:Typ](b: Behavior[B], f: (Rep[A], Rep[B]) => Rep[C]): Behavior[C] = {
       implicit val tOut: Typ[A] = typOut

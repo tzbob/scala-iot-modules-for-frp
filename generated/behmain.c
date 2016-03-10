@@ -40,6 +40,7 @@ int main() {
 	printf("behavior: %d\n",x59);	
 }*/
 
+/*
 #include "LMSBehaviorChangesApp.c"
 // => printf("res: %d\n",x??);
 
@@ -50,5 +51,18 @@ int main() {
 	x33();
 	printf("behavior: %d\n",x23);
 	
+}*/
+
+#include "LMSBehaviorSnapshotApp.c"
+// => printf("res: %d\n",x??);
+
+int main() {
+	printf("behavior: %d\n",x34);
+	x49();
+	printf("behavior: %d\n",x34);
+	x44();
+	printf("behavior: %d\n",x34);
+	x49();
+	printf("behavior: %d\n",x34);
 }
 
