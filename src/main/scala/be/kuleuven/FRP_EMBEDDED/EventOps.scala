@@ -281,7 +281,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
   }
 
   abstract class EventNode[A,B:Typ] extends EventImpl[B] with NodeImpl[B] {
-    nodeMap += ((id, this))
+    addNodeToNodemap(id,this)
     override type In = A
     override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()
     override def addChild(id: NodeID): Unit = {

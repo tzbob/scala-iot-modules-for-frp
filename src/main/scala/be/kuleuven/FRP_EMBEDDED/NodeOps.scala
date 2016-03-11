@@ -28,7 +28,11 @@ trait NodeOps extends Base {
 
 trait NodeOpsImpl extends NodeOps {
   //TODO: make private and supply getter to immutable map
-  protected val nodeMap: scala.collection.mutable.Map[NodeID,NodeImpl[_]] = scala.collection.mutable.HashMap()
+  private val nodeMap: scala.collection.mutable.Map[NodeID,NodeImpl[_]] = scala.collection.mutable.HashMap()
+
+  def addNodeToNodemap(id: NodeID, node: NodeImpl[_]): Unit = {
+    nodeMap += ((id, node))
+  }
 
   def getNodeMap: Map[NodeID,NodeImpl[_]] = {
     nodeMap.toMap
@@ -85,6 +89,10 @@ trait NodeOpsImpl extends NodeOps {
   trait NodeImpl[A] extends Node[A] {
     def generateNode(f: () => Rep[Unit]): () => Rep[Unit]
     def getFunction(): Rep[(Unit)=>Unit]
+
+    override def toString: String = {
+      "Node with id: " + this.id
+    }
   }
 
 }

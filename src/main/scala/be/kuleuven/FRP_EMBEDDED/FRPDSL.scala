@@ -9,7 +9,7 @@ trait FRPDSL
 
   def printEvent[A](e: Event[A]): String
 
-  def generator[A](e: Node[A]*): () => Rep[Unit]
+  def generator: () => Rep[Unit]
 }
 
 trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
@@ -46,12 +46,8 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     throw new IllegalStateException("Getting index of splitting node failed.")
   }
 
-  override def generator[X](ns: Node[X]*): () => Rep[Unit] = {
+  override def generator: () => Rep[Unit] = {
     var program: () => Rep[Unit] = () => unitToRepUnit( () )
-
-    for(n <- ns) {
-      n.buildGraphTopDown()
-    }
 
     // generate per level
     System.err.println("max level : "+ getMaxLevel)

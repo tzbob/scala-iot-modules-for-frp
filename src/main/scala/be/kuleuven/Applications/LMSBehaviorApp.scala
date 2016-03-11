@@ -72,6 +72,8 @@ object LMSBehaviorAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
@@ -84,6 +86,8 @@ object LMSBehaviorAppRunner {
         System.err.println("BehaviorFoldp1App:")
         System.err.println("Creating flow graph...")
         createMainFun
+        System.err.println("\n")
+        buildFRPGraph()
         System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
@@ -98,6 +102,8 @@ object LMSBehaviorAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
@@ -111,6 +117,8 @@ object LMSBehaviorAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
@@ -123,6 +131,8 @@ object LMSBehaviorAppRunner {
         System.err.println("BehaviorSnapshotApp:")
         System.err.println("Creating flow graph...")
         createMainFun
+        System.err.println("\n")
+        buildFRPGraph()
         System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")

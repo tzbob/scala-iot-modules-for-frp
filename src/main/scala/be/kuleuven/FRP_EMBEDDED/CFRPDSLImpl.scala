@@ -13,13 +13,28 @@ trait CFRPDSLImpl extends FRPDSLImpl
 
   val codegen = new CCodeGenPkgExtended with CGenTupledFunctionsExt with CGenUncheckedOps { val IR: self.type = self }
 
+  def buildFRPGraph(): Unit = {
+    getNodeMap.foreach(
+      x => x match {
+        case (_, n) => n.buildGraphTopDown()
+      }
+    )
+
+    val inputevents = getInputEventNodes.values.toList
+    System.err.println("InputEvents:")
+    inputevents.foreach(System.err.println )
+
+    //get all end nodes
+    val outputNodes = getOutputNodes.values.toList
+    System.err.println("OutputNodes:")
+    outputNodes.foreach(System.err.println )
+  }
+
   def emitProgram(): Unit = {
     val stream = new PrintWriter(System.out)
 
     //get all end nodes
-    val outputNodes = getOutputNodes.values.toList
-    System.err.println("Outputnodes: " + outputNodes)
-    val program = generator(outputNodes:_*)
+    val program = generator
 
     codegen.emitProgram(program, stream)
   }

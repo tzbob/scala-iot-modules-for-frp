@@ -285,6 +285,8 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
@@ -297,6 +299,8 @@ object LMSEventAppRunner {
         System.err.println("FilterApp:")
         System.err.println("Creating flow graph...")
         createMainFun
+        System.err.println("\n")
+        buildFRPGraph()
         System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
@@ -311,6 +315,8 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
@@ -323,6 +329,8 @@ object LMSEventAppRunner {
         System.err.println("MergeApp1:")
         System.err.println("Creating flow graph...")
         createMainFun
+        System.err.println("\n")
+        buildFRPGraph()
         System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
@@ -337,6 +345,8 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
@@ -349,6 +359,8 @@ object LMSEventAppRunner {
         System.err.println("MergeApp2b:")
         System.err.println("Creating flow graph...")
         createMainFun
+        System.err.println("\n")
+        buildFRPGraph()
         System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
@@ -363,8 +375,8 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        //printEventTree()
-        //System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
@@ -378,8 +390,8 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        //printEventTree()
-        //System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
@@ -393,8 +405,8 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        //printEventTree()
-        //System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
@@ -408,8 +420,8 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        //printEventTree()
-        //System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
@@ -423,8 +435,8 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        //printEventTree()
-        //System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
@@ -438,8 +450,8 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        //printEventTree()
-        //System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
@@ -453,8 +465,8 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        //printEventTree()
-        //System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }
@@ -467,8 +479,8 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        //printEventTree()
-        //System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }
@@ -481,8 +493,8 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        //printEventTree()
-        //System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }
@@ -495,8 +507,8 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        //printEventTree()
-        //System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }
@@ -509,8 +521,8 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        //printEventTree()
-        //System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }
@@ -523,8 +535,8 @@ object LMSEventAppRunner {
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")
-        //printEventTree()
-        //System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
         emitProgram()
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }

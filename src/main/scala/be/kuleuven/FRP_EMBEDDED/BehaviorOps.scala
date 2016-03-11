@@ -184,7 +184,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
   }
 
   abstract class BehaviorNode[A] extends BehaviorImpl[A] with NodeImpl[A] {
-    nodeMap += ((id, this))
+    addNodeToNodemap(id,this)
 
     override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()
     override def addChild(id: NodeID): Unit = {
