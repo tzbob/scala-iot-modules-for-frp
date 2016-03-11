@@ -129,8 +129,8 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
     override implicit val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = tB
     val constFun: Rep[In]=>Rep[Out] = _ => c
-    lazy val parentvalue: Rep[In] = getEventValue(parent)
-    lazy val parentfired: Rep[Boolean] = getEventFired(parent)
+    lazy val parentvalue: Rep[In] = readVar(getEventValue(parent))
+    lazy val parentfired: Rep[Boolean] = readVar(getEventFired(parent))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       fun { () =>
         if(parentfired) {
@@ -152,8 +152,8 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
     override implicit val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = tB
     val mapFun: Rep[In]=>Rep[Out] = f
-    lazy val parentvalue: Rep[In] = getEventValue(parent)
-    lazy val parentfired: Rep[Boolean] = getEventFired(parent)
+    lazy val parentvalue: Rep[In] = readVar(getEventValue(parent))
+    lazy val parentfired: Rep[Boolean] = readVar(getEventFired(parent))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       fun { () =>
         if(parentfired) {
@@ -174,8 +174,8 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
     override val typIn: Typ[In] = parent.typOut //tA?
     override val typOut: Typ[Out] = typIn //tA?
     val filterFun: Rep[In]=>Rep[Boolean] = f
-    lazy val parentvalue: Rep[In] = getEventValue(parent)
-    lazy val parentfired: Rep[Boolean] = getEventFired(parent)
+    lazy val parentvalue: Rep[In] = readVar(getEventValue(parent))
+    lazy val parentfired: Rep[Boolean] = readVar(getEventFired(parent))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       fun { () =>
         if(parentfired) {
@@ -210,10 +210,10 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
     val inputIDsRight: Set[NodeID] = parentRight.inputNodeIDs
     override val inputNodeIDs: Set[NodeID] = inputIDsLeft ++ inputIDsRight
 
-    lazy val parentleftvalue: Rep[In] = getEventValue(parentLeft)
-    lazy val parentleftfired: Rep[Boolean] = getEventFired(parentLeft)
-    lazy val parentrightvalue: Rep[In] = getEventValue(parentRight)
-    lazy val parentrightfired: Rep[Boolean] = getEventFired(parentRight)
+    lazy val parentleftvalue: Rep[In] = readVar(getEventValue(parentLeft))
+    lazy val parentleftfired: Rep[Boolean] = readVar(getEventFired(parentLeft))
+    lazy val parentrightvalue: Rep[In] = readVar(getEventValue(parentRight))
+    lazy val parentrightfired: Rep[Boolean] = readVar(getEventFired(parentRight))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       fun { () =>
         if(parentleftfired && parentrightfired ) {
@@ -241,7 +241,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
     override val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = typIn
 
-    lazy val parentvalue: Rep[In] = getBehaviorValue(parent)
+    lazy val parentvalue: Rep[In] = readVar(getBehaviorValue(parent))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       fun { () =>
           var_assign(fired, unit(true))
@@ -259,8 +259,8 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
     override val typIn: Typ[In] = parentEvent.typOut
     override val typOut: Typ[Out] = parentBeh.typOut
 
-    lazy val parentvalue: Rep[Out] = getBehaviorValue(parentBeh)
-    lazy val parentEventFired: Rep[Boolean] = getEventFired(parentEvent)
+    lazy val parentvalue: Rep[Out] = readVar(getBehaviorValue(parentBeh))
+    lazy val parentEventFired: Rep[Boolean] = readVar(getEventFired(parentEvent))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       fun { () =>
         if(parentEventFired) {
