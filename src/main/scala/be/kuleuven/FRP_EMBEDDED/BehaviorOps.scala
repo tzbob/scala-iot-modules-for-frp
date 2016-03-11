@@ -3,7 +3,7 @@ package be.kuleuven.FRP_EMBEDDED
 import scala.collection.immutable.HashSet
 
 trait BehaviorOps extends NodeOps {
-  event: EventOps with NodeOps =>
+  event: EventOps =>
 
   trait Behavior[A] extends Node[A] {
     val typOut: Typ[A]
