@@ -22,20 +22,20 @@ class ChildsEventTest extends FunSuite {
       val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => { println("merge8") ; x + y })
       val map3 = m.map((x: Rep[Int]) => { println("map9"); x * 2 })
 
-      buildGraphTopDown(map3)
+      map3.buildGraphTopDown
 
-      assert(map3.childEventIDs.size === 0)
-      assert(m.childEventIDs.contains(map3.id))
-      assert(map2.childEventIDs.contains(m.id))
-      assert(f2.childEventIDs.contains(map2.id))
-      assert(c2.childEventIDs.contains(f2.id))
-      assert(map1.childEventIDs.contains(m.id))
-      assert(f1.childEventIDs.contains(map1.id))
-      assert(c1.childEventIDs.contains(f1.id))
-      assert(t.childEventIDs.contains(c1.id))
-      assert(t.childEventIDs.contains(c2.id))
-      assert(t.childEventIDs.equals(SSet(c2.id,c1.id)))
-      assert(t.childEventIDs.equals(SSet(c1.id,c2.id)))
+      assert(map3.childNodeIDs.size === 0)
+      assert(m.childNodeIDs.contains(map3.id))
+      assert(map2.childNodeIDs.contains(m.id))
+      assert(f2.childNodeIDs.contains(map2.id))
+      assert(c2.childNodeIDs.contains(f2.id))
+      assert(map1.childNodeIDs.contains(m.id))
+      assert(f1.childNodeIDs.contains(map1.id))
+      assert(c1.childNodeIDs.contains(f1.id))
+      assert(t.childNodeIDs.contains(c1.id))
+      assert(t.childNodeIDs.contains(c2.id))
+      assert(t.childNodeIDs.equals(SSet(c2.id,c1.id)))
+      assert(t.childNodeIDs.equals(SSet(c1.id,c2.id)))
     }
   }
 
@@ -50,14 +50,14 @@ class ChildsEventTest extends FunSuite {
       val merge4 = m2.merge(m3, (x, y) => { println("merge4"); x + y })
       val merge5 = merge4.merge(m3, (x, y) => { println("merge5"); x + y })
 
-      buildGraphTopDown(merge5)
+      merge5.buildGraphTopDown
 
-      assert(merge5.childEventIDs.size === 0)
-      assert(merge4.childEventIDs.contains(merge5.id))
-      assert(m3.childEventIDs.equals(SSet(merge4.id,merge5.id)))
-      assert(m2.childEventIDs.contains(merge4.id))
-      assert(t.childEventIDs.contains(m2.id))
-      assert(t.childEventIDs.contains(m3.id))
+      assert(merge5.childNodeIDs.size === 0)
+      assert(merge4.childNodeIDs.contains(merge5.id))
+      assert(m3.childNodeIDs.equals(SSet(merge4.id,merge5.id)))
+      assert(m2.childNodeIDs.contains(merge4.id))
+      assert(t.childNodeIDs.contains(m2.id))
+      assert(t.childNodeIDs.contains(m3.id))
     }
   }
 
@@ -73,14 +73,14 @@ class ChildsEventTest extends FunSuite {
       val m33 = m3.map((x) => {println("map33"); x * 2})
 
 
-      buildGraphTopDown(m22)
-      buildGraphTopDown(m33)
+      m22.buildGraphTopDown
+      m33.buildGraphTopDown
 
-      assert(m22.childEventIDs.size === 0)
-      assert(m33.childEventIDs.size === 0)
-      assert(m2.childEventIDs.contains(m22.id))
-      assert(m3.childEventIDs.contains(m33.id))
-      assert(t.childEventIDs.equals(SSet(m2.id,m3.id)))
+      assert(m22.childNodeIDs.size === 0)
+      assert(m33.childNodeIDs.size === 0)
+      assert(m2.childNodeIDs.contains(m22.id))
+      assert(m3.childNodeIDs.contains(m33.id))
+      assert(t.childNodeIDs.equals(SSet(m2.id,m3.id)))
     }
   }
 }
