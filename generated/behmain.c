@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <string>
+#include <string.h>
 
 using namespace std;
 
@@ -40,7 +40,7 @@ int main() {
 	printf("behavior: %d\n",x59);	
 }*/
 
-/*
+
 #include "LMSBehaviorChangesApp.c"
 // => printf("res: %d\n",x??);
 
@@ -50,10 +50,10 @@ int main() {
 	printf("behavior: %d\n",x23);
 	x33();
 	printf("behavior: %d\n",x23);
-	
-}*/
+	x40(10);
+}
 
-#include "LMSBehaviorSnapshotApp.c"
+/*#include "LMSBehaviorSnapshotApp.c"
 // => printf("res: %d\n",x??);
 
 int main() {
@@ -64,5 +64,5 @@ int main() {
 	printf("behavior: %d\n",x34);
 	x49();
 	printf("behavior: %d\n",x34);
-}
+}*/
 
