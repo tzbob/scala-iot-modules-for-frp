@@ -53,6 +53,7 @@ int main() {
 	int x[3] = {10, 3,2};
 	x40(x);
 	printf("%d\n",*x);
+	x71();
 }
 
 /*#include "LMSBehaviorSnapshotApp.c"

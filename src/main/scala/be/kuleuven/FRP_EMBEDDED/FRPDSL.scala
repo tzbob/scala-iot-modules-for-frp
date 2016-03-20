@@ -112,6 +112,23 @@ trait FRPDSLImpl extends FRPDSL with VariablesExp with PointersExp with EventOps
       doApplyDecl(ttf)
       // END TESTING
 
+      // ARRAY TESTING
+      val arrayfun = fun { (x:Rep[Ptr[Int]]) =>
+        val ar: Rep[Array[Int]] = array_obj_new[Int](5)
+        ar.update(0,1)
+        ar.update(1,2)
+        ar.update(2,3)
+        println(ar.apply(0))
+      }
+      val testarrayfun = fun { () =>
+        val ar: Rep[Array[Int]] = array_obj_new[Int](5)
+        arrayfun( reparray_repptr(ar).e )
+        unitToRepUnit( () )
+
+      }
+      doApplyDecl(testarrayfun)
+      // END ARRAY TESTING
+
       unitToRepUnit( () )
     }
   }

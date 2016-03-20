@@ -10,14 +10,14 @@ import scala.lms.common._
 
 trait ScalaOpsPkgExt extends Base
   with ImplicitOps with NumericOps with FractionalOps with OrderingOps with StringOps
-  with RangeOps with IOOps with ArrayOps with BooleanOps with PrimitiveOps with MiscOps
+  with RangeOps with IOOps with ArrayOpsExt with BooleanOps with PrimitiveOps with MiscOps
   with Equal with IfThenElse with VariablesExt with Pointers with While with TupleOps with ListOps
   with SeqOps with MathOps with CastingOps with SetOps with ObjectOps with ArrayBufferOps with StructOps
   with TupledFunctionsExt
 
 trait ScalaOpsPkgExpExt extends ScalaOpsPkg
   with ImplicitOpsExp with NumericOpsExp with FractionalOpsExp with OrderingOpsExp with StringOpsExp
-  with RangeOpsExp with IOOpsExp with ArrayOpsExp with BooleanOpsExp with PrimitiveOpsExp with MiscOpsExp
+  with RangeOpsExp with IOOpsExp with ArrayOpsExpExt with BooleanOpsExp with PrimitiveOpsExp with MiscOpsExp
   with FunctionsExpExt with EqualExp with IfThenElseExp with VariablesExpExt with PointersExp with WhileExp with TupleOpsExp with ListOpsExp
   with SeqOpsExp with DSLOpsExp with MathOpsExp with CastingOpsExp with SetOpsExp with ObjectOpsExp with ArrayBufferOpsExp
   with StructExp
@@ -41,7 +41,7 @@ trait ScalaCodeGenPkgExt extends ScalaGenImplicitOps with ScalaGenNumericOps wit
 /////
 // C
 trait CCodeGenPkgExt extends CGenImplicitOps with CGenNumericOps with CGenFractionalOps with CGenOrderingOps
-  with CGenStringOps with CGenRangeOps with CGenIOOps with CGenArrayOps with CGenBooleanOps
+  with CGenStringOps with CGenRangeOps with CGenIOOps with CGenArrayOpsExt with CGenBooleanOps
   with CGenPrimitiveOps with CGenMiscOps with CGenFunctionsExt with CGenEqual with CGenIfThenElse
   with CGenVariablesExt with CGenWhile with CGenTupleOps with CGenListOps
   with CGenSeqOps with CGenDSLOps with CGenMathOps with CGenCastingOps with CGenSetOps

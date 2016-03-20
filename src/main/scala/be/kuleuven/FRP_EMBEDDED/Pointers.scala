@@ -13,6 +13,8 @@ trait Pointers extends Variables with ReadPtrImplicit {
   //def ptr_assign[T:Typ](lhs: Ptr[T], rhs: Ptr[T])(implicit pos: SourceContext): Rep[Unit]
   def ptr_assignToVal[T:Typ](lhs: Ptr[T], rhs: Rep[T])(implicit pos: SourceContext): Rep[Unit]
   def repptr_ptr[T:Typ](init: Rep[Ptr[T]])(implicit pos: SourceContext): Ptr[T]
+
+  def reparray_repptr[T:Typ](init: Rep[Array[T]])(implicit pos: SourceContext): Ptr[T]
 }
 
 // ReadVar is factored out so that it does not have higher priority than VariableImplicits when mixed in
@@ -22,7 +24,7 @@ trait ReadPtrImplicit {
 
   implicit def ptr_readVal[T:Typ](p: Ptr[T])(implicit pos: SourceContext) : Rep[T]
   implicit def repptr_readVal[T:Typ](p: Rep[Ptr[T]])(implicit pos: SourceContext) : Rep[T]
-  implicit def repptr_readVal[T:Typ](p: Rep[Ptr[T]], index: Int) : Rep[T]
+  implicit def repptr_readVal[T:Typ](p: Rep[Ptr[T]], index: Rep[Int]) : Rep[T]
 }
 
 trait ReadPtrImplicitExp extends EffectExp {
@@ -30,7 +32,7 @@ trait ReadPtrImplicitExp extends EffectExp {
 
   implicit def ptr_readVal[T:Typ](p: Ptr[T])(implicit pos: SourceContext) : Exp[T] = ReadPtr(p)
   implicit def repptr_readVal[T:Typ](p: Rep[Ptr[T]])(implicit pos: SourceContext) : Exp[T] = ReadRepPtr(p)
-  implicit def repptr_readVal[T:Typ](p: Rep[Ptr[T]], index: Int) : Exp[T] = ReadRepPtrIndexed(p,index)
+  implicit def repptr_readVal[T:Typ](p: Rep[Ptr[T]], index: Rep[Int]) : Exp[T] = ReadRepPtrIndexed(p,index)
 }
 
 trait PointersExp extends Pointers with VariablesExp with ExpressionsExt with ReadPtrImplicitExp {
@@ -52,12 +54,16 @@ trait PointersExp extends Pointers with VariablesExp with ExpressionsExt with Re
 
   case class ReadPtr[T:Typ](v: Ptr[T]) extends Def[T]
   case class ReadRepPtr[T:Typ](v: Rep[Ptr[T]]) extends Def[T]
-  case class ReadRepPtrIndexed[T:Typ](v: Rep[Ptr[T]], index: Int) extends Def[T]
+  case class ReadRepPtrIndexed[T:Typ](v: Rep[Ptr[T]], index: Rep[Int]) extends Def[T]
   case class NewPtr[T:Typ](init: Exp[T]) extends Def[Pointer[T]] {
     def m = manifest[T]
   }
 
   case class NewPtrFromPtr[T:Typ](init: Exp[Ptr[T]]) extends Def[Pointer[T]] {
+    def m = manifest[T]
+  }
+
+  case class NewPtrFromArray[T:Typ](init: Exp[Array[T]]) extends Def[Pointer[T]] {
     def m = manifest[T]
   }
 
@@ -72,6 +78,10 @@ trait PointersExp extends Pointers with VariablesExp with ExpressionsExt with Re
 
   def repptr_ptr[T:Typ](init: Rep[Ptr[T]])(implicit pos: SourceContext): Ptr[T] = {
     Pointer(reflectMutable(NewPtrFromPtr(init)))
+  }
+
+  def reparray_repptr[T:Typ](init: Rep[Array[T]])(implicit pos: SourceContext): Ptr[T] = {
+    Pointer(reflectMutable(NewPtrFromArray(init)))
   }
 
   override def ptr_assignToVal[T:Typ](lhs: Ptr[T], rhs: Exp[T])(implicit pos: SourceContext): Exp[Unit] = {
@@ -107,9 +117,10 @@ trait CLikeGenPointers extends SMCLikeCodeGen {
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
     case ReadPtr(Pointer(p)) => emitValDef(sym, "*"+quote(p))
     case ReadRepPtr(p) => emitValDef(sym, "*"+quote(p))
-    case ReadRepPtrIndexed(p,i) => emitValDef(sym, quote(p)+"["+i+"]")
+    case ReadRepPtrIndexed(p,i) => emitValDef(sym, quote(p)+"["+ quote(i) +"]")
     case NewPtr(init) => emitPtrDef(sym.asInstanceOf[Sym[Ptr[Any]]], "&"+quote(init))
     case NewPtrFromPtr(init) => emitPtrDef(sym.asInstanceOf[Sym[Ptr[Any]]], quote(init))
+    case NewPtrFromArray(init) => emitPtrDef(sym.asInstanceOf[Sym[Ptr[Any]]], quote(init))
     case AssignToVal(Pointer(p), b) => stream.println("*" + quote(p) + " = " + quote(b) + ";")
     case _ => super.emitNode(sym, rhs)
   }

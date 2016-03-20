@@ -23,6 +23,7 @@ trait SMCLikeCodeGen extends CLikeCodegen {
   }
 
   override def remap[A](m: Typ[A]) : String = {
+
     if (m.erasure == classOf[Pointer[AnyVal]])
       remap(m.typeArguments.head) + "*"
     else
