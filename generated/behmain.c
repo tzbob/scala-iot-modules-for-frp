@@ -13,7 +13,8 @@ int main() {
 	printf("behavior: %d\n",x18);
 }*/
 
-/*#include "LMSBehaviorFoldp1App.c"
+/*
+#include "LMSBehaviorFoldp1App.c"
 // => printf("res: %d\n",x??);
 
 int main() {
@@ -22,7 +23,8 @@ int main() {
 	printf("behavior: %d\n",x18);
 	x28();
 	printf("behavior: %d\n",x18);
-}*/
+}
+*/
 
 /*
 #include "LMSBehaviorMap2App.c"
@@ -41,6 +43,7 @@ int main() {
 }*/
 
 
+
 #include "LMSBehaviorChangesApp.c"
 // => printf("res: %d\n",x??);
 
@@ -50,10 +53,6 @@ int main() {
 	printf("behavior: %d\n",x23);
 	x33();
 	printf("behavior: %d\n",x23);
-	int x[3] = {10, 3,2};
-	x40(x);
-	printf("%d\n",*x);
-	x71();
 }
 
 /*#include "LMSBehaviorSnapshotApp.c"

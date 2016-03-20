@@ -12,7 +12,7 @@ trait FRPDSL
   def generator: () => Rep[Unit]
 }
 
-trait FRPDSLImpl extends FRPDSL with VariablesExp with PointersExp with EventOpsImpl with BehaviorOpsImpl {
+trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
   override def printEvent[A](e: Event[A]) = {
     def printParents[B](p: Event[B]): String = {
@@ -86,7 +86,6 @@ trait FRPDSLImpl extends FRPDSL with VariablesExp with PointersExp with EventOps
         eventsTO.foreach( x => {(x.getFunction())( () ) } ) // apply the functions in this context
       }
       doApplyDecl(top)
-
       unitToRepUnit( () )
     }
   }
