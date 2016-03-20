@@ -31,23 +31,25 @@ void x44 () {
 x2();
 x13();
 };
-int32_t x62 = 5;
-int32_t x63 = x62;
-int32_t* x64 = &x63;
+int32_t x64 = 5;
+int32_t x65 = x64;
+int32_t* x66 = &x65;
 void x49 (int32_t* x50) {
 int32_t x51 = x50[1];
 printf("%d\n",x51);
-int32_t x53 = 5;
-int32_t x54 = x53;
-int32_t* x55 = &x54;
-int32_t x56 = *x55;
-printf("%d\n",x56);
-*x55 = 3;
-int32_t x59 = *x55;
-printf("%d\n",x59);
+int32_t* x53 = x50;
+*x53 = 20;
+int32_t x55 = 5;
+int32_t x56 = x55;
+int32_t* x57 = &x56;
+int32_t x58 = *x57;
+printf("%d\n",x58);
+*x57 = 3;
+int32_t x61 = *x57;
+printf("%d\n",x61);
 };
-void x65 () {
-x49(x64);
+void x67 () {
+x49(x66);
 };
 void x8 () {
 x6 = true;
@@ -73,28 +75,30 @@ x34 = x39;
 } else {
 }
 };
-void x69 () {
+void x71 () {
 x8();
 x24();
 x35();
 };
-int32_t x88 = 5;
-int32_t x89 = x88;
-int32_t* x90 = &x89;
-void x75 (int32_t* x76) {
-int32_t x77 = x76[1];
-printf("%d\n",x77);
-int32_t x79 = 5;
-int32_t x80 = x79;
-int32_t* x81 = &x80;
-int32_t x82 = *x81;
-printf("%d\n",x82);
-*x81 = 3;
-int32_t x85 = *x81;
-printf("%d\n",x85);
+int32_t x92 = 5;
+int32_t x93 = x92;
+int32_t* x94 = &x93;
+void x77 (int32_t* x78) {
+int32_t x79 = x78[1];
+printf("%d\n",x79);
+int32_t* x81 = x78;
+*x81 = 20;
+int32_t x83 = 5;
+int32_t x84 = x83;
+int32_t* x85 = &x84;
+int32_t x86 = *x85;
+printf("%d\n",x86);
+*x85 = 3;
+int32_t x89 = *x85;
+printf("%d\n",x89);
 };
-void x91 () {
-x75(x90);
+void x95 () {
+x77(x94);
 };
 /*****************************************
   End of C Generated Code                  

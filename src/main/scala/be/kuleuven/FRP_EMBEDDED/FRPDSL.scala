@@ -90,6 +90,10 @@ trait FRPDSLImpl extends FRPDSL with VariablesExp with PointersExp with EventOps
       // TESTING !!! : delete me after!
       val testfun = fun { (x: Rep[Ptr[Int]]) =>
         println( repptr_readVal(x,1) )
+
+        val np = repptr_ptr(x)
+        ptr_assignToVal(np, 20)
+
         val v = var_new[Int](5)
         val pv = ptr_new[Int](readVar(v))
         println( ptr_readVal(pv) )

@@ -46,23 +46,25 @@ x7();
 x18();
 x24();
 };
-int32_t x53 = 5;
-int32_t x54 = x53;
-int32_t* x55 = &x54;
+int32_t x55 = 5;
+int32_t x56 = x55;
+int32_t* x57 = &x56;
 void x40 (int32_t* x41) {
 int32_t x42 = x41[1];
 printf("%d\n",x42);
-int32_t x44 = 5;
-int32_t x45 = x44;
-int32_t* x46 = &x45;
-int32_t x47 = *x46;
-printf("%d\n",x47);
-*x46 = 3;
-int32_t x50 = *x46;
-printf("%d\n",x50);
+int32_t* x44 = x41;
+*x44 = 20;
+int32_t x46 = 5;
+int32_t x47 = x46;
+int32_t* x48 = &x47;
+int32_t x49 = *x48;
+printf("%d\n",x49);
+*x48 = 3;
+int32_t x52 = *x48;
+printf("%d\n",x52);
 };
-void x56 () {
-x40(x55);
+void x58 () {
+x40(x57);
 };
 /*****************************************
   End of C Generated Code                  
