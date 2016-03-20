@@ -86,22 +86,28 @@ trait FRPDSLImpl extends FRPDSL with VariablesExp with PointersExp with EventOps
         eventsTO.foreach( x => {(x.getFunction())( () ) } ) // apply the functions in this context
       }
       doApplyDecl(top)
-      /*
+
       // TESTING !!! : delete me after!
-      val testfun = fun { (x: Rep[Var[Int]]) =>
-        println(x)
+      val testfun = fun { (x: Rep[Ptr[Int]]) =>
+        println( repptr_readVal(x,1) )
         val v = var_new[Int](5)
-        val pv = ptr_new[Int](v)
+        val pv = ptr_new[Int](readVar(v))
         println( ptr_readVal(pv) )
         ptr_assignToVal(pv, 3)
         println( ptr_readVal(pv) )
         unitToRepUnit( () )
       }
       //doApplyDecl(testfun)
-      val myvar: Variable[Int] = var_new[Int](5)
-      testfun(myvar.e)
+      val myvar = var_new[Int](5)
+      val myptr: Pointer[Int] = ptr_new[Int]( readVar(myvar) )
+
+      val ttf = fun { () =>
+        testfun(myptr.e)
+        unitToRepUnit( () )
+      }
+      doApplyDecl(ttf)
       // END TESTING
-      */
+
       unitToRepUnit( () )
     }
   }

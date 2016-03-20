@@ -35,6 +35,27 @@ x18 = x23;
 }
 };
 void x28 () {
+x2();
+x8();
+x19();
+};
+int32_t x47 = 5;
+int32_t x48 = x47;
+int32_t* x49 = &x48;
+void x34 (int32_t* x35) {
+int32_t x36 = x35[1];
+printf("%d\n",x36);
+int32_t x38 = 5;
+int32_t x39 = x38;
+int32_t* x40 = &x39;
+int32_t x41 = *x40;
+printf("%d\n",x41);
+*x40 = 3;
+int32_t x44 = *x40;
+printf("%d\n",x44);
+};
+void x50 () {
+x34(x49);
 };
 /*****************************************
   End of C Generated Code                  

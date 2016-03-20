@@ -50,6 +50,28 @@ int32_t x63 = x61 * x62;
 x59 = x63;
 };
 void x66 () {
+x2();
+x26();
+x47();
+x60();
+};
+int32_t x86 = 5;
+int32_t x87 = x86;
+int32_t* x88 = &x87;
+void x73 (int32_t* x74) {
+int32_t x75 = x74[1];
+printf("%d\n",x75);
+int32_t x77 = 5;
+int32_t x78 = x77;
+int32_t* x79 = &x78;
+int32_t x80 = *x79;
+printf("%d\n",x80);
+*x79 = 3;
+int32_t x83 = *x79;
+printf("%d\n",x83);
+};
+void x89 () {
+x73(x88);
 };
 void x8 () {
 x6 = true;
@@ -75,7 +97,29 @@ x36 = x41;
 } else {
 }
 };
-void x73 () {
+void x93 () {
+x8();
+x14();
+x37();
+x60();
+};
+int32_t x113 = 5;
+int32_t x114 = x113;
+int32_t* x115 = &x114;
+void x100 (int32_t* x101) {
+int32_t x102 = x101[1];
+printf("%d\n",x102);
+int32_t x104 = 5;
+int32_t x105 = x104;
+int32_t* x106 = &x105;
+int32_t x107 = *x106;
+printf("%d\n",x107);
+*x106 = 3;
+int32_t x110 = *x106;
+printf("%d\n",x110);
+};
+void x116 () {
+x100(x115);
 };
 /*****************************************
   End of C Generated Code                  

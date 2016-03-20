@@ -50,7 +50,8 @@ int main() {
 	printf("behavior: %d\n",x23);
 	x33();
 	printf("behavior: %d\n",x23);
-	x40(10);
+	int x[3] = {10, 3,2};
+	x40(x);
 }
 
 /*#include "LMSBehaviorSnapshotApp.c"

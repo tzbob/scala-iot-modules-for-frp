@@ -28,6 +28,26 @@ x12 = x17;
 }
 };
 void x44 () {
+x2();
+x13();
+};
+int32_t x62 = 5;
+int32_t x63 = x62;
+int32_t* x64 = &x63;
+void x49 (int32_t* x50) {
+int32_t x51 = x50[1];
+printf("%d\n",x51);
+int32_t x53 = 5;
+int32_t x54 = x53;
+int32_t* x55 = &x54;
+int32_t x56 = *x55;
+printf("%d\n",x56);
+*x55 = 3;
+int32_t x59 = *x55;
+printf("%d\n",x59);
+};
+void x65 () {
+x49(x64);
 };
 void x8 () {
 x6 = true;
@@ -53,7 +73,28 @@ x34 = x39;
 } else {
 }
 };
-void x49 () {
+void x69 () {
+x8();
+x24();
+x35();
+};
+int32_t x88 = 5;
+int32_t x89 = x88;
+int32_t* x90 = &x89;
+void x75 (int32_t* x76) {
+int32_t x77 = x76[1];
+printf("%d\n",x77);
+int32_t x79 = 5;
+int32_t x80 = x79;
+int32_t* x81 = &x80;
+int32_t x82 = *x81;
+printf("%d\n",x82);
+*x81 = 3;
+int32_t x85 = *x81;
+printf("%d\n",x85);
+};
+void x91 () {
+x75(x90);
 };
 /*****************************************
   End of C Generated Code                  

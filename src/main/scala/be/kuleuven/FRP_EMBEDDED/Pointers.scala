@@ -4,7 +4,7 @@ package be.kuleuven.FRP_EMBEDDED
 import scala.lms.common._
 import scala.reflect.SourceContext
 
-trait Pointers extends Variables {
+trait Pointers extends Variables with ReadPtrImplicit {
   type Ptr[+T] //FIXME: should be invariant
 
   //implicit def chainReadVar[T,U](x: Var[T])(implicit f: Rep[T] => U): U = f(readVar(x))
@@ -21,12 +21,16 @@ trait ReadPtrImplicit {
   this: Pointers =>
 
   implicit def ptr_readVal[T:Typ](p: Ptr[T])(implicit pos: SourceContext) : Rep[T]
+  implicit def repptr_readVal[T:Typ](p: Rep[Ptr[T]])(implicit pos: SourceContext) : Rep[T]
+  implicit def repptr_readVal[T:Typ](p: Rep[Ptr[T]], index: Int) : Rep[T]
 }
 
 trait ReadPtrImplicitExp extends EffectExp {
   this: PointersExp =>
 
   implicit def ptr_readVal[T:Typ](p: Ptr[T])(implicit pos: SourceContext) : Exp[T] = ReadPtr(p)
+  implicit def repptr_readVal[T:Typ](p: Rep[Ptr[T]])(implicit pos: SourceContext) : Exp[T] = ReadRepPtr(p)
+  implicit def repptr_readVal[T:Typ](p: Rep[Ptr[T]], index: Int) : Exp[T] = ReadRepPtrIndexed(p,index)
 }
 
 trait PointersExp extends Pointers with VariablesExp with ExpressionsExt with ReadPtrImplicitExp {
@@ -47,6 +51,8 @@ trait PointersExp extends Pointers with VariablesExp with ExpressionsExt with Re
   }
 
   case class ReadPtr[T:Typ](v: Ptr[T]) extends Def[T]
+  case class ReadRepPtr[T:Typ](v: Rep[Ptr[T]]) extends Def[T]
+  case class ReadRepPtrIndexed[T:Typ](v: Rep[Ptr[T]], index: Int) extends Def[T]
   case class NewPtr[T:Typ](init: Exp[T]) extends Def[Pointer[T]] {
     def m = manifest[T]
   }
@@ -64,64 +70,25 @@ trait PointersExp extends Pointers with VariablesExp with ExpressionsExt with Re
     Const()
   }
 
-  /*override def aliasSyms(e: Any): List[Sym[Any]] = e match {
-    case NewVar(a) => Nil
-    case ReadVar(Variable(a)) => Nil
-    case Assign(Variable(a),b) => Nil
-    case VarPlusEquals(Variable(a),b) => Nil
-    case VarMinusEquals(Variable(a),b) => Nil
-    case VarTimesEquals(Variable(a),b) => Nil
-    case VarDivideEquals(Variable(a),b) => Nil
+  override def aliasSyms(e: Any): List[Sym[Any]] = e match {
     case _ => super.aliasSyms(e)
   }
 
   override def containSyms(e: Any): List[Sym[Any]] = e match {
-    case NewVar(a) => syms(a)
-    case ReadVar(Variable(a)) => Nil
-    case Assign(Variable(a),b) => syms(b)
-    case VarPlusEquals(Variable(a),b) => syms(b)
-    case VarMinusEquals(Variable(a),b) => syms(b)
-    case VarTimesEquals(Variable(a),b) => syms(b)
-    case VarDivideEquals(Variable(a),b) => syms(b)
     case _ => super.containSyms(e)
   }
 
   override def extractSyms(e: Any): List[Sym[Any]] = e match {
-    case NewVar(a) => Nil
-    case ReadVar(Variable(a)) => syms(a)
-    case Assign(Variable(a),b) => Nil
-    case VarPlusEquals(Variable(a),b) => syms(a)
-    case VarMinusEquals(Variable(a),b) => syms(a)
-    case VarTimesEquals(Variable(a),b) => syms(a)
-    case VarDivideEquals(Variable(a),b) => syms(a)
     case _ => super.extractSyms(e)
   }
 
   override def copySyms(e: Any): List[Sym[Any]] = e match {
-    case NewVar(a) => Nil
-    case ReadVar(Variable(a)) => Nil
-    case Assign(Variable(a),b) => Nil
-    case VarPlusEquals(Variable(a),b) => Nil
-    case VarMinusEquals(Variable(a),b) => Nil
-    case VarTimesEquals(Variable(a),b) => Nil
-    case VarDivideEquals(Variable(a),b) => Nil
     case _ => super.copySyms(e)
   }
 
-
-
   override def mirror[A:Typ](e: Def[A], f: Transformer)(implicit pos: SourceContext): Exp[A] = (e match {
-    case ReadVar(Variable(a)) => readVar(Variable(f(a)))
-    case Reflect(e@NewVar(a), u, es) => reflectMirrored(Reflect(NewVar(f(a))(e.m), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)
-    case Reflect(ReadVar(Variable(a)), u, es) => reflectMirrored(Reflect(ReadVar(Variable(f(a))), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)
-    case Reflect(e@Assign(Variable(a),b), u, es) => reflectMirrored(Reflect(Assign(Variable(f(a)), f(b))(e.m), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)
-    case Reflect(e@VarPlusEquals(Variable(a),b), u, es) => reflectMirrored(Reflect(VarPlusEquals(Variable(f(a)), f(b))(e.m), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)
-    case Reflect(e@VarMinusEquals(Variable(a),b), u, es) => reflectMirrored(Reflect(VarMinusEquals(Variable(f(a)), f(b))(e.m), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)
-    case Reflect(e@VarTimesEquals(Variable(a),b), u, es) => reflectMirrored(Reflect(VarTimesEquals(Variable(f(a)), f(b))(e.m), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)
-    case Reflect(e@VarDivideEquals(Variable(a),b), u, es) => reflectMirrored(Reflect(VarDivideEquals(Variable(f(a)), f(b))(e.m), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)
     case _ => super.mirror(e,f)
-  }).asInstanceOf[Exp[A]]
-  */
+  })
 }
 
 trait CLikeGenPointers extends SMCLikeCodeGen {
@@ -130,6 +97,8 @@ trait CLikeGenPointers extends SMCLikeCodeGen {
 
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
     case ReadPtr(Pointer(p)) => emitValDef(sym, "*"+quote(p))
+    case ReadRepPtr(p) => emitValDef(sym, "*"+quote(p))
+    case ReadRepPtrIndexed(p,i) => emitValDef(sym, quote(p)+"["+i+"]")
     case NewPtr(init) => emitPtrDef(sym.asInstanceOf[Sym[Ptr[Any]]], "&"+quote(init))
     case AssignToVal(Pointer(p), b) => stream.println("*" + quote(p) + " = " + quote(b) + ";")
     case _ => super.emitNode(sym, rhs)

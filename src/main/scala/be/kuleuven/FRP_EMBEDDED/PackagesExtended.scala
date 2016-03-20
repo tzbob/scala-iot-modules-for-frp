@@ -43,7 +43,7 @@ trait ScalaCodeGenPkgExt extends ScalaGenImplicitOps with ScalaGenNumericOps wit
 trait CCodeGenPkgExt extends CGenImplicitOps with CGenNumericOps with CGenFractionalOps with CGenOrderingOps
   with CGenStringOps with CGenRangeOps with CGenIOOps with CGenArrayOps with CGenBooleanOps
   with CGenPrimitiveOps with CGenMiscOps with CGenFunctionsExt with CGenEqual with CGenIfThenElse
-  with CGenVariablesExt with CGenPointers with CGenWhile with CGenTupleOps with CGenListOps
+  with CGenVariablesExt with CGenWhile with CGenTupleOps with CGenListOps
   with CGenSeqOps with CGenDSLOps with CGenMathOps with CGenCastingOps with CGenSetOps
   with CGenObjectOps with CGenArrayBufferOps with CGenStruct
   { val IR: ScalaOpsPkgExpExt  }

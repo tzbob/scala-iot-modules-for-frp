@@ -11,7 +11,7 @@ import scala.lms.common._
 trait CFRPDSLImpl extends FRPDSLImpl
     with ScalaOpsPkgExpExt with TupledFunctionsRecursiveExpExt with UncheckedOpsExp { self =>
 
-  val codegen = new CCodeGenPkgExtended with CGenTupledFunctionsExt with CGenUncheckedOps { val IR: self.type = self }
+  val codegen = new CCodeGenPkgExtended with CGenTupledFunctionsExt with CGenUncheckedOps with CGenPointers { val IR: self.type = self }
 
   def buildFRPGraph(): Unit = {
     getNodeMap.foreach(
