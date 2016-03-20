@@ -1,4 +1,4 @@
-package be.kuleuven.FRP_EMBEDDED
+package be.kuleuven.LMS_extensions
 
 import scala.lms.internal.Expressions
 

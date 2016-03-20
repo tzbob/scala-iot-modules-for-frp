@@ -1,6 +1,6 @@
-package be.kuleuven.FRP_EMBEDDED
+package be.kuleuven.LMS_extensions
 
-import scala.lms.common.{CGenArrayOps, CLikeGenArrayOps, ArrayOpsExp, ArrayOps}
+import scala.lms.common.{ArrayOps, ArrayOpsExp, CGenArrayOps, CLikeGenArrayOps}
 
 trait ArrayOpsExt extends ArrayOps {
 

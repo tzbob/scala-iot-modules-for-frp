@@ -2,8 +2,9 @@ package be.kuleuven.FRP_EMBEDDED
 
 import java.io.PrintWriter
 
-import scala.lms.common._
+import be.kuleuven.LMS_extensions._
 
+import scala.lms.common._
 
 /*
  * Implementation of the FRP DSL to generate C code

@@ -1,5 +1,7 @@
 package be.kuleuven.FRP_EMBEDDED
 
+import be.kuleuven.LMS_extensions.ScalaOpsPkgExt
+
 import scala.collection.immutable.HashSet
 
 trait BehaviorOps extends NodeOps {

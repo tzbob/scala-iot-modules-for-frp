@@ -1,5 +1,7 @@
 package be.kuleuven.FRP_EMBEDDED
 
+import be.kuleuven.LMS_extensions.{TupledFunctionsExt, ScalaOpsPkgExt}
+
 import scala.lms.common._
 import java.lang.{Integer => JInteger}
 
