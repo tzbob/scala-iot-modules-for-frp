@@ -7,18 +7,13 @@ import scala.reflect.SourceContext
 trait Pointers extends Variables with ReadPtrImplicit {
   type Ptr[+T] //FIXME: should be invariant
 
-  //implicit def chainReadVar[T,U](x: Var[T])(implicit f: Rep[T] => U): U = f(readVar(x))
   def ptr_new[T:Typ](init: Rep[T])(implicit pos: SourceContext): Ptr[T]
-  //def ptr_new[T:Typ](init: Ptr[T])(implicit pos: SourceContext): Ptr[T]
-  //def ptr_assign[T:Typ](lhs: Ptr[T], rhs: Ptr[T])(implicit pos: SourceContext): Rep[Unit]
   def ptr_assignToVal[T:Typ](lhs: Ptr[T], rhs: Rep[T])(implicit pos: SourceContext): Rep[Unit]
   def repptr_ptr[T:Typ](init: Rep[Ptr[T]])(implicit pos: SourceContext): Ptr[T]
 
   def reparray_repptr[T:Typ](init: Rep[Array[T]])(implicit pos: SourceContext): Ptr[T]
 }
 
-// ReadVar is factored out so that it does not have higher priority than VariableImplicits when mixed in
-// (which result in ambiguous conversions)
 trait ReadPtrImplicit {
   this: Pointers =>
 
@@ -32,20 +27,11 @@ trait ReadPtrImplicitExp extends EffectExp {
 
   implicit def ptr_readVal[T:Typ](p: Ptr[T])(implicit pos: SourceContext) : Exp[T] = ReadPtr(p)
   implicit def repptr_readVal[T:Typ](p: Rep[Ptr[T]])(implicit pos: SourceContext) : Exp[T] = ReadRepPtr(p)
-  implicit def repptr_readVal[T:Typ](p: Rep[Ptr[T]], index: Rep[Int]) : Exp[T] = ReadRepPtrIndexed(p,index)
+  implicit def repptr_readVal[T:Typ](p: Rep[Ptr[T]], index: Rep[Int]) : Exp[T] = toAtom(ReadRepPtrIndexed(p,index))
 }
 
 trait PointersExp extends Pointers with VariablesExp with ExpressionsExt with ReadPtrImplicitExp {
-  // REMARK:
-  // defining Var[T] as Sym[T] is dangerous. If someone forgets to define a more-specific implicit conversion from
-  // Var[T] to Ops, e.g. implicit def varToRepStrOps(s: Var[String]) = new RepStrOpsCls(varToRep(s))
-  // then the existing implicit from Rep to Ops will be used, and the ReadVar operation will be lost.
-  // Defining Vars as separate from Exps will always cause a compile-time error if the implicit is missing.
-
-  //case class Variable[+T](val e: Exp[Variable[T]]) // FIXME: in Expressions because used by codegen...
-
   type Ptr[+T] = Pointer[T] //FIXME: should be invariant
-
 
   implicit def ptrTyp[T:Typ]: Typ[Ptr[T]] = {
     implicit val ManifestTyp(m) = typ[T]
