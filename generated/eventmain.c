@@ -2,9 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <string>
-
-using namespace std;
+#include <string.h>
 
 //#include "LMSEventMerge9bApp.c"
 #include "LMSEventMerge8App.c"

@@ -38,7 +38,7 @@ bool x9 = x0;
 if (x9) {
 x6 = true;
 int32_t x11 = x1;
-printf("%s\n",string("map9").c_str());
+printf("%s\n","map9");
 int32_t x13 = x11 + 10;
 x7 = x13;
 } else {
@@ -50,7 +50,7 @@ bool x23 = x0;
 if (x23) {
 x20 = true;
 int32_t x25 = x1;
-printf("%s\n",string("map2").c_str());
+printf("%s\n","map2");
 int32_t x27 = x25 + 1;
 x21 = x27;
 } else {
@@ -61,7 +61,7 @@ void x36 () {
 bool x37 = x20;
 if (x37) {
 int32_t x38 = x21;
-printf("%s\n",string("filter5").c_str());
+printf("%s\n","filter5");
 bool x40 = x38 == 1;
 if (x40) {
 x34 = true;
@@ -77,7 +77,7 @@ void x54 () {
 bool x55 = x20;
 if (x55) {
 int32_t x56 = x21;
-printf("%s\n",string("filter3").c_str());
+printf("%s\n","filter3");
 bool x58 = x56 == 1;
 if (x58) {
 x52 = true;
@@ -94,7 +94,7 @@ bool x73 = x34;
 if (x73) {
 x70 = true;
 int32_t x75 = x35;
-printf("%s\n",string("map6").c_str());
+printf("%s\n","map6");
 int32_t x77 = x75 * 2;
 x71 = x77;
 } else {
@@ -106,7 +106,7 @@ bool x87 = x52;
 if (x87) {
 x84 = true;
 int32_t x89 = x53;
-printf("%s\n",string("constant4").c_str());
+printf("%s\n","constant4");
 x85 = 2;
 } else {
 x84 = false;
@@ -120,7 +120,7 @@ if (x102) {
 x97 = true;
 int32_t x104 = x85;
 int32_t x105 = x71;
-printf("%s\n",string("merge7").c_str());
+printf("%s\n","merge7");
 int32_t x107 = x104 + x105;
 x98 = x107;
 } else {
@@ -144,7 +144,7 @@ bool x127 = x97;
 if (x127) {
 x124 = true;
 int32_t x129 = x98;
-printf("%s\n",string("map8").c_str());
+printf("%s\n","map8");
 int32_t x131 = x129 + 3;
 x125 = x131;
 } else {
@@ -159,7 +159,7 @@ if (x143) {
 x138 = true;
 int32_t x145 = x125;
 int32_t x146 = x7;
-printf("%s\n",string("merge10").c_str());
+printf("%s\n","merge10");
 int32_t x148 = x145 + x146;
 x139 = x148;
 } else {
@@ -183,7 +183,7 @@ bool x168 = x138;
 if (x168) {
 x165 = true;
 int32_t x170 = x139;
-printf("%s\n",string("map12").c_str());
+printf("%s\n","map12");
 int32_t x172 = x170 * 2;
 x166 = x172;
 } else {
@@ -195,7 +195,7 @@ bool x182 = x138;
 if (x182) {
 x179 = true;
 int32_t x184 = x139;
-printf("%s\n",string("map11").c_str());
+printf("%s\n","map11");
 int32_t x186 = x184 * 2;
 x180 = x186;
 } else {

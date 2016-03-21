@@ -24,7 +24,7 @@ bool x9 = x0;
 if (x9) {
 x6 = true;
 int32_t x11 = x1;
-printf("%s\n",string("map2").c_str());
+printf("%s\n","map2");
 int32_t x13 = x11 * 2;
 x7 = x13;
 } else {
@@ -36,7 +36,7 @@ bool x23 = x0;
 if (x23) {
 x20 = true;
 int32_t x25 = x1;
-printf("%s\n",string("map3").c_str());
+printf("%s\n","map3");
 int32_t x27 = x25 * 2;
 x21 = x27;
 } else {
@@ -51,7 +51,7 @@ if (x39) {
 x34 = true;
 int32_t x41 = x7;
 int32_t x42 = x21;
-printf("%s\n",string("merge4").c_str());
+printf("%s\n","merge4");
 int32_t x44 = x41 + x42;
 x35 = x44;
 } else {
@@ -78,7 +78,7 @@ if (x66) {
 x61 = true;
 int32_t x68 = x35;
 int32_t x69 = x21;
-printf("%s\n",string("merge5").c_str());
+printf("%s\n","merge5");
 int32_t x71 = x68 + x69;
 x62 = x71;
 } else {

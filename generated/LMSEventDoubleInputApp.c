@@ -22,7 +22,7 @@ bool x15 = x0;
 if (x15) {
 x12 = true;
 int32_t x17 = x1;
-printf("%s\n",string("m1").c_str());
+printf("%s\n","m1");
 int32_t x19 = x17 * 2;
 x13 = x19;
 } else {
@@ -42,7 +42,7 @@ bool x29 = x6;
 if (x29) {
 x26 = true;
 int32_t x31 = x7;
-printf("%s\n",string("m2").c_str());
+printf("%s\n","m2");
 int32_t x33 = x31 * 2;
 x27 = x33;
 } else {

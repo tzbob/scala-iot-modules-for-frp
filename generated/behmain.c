@@ -4,8 +4,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-using namespace std;
-
 /*#include "LMSBehaviorStartsWith1App.c"
 int main() {
 	printf("behavior: %d\n",x18);
