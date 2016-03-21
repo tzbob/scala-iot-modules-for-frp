@@ -307,6 +307,8 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExt  {
       getEventFunction(this)
     }
 
+    override def getInitializer(): Rep[Unit] = unitToRepUnit( () )
+
     override def buildGraphTopDown(): Unit = {
       buildGraphTopDownEvent(this)
     }

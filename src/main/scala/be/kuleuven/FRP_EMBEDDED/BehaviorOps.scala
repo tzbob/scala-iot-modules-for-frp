@@ -38,6 +38,14 @@ trait BehaviorOps extends NodeOps {
 trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
   eventImpl: EventOpsImpl =>
 
+  def getBehaviorNodes: Map[NodeID,NodeImpl[_]] = {
+    getNodeMap.filter(
+      x => x match {
+        case (id, _) => getBehaviorIDs().contains(id)
+      }
+    )
+  }
+
   def getBehaviorValue[T:Typ](b: Behavior[T]): Var[T] = {
     b match {
       case bn @ StartsWithBehavior(_,_) => bn.value
@@ -52,6 +60,15 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
       case bn @ StartsWithBehavior(_,_) => bn.behaviorfun
       case bn @ FoldpBehavior(_,_,_) => bn.behaviorfun
       case bn @ Map2Behavior(_,_) => bn.behaviorfun
+      case _ => throw new IllegalStateException("Unsupported Behavior type")
+    }
+  }
+
+  def getBehaviorInitializer[B](b: Behavior[B]): Rep[Unit] = {
+    b match {
+      case bn @ StartsWithBehavior(_,_) => bn.valueInit
+      case bn @ FoldpBehavior(_,_,_) => bn.valueInit
+      case bn @ Map2Behavior(_,_) => bn.valueInit
       case _ => throw new IllegalStateException("Unsupported Behavior type")
     }
   }
@@ -75,11 +92,12 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
 
   override def constantB[A:Typ](c: Rep[A]): Behavior[A] = new ConstantBehavior[A](c)
 
-  case class ConstantBehavior[A](c: Rep[A])(implicit val tA: Typ[A]) extends BehaviorNode[A] {
+  case class ConstantBehavior[A](init: Rep[A])(implicit val tA: Typ[A]) extends BehaviorNode[A] {
     override val typOut = tA
     val level = 0
     override val inputNodeIDs: Set[NodeID] = HashSet(this.id)
-    lazy val value = var_new[A](c)
+    lazy val value = var_new[A](init)
+    lazy val valueInit = var_assign[A](value, init)
     override def valueNow(): Rep[A] = readVar(value)
     override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
       () => {
@@ -88,6 +106,8 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
         unitToRepUnit( () )
       }
     }
+
+    System.err.println("Create ConstantBehavior(ID:" + id + "): " + inputNodeIDs)
   }
 
   case class Map2Behavior[A:Typ,B:Typ,C](parents: (Behavior[A],Behavior[B]), f: (Rep[A],Rep[B])=>Rep[C])(implicit val tC: Typ[C]) extends BehaviorNode[C]{
@@ -101,6 +121,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
     lazy val parentleftvalue = getBehaviorValue(parentLeft)
     lazy val parentrightvalue = getBehaviorValue(parentRight)
     lazy val value = var_new[C](f(parentleftvalue, parentrightvalue))
+    lazy val valueInit = var_assign[C](value, f(parentleftvalue, parentrightvalue))
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
       fun { () =>
         var_assign[C](value, f(parentleftvalue, parentrightvalue))
@@ -119,6 +140,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
 
     override def valueNow(): Rep[C] = readVar(value)
 
+    System.err.println("Create Map2Behavior(ID:" + id + "): " + inputNodeIDs)
   }
 
   case class FoldpBehavior[A,B:Typ](parent: Event[B], f: (Rep[A],Rep[B])=>Rep[A], init: Rep[A])(implicit val tA: Typ[A]) extends BehaviorNode[A] {
@@ -127,6 +149,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
     lazy val value = var_new[A](init)
+    lazy val valueInit = var_assign[A](value, init)
 
     lazy val parentvalue: Rep[B] = getEventValue(parent)
     lazy val parentfired: Rep[Boolean] = getEventFired(parent)
@@ -150,7 +173,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
 
     override def valueNow(): Rep[A] = readVar(value)
 
-    System.err.println("Create StartsWithBehavior(ID:" + id + "): " + inputNodeIDs)
+    System.err.println("Create FoldpBehavior(ID:" + id + "): " + inputNodeIDs)
   }
 
   case class StartsWithBehavior[A](parent: Event[A], init: Rep[A])(implicit val tA: Typ[A]) extends BehaviorNode[A] {
@@ -159,6 +182,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
     lazy val value = var_new[A](init)
+    lazy val valueInit = var_assign[A](value, init)
 
     lazy val parentvalue: Rep[A] = getEventValue(parent)
     lazy val parentfired: Rep[Boolean] = getEventFired(parent)
@@ -187,12 +211,16 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
 
   abstract class BehaviorNode[A] extends BehaviorImpl[A] with NodeImpl[A] {
     addNodeToNodemap(id,this)
+    addBehaviorID(id)
 
     override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()
     override def addChild(id: NodeID): Unit = {
       childNodeIDs.add(id)
     }
 
+    override def getInitializer(): Rep[Unit] = {
+      getBehaviorInitializer(this)
+    }
 
     override def getFunction(): Rep[(Unit)=>Unit] = {
       getBehaviorFunction(this)

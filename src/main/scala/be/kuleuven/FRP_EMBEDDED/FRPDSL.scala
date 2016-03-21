@@ -66,7 +66,28 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
       System.err.println("Generate dependencies of inputnode " + i)
       program = generateTopFunction(j, program)
     }
+
+    //TODO: change var_new to vardecl_new
+    //program = generateBehaviorInit(program)
+
     program
+  }
+
+  // SM_DATA can only contain declarations, so we need an initializer for all behaviors
+  def generateBehaviorInit(f: () => Rep[Unit]): () => Rep[Unit] = {
+    System.err.println()
+    System.err.println("Generating beh init fun for behaviors:")
+    getBehaviorNodes.foreach(x => x match { case (id,_) => System.err.println(id) })
+
+    () => {
+      f()
+      val inits = fun { () =>
+        getBehaviorNodes.values.foreach(_.getInitializer())
+      }
+
+      doApplyDecl(inits)
+      unitToRepUnit( () )
+    }
   }
 
   def generateTopFunction[X](n: NodeImpl[X], f: () => Rep[Unit]): () => Rep[Unit] = {
