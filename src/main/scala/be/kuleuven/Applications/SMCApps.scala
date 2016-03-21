@@ -7,7 +7,6 @@ object SMCAppsRunner {
 
   def main(args: Array[String]): Unit = {
 
-
     withOutFile("SMCInputApp.c") {
       new CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
@@ -16,7 +15,7 @@ object SMCAppsRunner {
           () => {
             val xx = var_new[Int](5)
 
-            val infun = inputfun { (x:Rep[Int]) =>
+            val infun = inputfunInner ("module1") { (x:Rep[Int]) =>
               val yy = var_new[Int](10)
               println(x+1)
               println(xx)
@@ -34,5 +33,33 @@ object SMCAppsRunner {
         System.err.println("\n\n")
       }
     }
+
+    withOutFile("SMCTupledInputApp.c") {
+      new CFRPDSLApplicationRunner {
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+
+        val program: () => Rep[Unit] =
+          () => {
+            val xx = var_new[Int](5)
+
+            val infun = inputfun ("module2") { (x:Rep[Int],y:Rep[Int]) =>
+              val yy = var_new[Int](10)
+              println(x+1)
+              println(xx)
+              println(yy)
+              unitToRepUnit( () )
+            }
+            doApplyDecl(infun)
+
+            unitToRepUnit( () )
+          }
+
+        System.err.println("\n")
+        emitProgram(program)
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
+      }
+    }
+
   }
 }
