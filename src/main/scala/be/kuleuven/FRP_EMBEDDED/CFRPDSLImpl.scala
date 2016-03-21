@@ -31,12 +31,12 @@ trait CFRPDSLImpl extends FRPDSLImpl
     outputNodes.foreach(System.err.println )
   }
 
-  def emitProgram(): Unit = {
+  def buildProgram(): () => Rep[Unit] = {
+    generator
+  }
+
+  def emitProgram(program: ()=>Rep[Unit]): Unit = {
     val stream = new PrintWriter(System.out)
-
-    //get all end nodes
-    val program = generator
-
     codegen.emitProgram(program, stream)
   }
 

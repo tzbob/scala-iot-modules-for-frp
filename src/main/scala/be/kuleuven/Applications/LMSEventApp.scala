@@ -287,7 +287,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -302,7 +304,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -317,7 +321,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -332,7 +338,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -347,7 +355,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -362,7 +372,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -377,7 +389,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -392,7 +406,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -407,7 +423,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -422,7 +440,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -437,7 +457,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -452,7 +474,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("\n\n")
       }
@@ -467,7 +491,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }
     }
@@ -481,7 +507,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }
     }
@@ -495,7 +523,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }
     }
@@ -509,7 +539,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }
     }
@@ -523,7 +555,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }
     }
@@ -537,7 +571,9 @@ object LMSEventAppRunner {
         System.err.println("\n")
         buildFRPGraph()
         System.err.println("\n")
-        emitProgram()
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
       }
     }
