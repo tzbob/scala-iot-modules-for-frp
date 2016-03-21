@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <string>
+#include <string.h>
 
-using namespace std;
+//using namespace std;
 
 #include "LMSPointerApp.c"
 // => printf("res: %d\n",x??);

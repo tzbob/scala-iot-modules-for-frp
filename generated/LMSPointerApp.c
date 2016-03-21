@@ -20,11 +20,11 @@ void x12 () {
 int32_t x13 = 5;
 int32_t x14 = x13;
 int32_t* x15 = &x14;
-printf("%s",string("Before call: ").c_str());
+printf("%s","Before call: ");
 int32_t x17 = *x15;
 printf("%d\n",x17);
 x0(x15);
-printf("%s",string("After call: ").c_str());
+printf("%s","After call: ");
 int32_t x21 = *x15;
 printf("%d\n",x21);
 };
