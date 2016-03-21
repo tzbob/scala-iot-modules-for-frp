@@ -6,15 +6,18 @@
 #include <string.h>
 #include <stdbool.h>
 int32_t x0 = 5;
-SM_INPUT(module2,x13,x1,x2) {
-int32_t x5 = 10;
-int32_t x3 = x1;
-int32_t x6 = x3 + 1;
-printf("%d\n",x6);
-int32_t x8 = x0;
-printf("%d\n",x8);
-int32_t x10 = x5;
-printf("%d\n",x10);
+SM_DATA(module2) int32_t x1;
+SM_INPUT(module2,x16,x2,x3) {
+int32_t x6 = 10;
+int32_t x4 = x2;
+int32_t x7 = x4 + 1;
+printf("%d\n",x7);
+int32_t x9 = x0;
+printf("%d\n",x9);
+int32_t x11 = x6;
+printf("%d\n",x11);
+int32_t x13 = x1;
+printf("%d\n",x13);
 };
 /*****************************************
   End of C Generated Code                  

@@ -7,7 +7,7 @@ trait FunctionsExt extends Functions {
 
   //TODO: rename to mainFun for example
   def doApplyDecl[A:Typ,B:Typ](fun: Rep[A => B])(implicit pos: SourceContext): Rep[B]
-
+  
   def doLambdaInput[A:Typ,B:Typ](name: String)(fun: Rep[A] => Rep[B])(implicit pos: SourceContext): Rep[A => B]
   def inputfunInner[A:Typ,B:Typ](name: String)(f: Rep[A] => Rep[B]): Rep[A=>B] = doLambdaInput(name)(f)
 }

@@ -53,3 +53,17 @@ trait CCodeGenPkgExt extends CGenImplicitOps with CGenNumericOps with CGenFracti
   { val IR: ScalaOpsPkgExpExt  }
 
 trait CCodeGenPkgExtended extends CCodeGenPkgExt with GenericCodeGenExt { val IR: ScalaOpsPkgExpExt }
+
+/////
+// SMC - secure modules C
+trait SMCCodeGenPkgExt extends CGenImplicitOps with CGenNumericOps with CGenFractionalOps with CGenOrderingOps
+  with CGenStringOps with CGenRangeOps with CGenIOOps with CGenArrayOpsExt with CGenBooleanOps
+  with CGenPrimitiveOps with CGenMiscOpsExt with CGenFunctionsExt with CGenTupledFunctionsExt with CGenEqual
+  with CGenIfThenElse
+  with SMCGenVariablesExt with CGenPointers with CGenWhile with CGenTupleOps with CGenListOps
+  with CGenSeqOps with CGenDSLOps with CGenMathOps with CGenCastingOps with CGenSetOps
+  with CGenObjectOps with CGenArrayBufferOps with CGenStruct
+  with CGenUncheckedOps
+{ val IR: ScalaOpsPkgExpExt  }
+
+trait SMCCodeGenPkgExtended extends SMCCodeGenPkgExt with GenericCodeGenExt { val IR: ScalaOpsPkgExpExt }
