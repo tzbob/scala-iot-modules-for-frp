@@ -1,6 +1,6 @@
 package be.kuleuven.Applications
 
-import be.kuleuven.FRP_EMBEDDED.{CFRPDSLApplicationRunner, OutputGenerator, FRPDSLApplication}
+import be.kuleuven.FRP_EMBEDDED.{SMCFRPDSLApplicationrunner, OutputGenerator, FRPDSLApplication}
 
 trait LMSBehaviorStartsWith1App extends FRPDSLApplication {
 
@@ -66,7 +66,7 @@ object LMSBehaviorAppRunner {
   def main(args: Array[String]): Unit = {
 
     withOutFile("LMSBehaviorStartsWith1App.c") {
-      new LMSBehaviorStartsWith1App with CFRPDSLApplicationRunner {
+      new LMSBehaviorStartsWith1App with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("BehaviorStartsWith1App:")
         System.err.println("Creating flow graph...")
@@ -83,7 +83,7 @@ object LMSBehaviorAppRunner {
     }
 
     withOutFile("LMSBehaviorFoldp1App.c") {
-      new LMSBehaviorFoldp1App with CFRPDSLApplicationRunner {
+      new LMSBehaviorFoldp1App with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("BehaviorFoldp1App:")
         System.err.println("Creating flow graph...")
@@ -100,7 +100,7 @@ object LMSBehaviorAppRunner {
     }
 
     withOutFile("LMSBehaviorMap2App.c") {
-      new LMSBehaviorMap2App with CFRPDSLApplicationRunner {
+      new LMSBehaviorMap2App with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("BehaviorMap2App:")
         System.err.println("Creating flow graph...")
@@ -117,7 +117,7 @@ object LMSBehaviorAppRunner {
     }
 
     withOutFile("LMSBehaviorChangesApp.c") {
-      new LMSBehaviorChangesApp with CFRPDSLApplicationRunner {
+      new LMSBehaviorChangesApp with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("BehaviorChangesApp:")
         System.err.println("Creating flow graph...")
@@ -134,7 +134,7 @@ object LMSBehaviorAppRunner {
     }
 
     withOutFile("LMSBehaviorSnapshotApp.c") {
-      new LMSBehaviorSnapshotApp with CFRPDSLApplicationRunner {
+      new LMSBehaviorSnapshotApp with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("BehaviorSnapshotApp:")
         System.err.println("Creating flow graph...")

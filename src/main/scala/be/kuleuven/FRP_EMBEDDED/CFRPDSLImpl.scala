@@ -10,7 +10,7 @@ import scala.lms.common._
  * Implementation of the FRP DSL to generate C code
  */
 trait CFRPDSLImpl extends FRPDSLImpl
-    with ScalaOpsPkgExpExt with TupledFunctionsRecursiveExpExt with UncheckedOpsExp { self =>
+    with ScalaOpsPkgExpExt { self =>
 
   val codegen = new SMCCodeGenPkgExtended { val IR: self.type = self }
 

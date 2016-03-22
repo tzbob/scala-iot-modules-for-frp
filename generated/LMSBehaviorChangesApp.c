@@ -5,69 +5,73 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-bool x0;
-int32_t x1;
-int32_t x29 = 1;
-bool x39;
-int32_t x40;
-int32_t x46 = 10;
-void x2 (uint8_t* x3,int32_t x4) {
+SM_DATA(module1) bool x0;
+SM_DATA(module1) int32_t x1;
+SM_DATA(module1) int32_t x29;
+SM_DATA(module1) bool x39;
+SM_DATA(module1) int32_t x40;
+SM_DATA(module1) int32_t x46;
+SM_FUNC(module1) void x28 (uint8_t* x2,int32_t x3) {
+int32_t x6 = 0;
 int32_t x7 = 0;
-int32_t x8 = 0;
-int32_t x6 = x4;
-uint8_t* x5 = x3;
+int32_t x5 = x3;
+uint8_t* x4 = x2;
 for (;;) {
-int32_t x9 = x8;
-bool x10 = x9 < x6;
-if (!x10) break;
-int32_t x12 = x8;
-uint8_t x13 = x5[x12];
-int32_t x17 = x7;
-int32_t x14 = (int32_t ) x13;
-int32_t x15 = x12 * 8;
-int32_t x16 = x14 << x15;
-int32_t x18 = x17 + x16;
-x7 = x18;
-int32_t x20 = x12 + 1;
-x8 = x20;
+int32_t x8 = x7;
+bool x9 = x8 < x5;
+if (!x9) break;
+int32_t x11 = x7;
+uint8_t x12 = x4[x11];
+int32_t x16 = x6;
+int32_t x13 = (int32_t ) x12;
+int32_t x14 = x11 * 8;
+int32_t x15 = x13 << x14;
+int32_t x17 = x16 + x15;
+x6 = x17;
+int32_t x19 = x11 + 1;
+x7 = x19;
 }
 x0 = true;
-int32_t x25 = x7;
-int32_t x26 = (int32_t ) x25;
-x1 = x26;
+int32_t x24 = x6;
+int32_t x25 = (int32_t ) x24;
+x1 = x25;
 };
-void x30 () {
-bool x31 = x0;
-if (x31) {
-int32_t x32 = x29;
-int32_t x33 = x1;
-int32_t x34 = x32 + x33;
-x29 = x34;
+void x38 () {
+bool x30 = x0;
+if (x30) {
+int32_t x31 = x29;
+int32_t x32 = x1;
+int32_t x33 = x31 + x32;
+x29 = x33;
 } else {
 }
 };
-void x41 () {
+SM_FUNC(module1) void x45 () {
 x39 = true;
-int32_t x43 = x29;
-x40 = x43;
+int32_t x42 = x29;
+x40 = x42;
 };
-void x47 () {
-bool x48 = x39;
-if (x48) {
-int32_t x49 = x46;
-int32_t x50 = x40;
-int32_t x51 = x49 + x50;
-x46 = x51;
+void x55 () {
+bool x47 = x39;
+if (x47) {
+int32_t x48 = x46;
+int32_t x49 = x40;
+int32_t x50 = x48 + x49;
+x46 = x50;
 } else {
 }
 };
 SM_INPUT(module1,x66,x56,x57) {
 uint8_t* x58 = x56;
 int32_t x59 = x57;
-x2(x58,x59);
-x30();
-x41();
-x47();
+x28(x58,x59);
+x38();
+x45();
+x55();
+};
+SM_FUNC(module1) void x71 () {
+x29 = 1;
+x46 = 10;
 };
 /*****************************************
   End of C Generated Code                  

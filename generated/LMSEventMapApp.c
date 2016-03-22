@@ -5,43 +5,66 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-bool x0;
-int32_t x1;
-bool x6;
-int32_t x7;
-bool x19;
-bool x20;
-void x2 () {
+SM_DATA(module1) bool x0;
+SM_DATA(module1) int32_t x1;
+SM_DATA(module1) bool x29;
+SM_DATA(module1) int32_t x30;
+SM_DATA(module1) bool x42;
+SM_DATA(module1) bool x43;
+SM_FUNC(module1) void x28 (uint8_t* x2,int32_t x3) {
+int32_t x6 = 0;
+int32_t x7 = 0;
+int32_t x5 = x3;
+uint8_t* x4 = x2;
+for (;;) {
+int32_t x8 = x7;
+bool x9 = x8 < x5;
+if (!x9) break;
+int32_t x11 = x7;
+uint8_t x12 = x4[x11];
+int32_t x16 = x6;
+int32_t x13 = (int32_t ) x12;
+int32_t x14 = x11 * 8;
+int32_t x15 = x13 << x14;
+int32_t x17 = x16 + x15;
+x6 = x17;
+int32_t x19 = x11 + 1;
+x7 = x19;
+}
 x0 = true;
-x1 = 5;
+int32_t x24 = x6;
+int32_t x25 = (int32_t ) x24;
+x1 = x25;
 };
-void x8 () {
-bool x9 = x0;
-if (x9) {
-x6 = true;
-int32_t x11 = x1;
-int32_t x12 = 2 * x11;
-x7 = x12;
+SM_FUNC(module1) void x41 () {
+bool x31 = x0;
+if (x31) {
+x29 = true;
+int32_t x33 = x1;
+int32_t x34 = 2 * x33;
+x30 = x34;
 } else {
-x6 = false;
+x29 = false;
 }
 };
-void x21 () {
-bool x22 = x6;
-if (x22) {
-x19 = true;
-int32_t x24 = x7;
-int32_t x25 = x24 % 2;
-bool x26 = x25 == 0;
-x20 = x26;
+SM_FUNC(module1) void x55 () {
+bool x44 = x29;
+if (x44) {
+x42 = true;
+int32_t x46 = x30;
+int32_t x47 = x46 % 2;
+bool x48 = x47 == 0;
+x43 = x48;
 } else {
-x19 = false;
+x42 = false;
 }
 };
-void x33 () {
-x2();
-x8();
-x21();
+SM_INPUT(module1,x65,x56,x57) {
+uint8_t* x58 = x56;
+int32_t x59 = x57;
+x28(x58,x59);
+x41();
+x55();
 };
 /*****************************************
   End of C Generated Code                  

@@ -1,6 +1,6 @@
 package be.kuleuven.Applications
 
-import be.kuleuven.FRP_EMBEDDED.{CFRPDSLApplicationRunner, OutputGenerator, FRPDSLApplication}
+import be.kuleuven.FRP_EMBEDDED.{SMCFRPDSLApplicationrunner, CFRPDSLApplicationRunner, OutputGenerator, FRPDSLApplication}
 
 trait LMSEventMapApp extends FRPDSLApplication {
 
@@ -279,7 +279,7 @@ object LMSEventAppRunner {
   def main(args: Array[String]): Unit = {
 
     withOutFile("LMSEventMapApp.c") {
-      new LMSEventMapApp with CFRPDSLApplicationRunner {
+      new LMSEventMapApp with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MapApp:")
         System.err.println("Creating flow graph...")
@@ -296,7 +296,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventFilterApp.c") {
-      new LMSEventFilterApp with CFRPDSLApplicationRunner {
+      new LMSEventFilterApp with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("FilterApp:")
         System.err.println("Creating flow graph...")
@@ -313,7 +313,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventConstantApp.c") {
-      new LMSEventConstantApp with CFRPDSLApplicationRunner {
+      new LMSEventConstantApp with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("ConstantApp:")
         System.err.println("Creating flow graph...")
@@ -330,7 +330,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge1App.c") {
-      new LMSEventMerge1App with CFRPDSLApplicationRunner {
+      new LMSEventMerge1App with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp1:")
         System.err.println("Creating flow graph...")
@@ -347,7 +347,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge2App.c") {
-      new LMSEventMerge2App with CFRPDSLApplicationRunner {
+      new LMSEventMerge2App with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp2:")
         System.err.println("Creating flow graph...")
@@ -364,7 +364,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge2bApp.c") {
-      new LMSEventMerge2bApp with CFRPDSLApplicationRunner {
+      new LMSEventMerge2bApp with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp2b:")
         System.err.println("Creating flow graph...")
@@ -381,7 +381,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge3App.c") {
-      new LMSEventMerge3App with CFRPDSLApplicationRunner {
+      new LMSEventMerge3App with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp3:")
         System.err.println("Creating flow graph...")
@@ -398,7 +398,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge3bApp.c") {
-      new LMSEventMerge3bApp with CFRPDSLApplicationRunner {
+      new LMSEventMerge3bApp with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp3b:")
         System.err.println("Creating flow graph...")
@@ -415,7 +415,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge4App.c") {
-      new LMSEventMerge4App with CFRPDSLApplicationRunner {
+      new LMSEventMerge4App with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp4:")
         System.err.println("Creating flow graph...")
@@ -432,7 +432,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge5App.c") {
-      new LMSEventMerge5App with CFRPDSLApplicationRunner {
+      new LMSEventMerge5App with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp5:")
         System.err.println("Creating flow graph...")
@@ -449,7 +449,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge6aApp.c") {
-      new LMSEventMerge6aApp with CFRPDSLApplicationRunner {
+      new LMSEventMerge6aApp with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp6a:")
         System.err.println("Creating flow graph...")
@@ -466,7 +466,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge6bApp.c") {
-      new LMSEventMerge6bApp with CFRPDSLApplicationRunner {
+      new LMSEventMerge6bApp with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp6b:")
         System.err.println("Creating flow graph...")
@@ -483,7 +483,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge7App.c") {
-      new LMSEventMerge7App with CFRPDSLApplicationRunner {
+      new LMSEventMerge7App with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp7:")
         System.err.println("Creating flow graph...")
@@ -499,7 +499,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge8App.c") {
-      new LMSEventMerge8App with CFRPDSLApplicationRunner {
+      new LMSEventMerge8App with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp8:")
         System.err.println("Creating flow graph...")
@@ -515,7 +515,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge9aApp.c") {
-      new LMSEventMerge9aApp with CFRPDSLApplicationRunner {
+      new LMSEventMerge9aApp with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp9a:")
         System.err.println("Creating flow graph...")
@@ -531,7 +531,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge9bApp.c") {
-      new LMSEventMerge9bApp with CFRPDSLApplicationRunner {
+      new LMSEventMerge9bApp with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp9b:")
         System.err.println("Creating flow graph...")
@@ -547,7 +547,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge10App.c") {
-      new LMSEventMerge10App with CFRPDSLApplicationRunner {
+      new LMSEventMerge10App with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp10:")
         System.err.println("Creating flow graph...")
@@ -563,7 +563,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventDoubleInputApp.c") {
-      new LMSEventDoubleInputApp with CFRPDSLApplicationRunner {
+      new LMSEventDoubleInputApp with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("DoubleInputApp:")
         System.err.println("Creating flow graph...")

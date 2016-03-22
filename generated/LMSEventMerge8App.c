@@ -5,216 +5,239 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-bool x0;
-int32_t x1;
-bool x6;
-int32_t x7;
-bool x20;
-int32_t x21;
-bool x34;
-int32_t x35;
-bool x52;
-int32_t x53;
-bool x70;
-int32_t x71;
-bool x84;
-int32_t x85;
-bool x97;
-int32_t x98;
-bool x124;
-int32_t x125;
-bool x138;
-int32_t x139;
-bool x165;
-int32_t x166;
-bool x179;
-int32_t x180;
-void x2 () {
+SM_DATA(module1) bool x0;
+SM_DATA(module1) int32_t x1;
+SM_DATA(module1) bool x29;
+SM_DATA(module1) int32_t x30;
+SM_DATA(module1) bool x43;
+SM_DATA(module1) int32_t x44;
+SM_DATA(module1) bool x57;
+SM_DATA(module1) int32_t x58;
+SM_DATA(module1) bool x75;
+SM_DATA(module1) int32_t x76;
+SM_DATA(module1) bool x93;
+SM_DATA(module1) int32_t x94;
+SM_DATA(module1) bool x107;
+SM_DATA(module1) int32_t x108;
+SM_DATA(module1) bool x120;
+SM_DATA(module1) int32_t x121;
+SM_DATA(module1) bool x147;
+SM_DATA(module1) int32_t x148;
+SM_DATA(module1) bool x161;
+SM_DATA(module1) int32_t x162;
+SM_DATA(module1) bool x188;
+SM_DATA(module1) int32_t x189;
+SM_DATA(module1) bool x202;
+SM_DATA(module1) int32_t x203;
+SM_FUNC(module1) void x28 (uint8_t* x2,int32_t x3) {
+int32_t x6 = 0;
+int32_t x7 = 0;
+int32_t x5 = x3;
+uint8_t* x4 = x2;
+for (;;) {
+int32_t x8 = x7;
+bool x9 = x8 < x5;
+if (!x9) break;
+int32_t x11 = x7;
+uint8_t x12 = x4[x11];
+int32_t x16 = x6;
+int32_t x13 = (int32_t ) x12;
+int32_t x14 = x11 * 8;
+int32_t x15 = x13 << x14;
+int32_t x17 = x16 + x15;
+x6 = x17;
+int32_t x19 = x11 + 1;
+x7 = x19;
+}
 x0 = true;
-x1 = 0;
+int32_t x24 = x6;
+int32_t x25 = (int32_t ) x24;
+x1 = x25;
 };
-void x8 () {
-bool x9 = x0;
-if (x9) {
-x6 = true;
-int32_t x11 = x1;
+SM_FUNC(module1) void x42 () {
+bool x31 = x0;
+if (x31) {
+x29 = true;
+int32_t x33 = x1;
 printf("%s\n","map9");
-int32_t x13 = x11 + 10;
-x7 = x13;
+int32_t x35 = x33 + 10;
+x30 = x35;
 } else {
-x6 = false;
+x29 = false;
 }
 };
-void x22 () {
-bool x23 = x0;
-if (x23) {
-x20 = true;
-int32_t x25 = x1;
+SM_FUNC(module1) void x56 () {
+bool x45 = x0;
+if (x45) {
+x43 = true;
+int32_t x47 = x1;
 printf("%s\n","map2");
-int32_t x27 = x25 + 1;
-x21 = x27;
+int32_t x49 = x47 + 1;
+x44 = x49;
 } else {
-x20 = false;
+x43 = false;
 }
 };
-void x36 () {
-bool x37 = x20;
-if (x37) {
-int32_t x38 = x21;
+SM_FUNC(module1) void x74 () {
+bool x59 = x43;
+if (x59) {
+int32_t x60 = x44;
 printf("%s\n","filter5");
-bool x40 = x38 == 1;
-if (x40) {
-x34 = true;
-x35 = x38;
+bool x62 = x60 == 1;
+if (x62) {
+x57 = true;
+x58 = x60;
 } else {
-x34 = false;
+x57 = false;
 }
 } else {
-x34 = false;
+x57 = false;
 }
 };
-void x54 () {
-bool x55 = x20;
-if (x55) {
-int32_t x56 = x21;
+SM_FUNC(module1) void x92 () {
+bool x77 = x43;
+if (x77) {
+int32_t x78 = x44;
 printf("%s\n","filter3");
-bool x58 = x56 == 1;
-if (x58) {
-x52 = true;
-x53 = x56;
+bool x80 = x78 == 1;
+if (x80) {
+x75 = true;
+x76 = x78;
 } else {
-x52 = false;
+x75 = false;
 }
 } else {
-x52 = false;
+x75 = false;
 }
 };
-void x72 () {
-bool x73 = x34;
-if (x73) {
-x70 = true;
-int32_t x75 = x35;
+SM_FUNC(module1) void x106 () {
+bool x95 = x57;
+if (x95) {
+x93 = true;
+int32_t x97 = x58;
 printf("%s\n","map6");
-int32_t x77 = x75 * 2;
-x71 = x77;
+int32_t x99 = x97 * 2;
+x94 = x99;
 } else {
-x70 = false;
+x93 = false;
 }
 };
-void x86 () {
-bool x87 = x52;
-if (x87) {
-x84 = true;
-int32_t x89 = x53;
+SM_FUNC(module1) void x119 () {
+bool x109 = x75;
+if (x109) {
+x107 = true;
+int32_t x111 = x76;
 printf("%s\n","constant4");
-x85 = 2;
+x108 = 2;
 } else {
-x84 = false;
+x107 = false;
 }
 };
-void x99 () {
-bool x100 = x84;
-bool x101 = x70;
-bool x102 = x100 && x101;
-if (x102) {
-x97 = true;
-int32_t x104 = x85;
-int32_t x105 = x71;
+SM_FUNC(module1) void x146 () {
+bool x122 = x107;
+bool x123 = x93;
+bool x124 = x122 && x123;
+if (x124) {
+x120 = true;
+int32_t x126 = x108;
+int32_t x127 = x94;
 printf("%s\n","merge7");
-int32_t x107 = x104 + x105;
-x98 = x107;
+int32_t x129 = x126 + x127;
+x121 = x129;
 } else {
-if (x100) {
-x97 = true;
-int32_t x104 = x85;
-x98 = x104;
+if (x122) {
+x120 = true;
+int32_t x126 = x108;
+x121 = x126;
 } else {
-if (x101) {
-x97 = true;
-int32_t x105 = x71;
-x98 = x105;
+if (x123) {
+x120 = true;
+int32_t x127 = x94;
+x121 = x127;
 } else {
-x97 = false;
+x120 = false;
 }
 }
 }
 };
-void x126 () {
-bool x127 = x97;
-if (x127) {
-x124 = true;
-int32_t x129 = x98;
+SM_FUNC(module1) void x160 () {
+bool x149 = x120;
+if (x149) {
+x147 = true;
+int32_t x151 = x121;
 printf("%s\n","map8");
-int32_t x131 = x129 + 3;
-x125 = x131;
+int32_t x153 = x151 + 3;
+x148 = x153;
 } else {
-x124 = false;
+x147 = false;
 }
 };
-void x140 () {
-bool x141 = x124;
-bool x142 = x6;
-bool x143 = x141 && x142;
-if (x143) {
-x138 = true;
-int32_t x145 = x125;
-int32_t x146 = x7;
+SM_FUNC(module1) void x187 () {
+bool x163 = x147;
+bool x164 = x29;
+bool x165 = x163 && x164;
+if (x165) {
+x161 = true;
+int32_t x167 = x148;
+int32_t x168 = x30;
 printf("%s\n","merge10");
-int32_t x148 = x145 + x146;
-x139 = x148;
+int32_t x170 = x167 + x168;
+x162 = x170;
 } else {
-if (x141) {
-x138 = true;
-int32_t x145 = x125;
-x139 = x145;
+if (x163) {
+x161 = true;
+int32_t x167 = x148;
+x162 = x167;
 } else {
-if (x142) {
-x138 = true;
-int32_t x146 = x7;
-x139 = x146;
+if (x164) {
+x161 = true;
+int32_t x168 = x30;
+x162 = x168;
 } else {
-x138 = false;
+x161 = false;
 }
 }
 }
 };
-void x167 () {
-bool x168 = x138;
-if (x168) {
-x165 = true;
-int32_t x170 = x139;
+SM_FUNC(module1) void x201 () {
+bool x190 = x161;
+if (x190) {
+x188 = true;
+int32_t x192 = x162;
 printf("%s\n","map12");
-int32_t x172 = x170 * 2;
-x166 = x172;
+int32_t x194 = x192 * 2;
+x189 = x194;
 } else {
-x165 = false;
+x188 = false;
 }
 };
-void x181 () {
-bool x182 = x138;
-if (x182) {
-x179 = true;
-int32_t x184 = x139;
+SM_FUNC(module1) void x215 () {
+bool x204 = x161;
+if (x204) {
+x202 = true;
+int32_t x206 = x162;
 printf("%s\n","map11");
-int32_t x186 = x184 * 2;
-x180 = x186;
+int32_t x208 = x206 * 2;
+x203 = x208;
 } else {
-x179 = false;
+x202 = false;
 }
 };
-void x193 () {
-x2();
-x8();
-x22();
-x36();
-x54();
-x72();
-x86();
-x99();
-x126();
-x140();
-x167();
-x181();
+SM_INPUT(module1,x234,x216,x217) {
+uint8_t* x218 = x216;
+int32_t x219 = x217;
+x28(x218,x219);
+x42();
+x56();
+x74();
+x92();
+x106();
+x119();
+x146();
+x160();
+x187();
+x201();
+x215();
 };
 /*****************************************
   End of C Generated Code                  

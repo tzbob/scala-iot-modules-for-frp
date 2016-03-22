@@ -5,104 +5,127 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-bool x0;
-int32_t x1;
-bool x6;
-int32_t x7;
-bool x20;
-int32_t x21;
-bool x34;
-int32_t x35;
-bool x61;
-int32_t x62;
-void x2 () {
+SM_DATA(module1) bool x0;
+SM_DATA(module1) int32_t x1;
+SM_DATA(module1) bool x29;
+SM_DATA(module1) int32_t x30;
+SM_DATA(module1) bool x43;
+SM_DATA(module1) int32_t x44;
+SM_DATA(module1) bool x57;
+SM_DATA(module1) int32_t x58;
+SM_DATA(module1) bool x84;
+SM_DATA(module1) int32_t x85;
+SM_FUNC(module1) void x28 (uint8_t* x2,int32_t x3) {
+int32_t x6 = 0;
+int32_t x7 = 0;
+int32_t x5 = x3;
+uint8_t* x4 = x2;
+for (;;) {
+int32_t x8 = x7;
+bool x9 = x8 < x5;
+if (!x9) break;
+int32_t x11 = x7;
+uint8_t x12 = x4[x11];
+int32_t x16 = x6;
+int32_t x13 = (int32_t ) x12;
+int32_t x14 = x11 * 8;
+int32_t x15 = x13 << x14;
+int32_t x17 = x16 + x15;
+x6 = x17;
+int32_t x19 = x11 + 1;
+x7 = x19;
+}
 x0 = true;
-x1 = 2;
+int32_t x24 = x6;
+int32_t x25 = (int32_t ) x24;
+x1 = x25;
 };
-void x8 () {
-bool x9 = x0;
-if (x9) {
-x6 = true;
-int32_t x11 = x1;
+SM_FUNC(module1) void x42 () {
+bool x31 = x0;
+if (x31) {
+x29 = true;
+int32_t x33 = x1;
 printf("%s\n","map2");
-int32_t x13 = x11 * 2;
-x7 = x13;
+int32_t x35 = x33 * 2;
+x30 = x35;
 } else {
-x6 = false;
+x29 = false;
 }
 };
-void x22 () {
-bool x23 = x0;
-if (x23) {
-x20 = true;
-int32_t x25 = x1;
+SM_FUNC(module1) void x56 () {
+bool x45 = x0;
+if (x45) {
+x43 = true;
+int32_t x47 = x1;
 printf("%s\n","map3");
-int32_t x27 = x25 * 2;
-x21 = x27;
+int32_t x49 = x47 * 2;
+x44 = x49;
 } else {
-x20 = false;
+x43 = false;
 }
 };
-void x36 () {
-bool x37 = x6;
-bool x38 = x20;
-bool x39 = x37 && x38;
-if (x39) {
-x34 = true;
-int32_t x41 = x7;
-int32_t x42 = x21;
+SM_FUNC(module1) void x83 () {
+bool x59 = x29;
+bool x60 = x43;
+bool x61 = x59 && x60;
+if (x61) {
+x57 = true;
+int32_t x63 = x30;
+int32_t x64 = x44;
 printf("%s\n","merge4");
-int32_t x44 = x41 + x42;
-x35 = x44;
+int32_t x66 = x63 + x64;
+x58 = x66;
 } else {
-if (x37) {
-x34 = true;
-int32_t x41 = x7;
-x35 = x41;
+if (x59) {
+x57 = true;
+int32_t x63 = x30;
+x58 = x63;
 } else {
-if (x38) {
-x34 = true;
-int32_t x42 = x21;
-x35 = x42;
+if (x60) {
+x57 = true;
+int32_t x64 = x44;
+x58 = x64;
 } else {
-x34 = false;
+x57 = false;
 }
 }
 }
 };
-void x63 () {
-bool x64 = x34;
-bool x65 = x20;
-bool x66 = x64 && x65;
-if (x66) {
-x61 = true;
-int32_t x68 = x35;
-int32_t x69 = x21;
+SM_FUNC(module1) void x110 () {
+bool x86 = x57;
+bool x87 = x43;
+bool x88 = x86 && x87;
+if (x88) {
+x84 = true;
+int32_t x90 = x58;
+int32_t x91 = x44;
 printf("%s\n","merge5");
-int32_t x71 = x68 + x69;
-x62 = x71;
+int32_t x93 = x90 + x91;
+x85 = x93;
 } else {
-if (x64) {
-x61 = true;
-int32_t x68 = x35;
-x62 = x68;
+if (x86) {
+x84 = true;
+int32_t x90 = x58;
+x85 = x90;
 } else {
-if (x65) {
-x61 = true;
-int32_t x69 = x21;
-x62 = x69;
+if (x87) {
+x84 = true;
+int32_t x91 = x44;
+x85 = x91;
 } else {
-x61 = false;
+x84 = false;
 }
 }
 }
 };
-void x88 () {
-x2();
-x8();
-x22();
-x36();
-x63();
+SM_INPUT(module1,x122,x111,x112) {
+uint8_t* x113 = x111;
+int32_t x114 = x112;
+x28(x113,x114);
+x42();
+x56();
+x83();
+x110();
 };
 /*****************************************
   End of C Generated Code                  

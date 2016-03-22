@@ -5,28 +5,28 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-void x0 (int32_t* x1) {
-x1[2] = 20;
-int32_t x3[5];
-x3[0] = 1;
-x3[1] = 2;
-x3[2] = 3;
-int32_t x7 = x3[0];
-printf("%d\n",x7);
+void x9 (int32_t* x0) {
+x0[2] = 20;
+int32_t x2[5];
+x2[0] = 1;
+x2[1] = 2;
+x2[2] = 3;
+int32_t x6 = x2[0];
+printf("%d\n",x6);
 };
-void x10 () {
-int32_t x11[3];
-x11[0] = 10;
-x11[1] = 20;
-x11[2] = 30;
-int32_t* x15 = x11;
-x0(x15);
-int32_t x17 = x15[0];
-printf("%d\n",x17);
-int32_t x19 = x15[1];
-printf("%d\n",x19);
-int32_t x21 = x15[2];
-printf("%d\n",x21);
+void x23 () {
+int32_t x10[3];
+x10[0] = 10;
+x10[1] = 20;
+x10[2] = 30;
+int32_t* x14 = x10;
+x9(x14);
+int32_t x16 = x14[0];
+printf("%d\n",x16);
+int32_t x18 = x14[1];
+printf("%d\n",x18);
+int32_t x20 = x14[2];
+printf("%d\n",x20);
 };
 /*****************************************
   End of C Generated Code                  

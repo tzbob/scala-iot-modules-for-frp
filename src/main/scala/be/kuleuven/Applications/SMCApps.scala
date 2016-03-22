@@ -1,6 +1,6 @@
 package be.kuleuven.Applications
 
-import be.kuleuven.FRP_EMBEDDED.CFRPDSLApplicationRunner
+import be.kuleuven.FRP_EMBEDDED.SMCFRPDSLApplicationrunner
 import be.kuleuven.FRP_EMBEDDED.OutputGenerator._
 
 object SMCAppsRunner {
@@ -8,14 +8,14 @@ object SMCAppsRunner {
   def main(args: Array[String]): Unit = {
 
     withOutFile("SMCInputApp.c") {
-      new CFRPDSLApplicationRunner {
+      new SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
 
         val program: () => Rep[Unit] =
           () => {
             val xx = var_new[Int](5)
 
-            val infun = inputfunInner ("module1") { (x:Rep[Int]) =>
+            val infun = inputfun ("module1") { (x:Rep[Int], y:Rep[Int]) =>
               val yy = var_new[Int](10)
               println(x+1)
               println(xx)
@@ -35,7 +35,7 @@ object SMCAppsRunner {
     }
 
     withOutFile("SMCTupledInputApp.c") {
-      new CFRPDSLApplicationRunner {
+      new SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
 
         val program: () => Rep[Unit] =

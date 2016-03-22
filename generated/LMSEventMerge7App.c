@@ -5,165 +5,188 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-bool x0;
-int32_t x1;
-bool x6;
-int32_t x7;
-bool x18;
-int32_t x19;
-bool x30;
-int32_t x31;
-bool x47;
-int32_t x48;
-bool x64;
-int32_t x65;
-bool x77;
-int32_t x78;
-bool x94;
-int32_t x95;
-bool x107;
-int32_t x108;
-bool x133;
-int32_t x134;
-void x2 () {
+SM_DATA(module1) bool x0;
+SM_DATA(module1) int32_t x1;
+SM_DATA(module1) bool x29;
+SM_DATA(module1) int32_t x30;
+SM_DATA(module1) bool x41;
+SM_DATA(module1) int32_t x42;
+SM_DATA(module1) bool x53;
+SM_DATA(module1) int32_t x54;
+SM_DATA(module1) bool x70;
+SM_DATA(module1) int32_t x71;
+SM_DATA(module1) bool x87;
+SM_DATA(module1) int32_t x88;
+SM_DATA(module1) bool x100;
+SM_DATA(module1) int32_t x101;
+SM_DATA(module1) bool x117;
+SM_DATA(module1) int32_t x118;
+SM_DATA(module1) bool x130;
+SM_DATA(module1) int32_t x131;
+SM_DATA(module1) bool x156;
+SM_DATA(module1) int32_t x157;
+SM_FUNC(module1) void x28 (uint8_t* x2,int32_t x3) {
+int32_t x6 = 0;
+int32_t x7 = 0;
+int32_t x5 = x3;
+uint8_t* x4 = x2;
+for (;;) {
+int32_t x8 = x7;
+bool x9 = x8 < x5;
+if (!x9) break;
+int32_t x11 = x7;
+uint8_t x12 = x4[x11];
+int32_t x16 = x6;
+int32_t x13 = (int32_t ) x12;
+int32_t x14 = x11 * 8;
+int32_t x15 = x13 << x14;
+int32_t x17 = x16 + x15;
+x6 = x17;
+int32_t x19 = x11 + 1;
+x7 = x19;
+}
 x0 = true;
-x1 = 5;
+int32_t x24 = x6;
+int32_t x25 = (int32_t ) x24;
+x1 = x25;
 };
-void x8 () {
-bool x9 = x0;
-if (x9) {
-x6 = true;
-int32_t x11 = x1;
-x7 = 2;
+SM_FUNC(module1) void x40 () {
+bool x31 = x0;
+if (x31) {
+x29 = true;
+int32_t x33 = x1;
+x30 = 2;
 } else {
-x6 = false;
-}
-};
-void x20 () {
-bool x21 = x0;
-if (x21) {
-x18 = true;
-int32_t x23 = x1;
-x19 = 1;
-} else {
-x18 = false;
+x29 = false;
 }
 };
-void x32 () {
-bool x33 = x6;
-if (x33) {
-int32_t x34 = x7;
-bool x35 = x34 == 3;
-if (x35) {
-x30 = true;
-x31 = x34;
+SM_FUNC(module1) void x52 () {
+bool x43 = x0;
+if (x43) {
+x41 = true;
+int32_t x45 = x1;
+x42 = 1;
 } else {
-x30 = false;
-}
-} else {
-x30 = false;
+x41 = false;
 }
 };
-void x49 () {
-bool x50 = x18;
-if (x50) {
-int32_t x51 = x19;
-bool x52 = x51 == 1;
-if (x52) {
-x47 = true;
-x48 = x51;
+SM_FUNC(module1) void x69 () {
+bool x55 = x29;
+if (x55) {
+int32_t x56 = x30;
+bool x57 = x56 == 3;
+if (x57) {
+x53 = true;
+x54 = x56;
 } else {
-x47 = false;
+x53 = false;
 }
 } else {
-x47 = false;
-}
-};
-void x66 () {
-bool x67 = x30;
-if (x67) {
-x64 = true;
-int32_t x69 = x31;
-int32_t x70 = x69 * 3;
-x65 = x70;
-} else {
-x64 = false;
+x53 = false;
 }
 };
-void x79 () {
-bool x80 = x47;
-if (x80) {
-int32_t x81 = x48;
-bool x82 = x81 == 2;
-if (x82) {
-x77 = true;
-x78 = x81;
+SM_FUNC(module1) void x86 () {
+bool x72 = x41;
+if (x72) {
+int32_t x73 = x42;
+bool x74 = x73 == 1;
+if (x74) {
+x70 = true;
+x71 = x73;
 } else {
-x77 = false;
+x70 = false;
 }
 } else {
-x77 = false;
-}
-};
-void x96 () {
-bool x97 = x77;
-if (x97) {
-x94 = true;
-int32_t x99 = x78;
-int32_t x100 = x99 + 1;
-x95 = x100;
-} else {
-x94 = false;
+x70 = false;
 }
 };
-void x109 () {
-bool x110 = x94;
-bool x111 = x64;
-bool x112 = x110 && x111;
-if (x112) {
-x107 = true;
-int32_t x114 = x95;
-int32_t x115 = x65;
-int32_t x116 = x114 + x115;
-x108 = x116;
+SM_FUNC(module1) void x99 () {
+bool x89 = x53;
+if (x89) {
+x87 = true;
+int32_t x91 = x54;
+int32_t x92 = x91 * 3;
+x88 = x92;
 } else {
-if (x110) {
-x107 = true;
-int32_t x114 = x95;
-x108 = x114;
+x87 = false;
+}
+};
+SM_FUNC(module1) void x116 () {
+bool x102 = x70;
+if (x102) {
+int32_t x103 = x71;
+bool x104 = x103 == 2;
+if (x104) {
+x100 = true;
+x101 = x103;
 } else {
-if (x111) {
-x107 = true;
-int32_t x115 = x65;
-x108 = x115;
+x100 = false;
+}
 } else {
-x107 = false;
+x100 = false;
+}
+};
+SM_FUNC(module1) void x129 () {
+bool x119 = x100;
+if (x119) {
+x117 = true;
+int32_t x121 = x101;
+int32_t x122 = x121 + 1;
+x118 = x122;
+} else {
+x117 = false;
+}
+};
+SM_FUNC(module1) void x155 () {
+bool x132 = x117;
+bool x133 = x87;
+bool x134 = x132 && x133;
+if (x134) {
+x130 = true;
+int32_t x136 = x118;
+int32_t x137 = x88;
+int32_t x138 = x136 + x137;
+x131 = x138;
+} else {
+if (x132) {
+x130 = true;
+int32_t x136 = x118;
+x131 = x136;
+} else {
+if (x133) {
+x130 = true;
+int32_t x137 = x88;
+x131 = x137;
+} else {
+x130 = false;
 }
 }
 }
 };
-void x135 () {
-bool x136 = x107;
-if (x136) {
-x133 = true;
-int32_t x138 = x108;
-int32_t x139 = x138 * 2;
-x134 = x139;
+SM_FUNC(module1) void x168 () {
+bool x158 = x130;
+if (x158) {
+x156 = true;
+int32_t x160 = x131;
+int32_t x161 = x160 * 2;
+x157 = x161;
 } else {
-x133 = false;
+x156 = false;
 }
 };
-void x146 () {
-x2();
-x8();
-x20();
-x32();
-x49();
-x66();
-x79();
-x96();
-x109();
-x135();
+SM_INPUT(module1,x185,x169,x170) {
+uint8_t* x171 = x169;
+int32_t x172 = x170;
+x28(x171,x172);
+x40();
+x52();
+x69();
+x86();
+x99();
+x116();
+x129();
+x155();
+x168();
 };
 /*****************************************
   End of C Generated Code                  

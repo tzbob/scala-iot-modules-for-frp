@@ -6,8 +6,7 @@ import be.kuleuven.LMS_extensions.{SMCCodeGenPkgExtended, TupledFunctionsRecursi
 
 import scala.lms.common.UncheckedOpsExp
 
-trait SMCFRPDSLImpl extends FRPDSLImpl
-  with ScalaOpsPkgExpExt with TupledFunctionsRecursiveExpExt with UncheckedOpsExp { self =>
+trait SMCFRPDSLImpl extends FRPDSLImpl with ScalaOpsPkgExpExt { self =>
 
   val codegen = new SMCCodeGenPkgExtended { val IR: self.type = self }
 

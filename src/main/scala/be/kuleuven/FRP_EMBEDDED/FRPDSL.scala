@@ -6,47 +6,13 @@ import scala.lms.common._
 import java.lang.{Integer => JInteger}
 
 trait FRPDSL
-    extends ScalaOpsPkgExt with TupledFunctionsExt with UncheckedOps with LiftPrimitives with LiftString with LiftVariables with LiftBoolean
+    extends ScalaOpsPkgExt with LiftPrimitives with LiftString with LiftVariables with LiftBoolean
     with EventOps with BehaviorOps {
-
-  def printEvent[A](e: Event[A]): String
 
   def generator: () => Rep[Unit]
 }
 
 trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
-
-  override def printEvent[A](e: Event[A]) = {
-    def printParents[B](p: Event[B]): String = {
-      val x = printEvent(p)
-      x.mkString(",")
-    }
-
-    e match {
-      case i @ InputEvent(_) => "InputEvent@"+ JInteger.toHexString(System.identityHashCode(i))
-      case c @ ConstantEvent(_,_) => "ConstantEvent@"+ JInteger.toHexString(System.identityHashCode(c)) + "(" + printParents(c.parent) + ")"
-      case m @ MapEvent(_,_) => "MapEvent@" + JInteger.toHexString(System.identityHashCode(m)) + "(" + printParents(m.parent) + ")"
-      case f @ FilterEvent(_,_) => "FilterEvent@" + JInteger.toHexString(System.identityHashCode(f)) + "(" + printParents(f.parent) + ")"
-      case m @ MergeEvent(_,_) => "MergeEvent@" + JInteger.toHexString(System.identityHashCode(m)) +
-                                      "(" + printParents(m.parentLeft) + "," + printParents(m.parentRight) + ")"
-      case _ => "other"
-    }
-  }
-
-  def isDisjointFor(target: NodeID, left: Set[NodeID], right: Set[NodeID]): Boolean = {
-    var b: Boolean = true
-    for(l <- left if l==target) {
-      if(right.contains(l)) b = false
-    }
-    b
-  }
-
-  def getSplitNode(left: List[NodeID], right: List[NodeID]): NodeID = {
-    for(l <- left) {
-      if(right.contains(l)) return l
-    }
-    throw new IllegalStateException("Getting index of splitting node failed.")
-  }
 
   override def generator: () => Rep[Unit] = {
     var program: () => Rep[Unit] = () => unitToRepUnit( () )
@@ -68,7 +34,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     }
 
     //TODO: change var_new to vardecl_new
-    //program = generateBehaviorInit(program)
+    program = generateBehaviorInit(program)
 
     program
   }
@@ -81,19 +47,18 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
     () => {
       f()
-      val inits = fun { () =>
+      val inits = namedfun0 ("module1") { () =>
         getBehaviorNodes.values.foreach(_.getInitializer())
       }
-
       doApplyDecl(inits)
       unitToRepUnit( () )
     }
   }
 
-  def generateTopFunction[X](n: InputEvent[X], f: () => Rep[Unit]): () => Rep[Unit] = {
-    System.err.println("top" + n.id)
+  def generateTopFunction[X](input: InputEvent[X], f: () => Rep[Unit]): () => Rep[Unit] = {
+    System.err.println("top" + input.id)
 
-    val descendantIDs = getDecendantNodeIDs(n).filter(id => id != n.id)
+    val descendantIDs = getDecendantNodeIDs(input).filter(id => id != input.id)
     val descendantNodes = getNodesWithIDs(descendantIDs)
 
     // get topological ordering
@@ -106,7 +71,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     () => {
       f()
       val top = inputfun("module1") { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
-        n.eventfun(data,len)
+        input.eventfun(data,len)
         eventsTO.foreach( x => {(x.getFunction())( () ) } ) // apply the functions in this context
       }
       doApplyDecl(top)

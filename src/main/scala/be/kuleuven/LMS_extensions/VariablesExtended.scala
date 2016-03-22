@@ -39,25 +39,34 @@ trait ScalaGenVariablesExt extends ScalaGenVariables {
   }
 }
 
+/*
+ * C
+ */
+
 trait CLikeGenVariablesExt extends CLikeGenVariables {
   val IR: VariablesExpExt
   import IR._
 
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
     case NewVarDecl() => emitVarDecl(sym)
+    case NewModuleVarDecl(n) => emitVarDecl(sym)
     case _ => super.emitNode(sym, rhs)
   }
 }
 
 trait CGenVariablesExt extends CGenEffect with CLikeGenVariablesExt
 
+
+/*
+ * SMC
+ */
 trait SMCLikeGenVariables extends CLikeGenVariables with SMCLikeCodeGen {
   val IR: VariablesExpExt
   import IR._
 
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
     case NewVarDecl() => emitVarDecl(sym)
-    case NewModuleVarDecl(n) => stream.println("SM_DATA("+ n +  ") " + remap(sym.tp) + " " + quote(sym) + ";")
+    case NewModuleVarDecl(n) => stream.println("SM_DATA("+ n + ") " + remap(sym.tp) + " " + quote(sym) + ";")
     case _ => super.emitNode(sym, rhs)
   }
 }
