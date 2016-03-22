@@ -117,7 +117,7 @@ trait CGenFunctionsExt extends CGenFunctions {
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
     case NamedLambdaInput(_, fun, x, y) =>
       val retType = remap(getBlockResult(y).tp)
-      stream.println(retType + " " +quote(sym)+"("+quote(x)+") {")
+      stream.println(retType + " " + quote(sym) + "(" + remap(x.tp) + " " + quote(x) + ") {")
       emitBlock(y)
       val z = getBlockResult(y)
       if (retType != "void")
@@ -125,7 +125,7 @@ trait CGenFunctionsExt extends CGenFunctions {
       stream.println("};")
     case NamedLambda(_, fun, x, y) =>
       val retType = remap(getBlockResult(y).tp)
-      stream.println(retType + " " +quote(sym)+"("+quote(x)+") {")
+      stream.println(retType + " " + quote(sym) + "(" + remap(x.tp) + " " + quote(x) + ") {")
       emitBlock(y)
       val z = getBlockResult(y)
       if (retType != "void")
@@ -133,7 +133,7 @@ trait CGenFunctionsExt extends CGenFunctions {
       stream.println("};")
     case e@Lambda(fun, x, y) =>
       val retType = remap(getBlockResult(y).tp)
-      stream.println(retType+" "+quote(sym)+" ("+remap(x.tp)+" "+quote(x)+") {")
+      stream.println(retType+" "+quote(sym)+" (" + remap(x.tp) + " " + quote(x) + ") {")
       emitBlock(y)
       val z = getBlockResult(y)
       if (retType != "void")
@@ -154,15 +154,15 @@ trait CGenTupledFunctionsExt extends CGenFunctionsExt with GenericGenUnboxedTupl
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
     case NamedLambdaInput(_, fun, UnboxedTuple(xs), y) =>
       val retType = remap(getBlockResult(y).tp)
-      stream.println(retType + " " + quote(sym) + "(" +xs.map(s=>quote(s)).mkString(",")+") {")
+      stream.println(retType + " " + quote(sym) + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
       emitBlock(y)
       val z = getBlockResult(y)
       if (retType != "void")
         stream.println("return " + quote(z) + ";")
       stream.println("};")
-    case NamedLambda(_, fun, x, y) =>
+    case NamedLambda(_, fun, UnboxedTuple(xs), y) =>
       val retType = remap(getBlockResult(y).tp)
-      stream.println(retType + " " +quote(sym)+"("+quote(x)+") {")
+      stream.println(retType + " " +quote(sym) +"(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") + ") {")
       emitBlock(y)
       val z = getBlockResult(y)
       if (retType != "void")
@@ -170,7 +170,7 @@ trait CGenTupledFunctionsExt extends CGenFunctionsExt with GenericGenUnboxedTupl
       stream.println("};")
     case Lambda(fun, UnboxedTuple(xs), y) =>
       val retType = remap(getBlockResult(y).tp)
-      stream.println(retType+" "+quote(sym)+" ("+xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",")+") {")
+      stream.println(retType + " " + quote(sym) + " (" + xs.map(s=>remap(s.tp) + " " + quote(s)).mkString(",") + ") {")
       emitBlock(y)
       val z = getBlockResult(y)
       if (retType != "void")

@@ -46,11 +46,12 @@ int main() {
 // => printf("res: %d\n",x??);
 
 int main() {
+	x71();
 	printf("behavior: %d\n",x46);
 	int x = 1;
-	x56((uint8_t*)&x, sizeof(x));
+	x66((uint8_t*)&x, sizeof(x));
 	printf("behavior: %d\n",x46);
-	x56((uint8_t*)&x, sizeof(x));
+	x66((uint8_t*)&x, sizeof(x));
 	printf("behavior: %d\n",x46);
 }
 

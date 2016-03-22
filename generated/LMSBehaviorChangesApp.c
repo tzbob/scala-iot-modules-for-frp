@@ -5,13 +5,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-SM_DATA(module1) bool x0;
-SM_DATA(module1) int32_t x1;
-SM_DATA(module1) int32_t x29;
-SM_DATA(module1) bool x39;
-SM_DATA(module1) int32_t x40;
-SM_DATA(module1) int32_t x46;
-SM_FUNC(module1) void x28 (uint8_t* x2,int32_t x3) {
+bool x0;
+int32_t x1;
+int32_t x29;
+bool x39;
+int32_t x40;
+int32_t x46;
+void x28(uint8_t* x2,int32_t x3) {
 int32_t x6 = 0;
 int32_t x7 = 0;
 int32_t x5 = x3;
@@ -46,7 +46,7 @@ x29 = x33;
 } else {
 }
 };
-SM_FUNC(module1) void x45 () {
+void x45() {
 x39 = true;
 int32_t x42 = x29;
 x40 = x42;
@@ -61,7 +61,7 @@ x46 = x50;
 } else {
 }
 };
-SM_INPUT(module1,x66,x56,x57) {
+void x66(uint8_t* x56,int32_t x57) {
 uint8_t* x58 = x56;
 int32_t x59 = x57;
 x28(x58,x59);
@@ -69,7 +69,7 @@ x38();
 x45();
 x55();
 };
-SM_FUNC(module1) void x71 () {
+void x71() {
 x29 = 1;
 x46 = 10;
 };
