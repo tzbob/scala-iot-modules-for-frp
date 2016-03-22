@@ -1,6 +1,6 @@
 package be.kuleuven.LMS_extensions
 
-import scala.lms.internal.CLikeCodegen
+import scala.lms.internal.{GenerationFailedException, CLikeCodegen}
 
 
 trait SMCLikeCodeGen extends CLikeCodegen {
@@ -30,8 +30,29 @@ trait SMCLikeCodeGen extends CLikeCodegen {
 
     if (m.erasure == classOf[Pointer[AnyVal]])
       remap(m.typeArguments.head) + "*"
-    else
-      super.remap(m)
+    else if (m.erasure == classOf[Variable[AnyVal]])
+      remap(m.typeArguments.head)
+    else if (m.erasure == classOf[List[Any]]) { // Use case: Delite Foreach sync list
+      deviceTarget.toString + "List< " + remap(m.typeArguments.head) + " >"
+    }
+    else {
+      m.toString match {
+        case "scala.collection.immutable.List[Float]" => "List"
+        case "Boolean" => "bool"
+        case "Byte" => "uint8_t"
+        case "Char" => "uint16_t"
+        case "Short" => "int16_t"
+        case "Int" => "int32_t"
+        case "Long" => "int64_t"
+        case "Float" => "float"
+        case "Double" => "double"
+        case "Unit" => "void"
+        case "Nothing" => "void"
+        case _ => throw new GenerationFailedException("SMCLikeGen: remap(m) : Type %s cannot be remapped.".format(m.toString))
+      }
+    }
+    /*else
+      super.remap(m)*/
   }
 
 }
