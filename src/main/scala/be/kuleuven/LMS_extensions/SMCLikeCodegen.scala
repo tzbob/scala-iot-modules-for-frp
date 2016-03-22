@@ -26,6 +26,14 @@ trait SMCLikeCodeGen extends CLikeCodegen {
       stream.println(rhs + ";")
   }
 
+  override def isPrimitiveType(tpe: String) : Boolean = {
+    tpe match {
+      case "bool" | "int8_t" | "uint16_t" | "int16_t" | "int32_t" | "int64_t" | "float" | "double" => true
+      case "int" | "uint8_t" => true
+      case _ => false
+    }
+  }
+
   override def remap[A](m: Typ[A]) : String = {
 
     if (m.erasure == classOf[Pointer[AnyVal]])
@@ -37,12 +45,13 @@ trait SMCLikeCodeGen extends CLikeCodegen {
     }
     else {
       m.toString match {
+          //TODO: some types are adapted to the embedded system : check best mapping!
         case "scala.collection.immutable.List[Float]" => "List"
         case "Boolean" => "bool"
         case "Byte" => "uint8_t"
-        case "Char" => "uint16_t"
-        case "Short" => "int16_t"
-        case "Int" => "int32_t"
+        case "Char" => "uint8_t"
+        case "Short" => "int8_t"
+        case "Int" => "int" //TODO: int32_t made some trouble
         case "Long" => "int64_t"
         case "Float" => "float"
         case "Double" => "double"

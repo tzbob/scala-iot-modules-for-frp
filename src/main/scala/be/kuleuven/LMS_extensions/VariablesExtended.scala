@@ -50,6 +50,9 @@ trait CLikeGenVariablesExt extends CLikeGenVariables {
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
     case NewVarDecl() => emitVarDecl(sym)
     case NewModuleVarDecl(n) => emitVarDecl(sym)
+    case ReadVar(Variable(a)) => emitValDef(sym, quote(a))
+    case NewVar(init) => emitVarDef(sym.asInstanceOf[Sym[Variable[Any]]], quote(init))
+    case Assign(Variable(a), b) => stream.println(quote(a) + " = " + quote(b) + ";")
     case _ => super.emitNode(sym, rhs)
   }
 }

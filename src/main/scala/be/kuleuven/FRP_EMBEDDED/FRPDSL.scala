@@ -47,7 +47,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
     () => {
       f()
-      val inits = namedfun0 ("module1") { () =>
+      val inits = entryfun0 ("module1") { () =>
         getBehaviorNodes.values.foreach(_.getInitializer())
       }
       doApplyDecl(inits)

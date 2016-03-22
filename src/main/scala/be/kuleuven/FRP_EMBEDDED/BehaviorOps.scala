@@ -125,7 +125,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     lazy val value = vardeclmod_new[C]("module1")
     lazy val valueInit = var_assign[C](value, f(parentleftvalue, parentrightvalue))
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
-      fun { () =>
+      namedfun0 ("module1") { () =>
         var_assign[C](value, f(parentleftvalue, parentrightvalue))
         unitToRepUnit( () )
       }
@@ -157,7 +157,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     lazy val parentvalue: Rep[B] = getEventValue(parent)
     lazy val parentfired: Rep[Boolean] = getEventFired(parent)
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
-      fun { () =>
+      namedfun0 ("module1") { () =>
         if(parentfired) {
           var_assign[A](value, f(readVar(value), parentvalue))
         }
@@ -191,7 +191,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     lazy val parentvalue: Rep[A] = getEventValue(parent)
     lazy val parentfired: Rep[Boolean] = getEventFired(parent)
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
-      fun { () =>
+      namedfun0 ("module1") { () =>
         if(parentfired) {
           var_assign[A](value, parentvalue)
         }
