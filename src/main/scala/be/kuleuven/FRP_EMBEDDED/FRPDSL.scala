@@ -62,9 +62,9 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     val inputMap = getInputEventNodes
 
     // generate top functions
-    for( (i,j) <- inputMap) {
-      System.err.println("Generate dependencies of inputnode " + i)
-      program = generateTopFunction(j, program)
+    for( ie <- inputMap) {
+      System.err.println("Generate dependencies of inputnode " + ie.id)
+      program = generateTopFunction(ie, program)
     }
 
     //TODO: change var_new to vardecl_new
@@ -90,10 +90,10 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     }
   }
 
-  def generateTopFunction[X](n: NodeImpl[X], f: () => Rep[Unit]): () => Rep[Unit] = {
+  def generateTopFunction[X](n: InputEvent[X], f: () => Rep[Unit]): () => Rep[Unit] = {
     System.err.println("top" + n.id)
 
-    val descendantIDs = getDecendantNodeIDs(n)
+    val descendantIDs = getDecendantNodeIDs(n).filter(id => id != n.id)
     val descendantNodes = getNodesWithIDs(descendantIDs)
 
     // get topological ordering
@@ -105,7 +105,8 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
     () => {
       f()
-      val top = fun { () =>
+      val top = inputfun("module1") { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
+        n.eventfun(data,len)
         eventsTO.foreach( x => {(x.getFunction())( () ) } ) // apply the functions in this context
       }
       doApplyDecl(top)

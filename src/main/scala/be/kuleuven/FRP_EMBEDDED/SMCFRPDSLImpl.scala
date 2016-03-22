@@ -18,7 +18,7 @@ trait SMCFRPDSLImpl extends FRPDSLImpl
       }
     )
 
-    val inputevents = getInputEventNodes.values.toList
+    val inputevents = getInputEventNodes
     System.err.println("InputEvents:")
     inputevents.foreach(System.err.println )
 

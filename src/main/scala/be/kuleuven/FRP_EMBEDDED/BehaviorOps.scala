@@ -1,6 +1,6 @@
 package be.kuleuven.FRP_EMBEDDED
 
-import be.kuleuven.LMS_extensions.ScalaOpsPkgExt
+import be.kuleuven.LMS_extensions.{ScalaOpsPkgExpExt, ScalaOpsPkgExt}
 
 import scala.collection.immutable.HashSet
 
@@ -35,7 +35,7 @@ trait BehaviorOps extends NodeOps {
   def constantB[A:Typ] (value: Rep[A]): Behavior[A]
 }
 
-trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExt {
+trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
   eventImpl: EventOpsImpl =>
 
   def getBehaviorNodes: Map[NodeID,NodeImpl[_]] = {
