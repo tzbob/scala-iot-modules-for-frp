@@ -12,8 +12,6 @@ trait BehaviorOps extends NodeOps {
 
     def valueNow (): Rep[A]
 
-    def delay (t: Rep[Int]): Behavior[A]
-
     // map2: Combine 2 behaviors (merge-like). Whenever a behaviors value changes, the output behavior applies
     // the function f to both child behaviors, changing its value to the result of that function
     def map2[B:Typ,C:Typ] (b: Behavior[B], f: (Rep[A], Rep[B])=>Rep[C]): Behavior[C]
@@ -32,7 +30,7 @@ trait BehaviorOps extends NodeOps {
     def changes (): Event[A]
   }
 
-  def constantB[A:Typ] (value: Rep[A]): Behavior[A]
+  def constantB[A:Typ](value: Rep[A]): Behavior[A]
 }
 
 trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
@@ -97,7 +95,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     val level = 0
     override val inputNodeIDs: Set[NodeID] = HashSet(this.id)
     //lazy val value = var_new[A](init)
-    lazy val value = vardeclmod_new[A]("module1")
+    lazy val value = vardeclmod_new[A](moduleName)
     lazy val valueInit = var_assign[A](value, init)
     override def valueNow(): Rep[A] = readVar(value)
     override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
@@ -122,10 +120,10 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     lazy val parentleftvalue = getBehaviorValue(parentLeft)
     lazy val parentrightvalue = getBehaviorValue(parentRight)
     //lazy val value = var_new[C](f(parentleftvalue, parentrightvalue))
-    lazy val value = vardeclmod_new[C]("module1")
+    lazy val value = vardeclmod_new[C](moduleName)
     lazy val valueInit = var_assign[C](value, f(parentleftvalue, parentrightvalue))
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
-      namedfun0 ("module1") { () =>
+      namedfun0 (moduleName) { () =>
         var_assign[C](value, f(parentleftvalue, parentrightvalue))
         unitToRepUnit( () )
       }
@@ -151,13 +149,13 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
     //lazy val value = var_new[A](init)
-    lazy val value = vardeclmod_new[A]("module1")
+    lazy val value = vardeclmod_new[A](moduleName)
     lazy val valueInit = var_assign[A](value, init)
 
     lazy val parentvalue: Rep[B] = getEventValue(parent)
     lazy val parentfired: Rep[Boolean] = getEventFired(parent)
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
-      namedfun0 ("module1") { () =>
+      namedfun0 (moduleName) { () =>
         if(parentfired) {
           var_assign[A](value, f(readVar(value), parentvalue))
         }
@@ -185,13 +183,13 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
     //lazy val value = var_new[A](init)
-    lazy val value = vardeclmod_new[A]("module1")
+    lazy val value = vardeclmod_new[A](moduleName)
     lazy val valueInit = var_assign[A](value, init)
 
     lazy val parentvalue: Rep[A] = getEventValue(parent)
     lazy val parentfired: Rep[Boolean] = getEventFired(parent)
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
-      namedfun0 ("module1") { () =>
+      namedfun0 (moduleName) { () =>
         if(parentfired) {
           var_assign[A](value, parentvalue)
         }
@@ -217,6 +215,8 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     addNodeToNodemap(id,this)
     addBehaviorID(id)
 
+    override val moduleName = activeModule
+
     override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()
     override def addChild(id: NodeID): Unit = {
       childNodeIDs.add(id)
@@ -238,7 +238,6 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
   }
 
   trait BehaviorImpl[A] extends Behavior[A] {
-    override def delay(t: Rep[Int]): Behavior[A] = ???
 
     override def snapshot[B:Typ](e: Event[B]): Event[A] = {
       implicit val tOut = typOut

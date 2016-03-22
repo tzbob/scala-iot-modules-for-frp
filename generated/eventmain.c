@@ -10,7 +10,8 @@
 // => printf("res: %d\n",x??);
 
 int main() {
-	x193();
-	printf("map11: %d\n",x166);
-	printf("map12: %d\n",x180);
+	uint8_t data = 0;
+	top1(&data, sizeof(data));
+	printf("map11: %d\n",x189);
+	printf("map12: %d\n",x203);
 }

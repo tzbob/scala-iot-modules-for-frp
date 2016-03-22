@@ -4,7 +4,7 @@ import be.kuleuven.FRP_EMBEDDED.{SMCFRPDSLApplicationrunner, CFRPDSLApplicationR
 
 trait LMSEventMapApp extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t1: Event[Int] = TimerEvent(5) // every 5 sec
     val n1 = t1.map[Int]( (i) => 2*i )
     val n2 = n1.map[Boolean]( (i) => infix_%(i,2)==0 )
@@ -13,7 +13,7 @@ trait LMSEventMapApp extends FRPDSLApplication {
 
 trait LMSEventFilterApp extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t1: Event[Int] = TimerEvent(5) // every 5 sec
     val n1 = t1.map[Int]( (i:Rep[Int]) => 2*i )
     val n2 = n1.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
@@ -23,7 +23,7 @@ trait LMSEventFilterApp extends FRPDSLApplication {
 
 trait LMSEventConstantApp extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t1: Event[Int] = TimerEvent(5)
     val c1: Event[Int] = t1.constant(10)
     val m1 = c1.map[Int]( (i:Rep[Int]) => 2*i )
@@ -32,7 +32,7 @@ trait LMSEventConstantApp extends FRPDSLApplication {
 
 trait LMSEventMerge1App extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t1: Event[Int] = TimerEvent(5)
     val c1 = t1.constant(1)
 
@@ -46,7 +46,7 @@ trait LMSEventMerge1App extends FRPDSLApplication {
 
 trait LMSEventMerge2App extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t1: Event[Int] = TimerEvent(5)
 
     val c1 = t1.constant(1)
@@ -59,7 +59,7 @@ trait LMSEventMerge2App extends FRPDSLApplication {
 
 trait LMSEventMerge2bApp extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t1: Event[Int] = TimerEvent(5)
 
     val f1 = t1.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
@@ -73,7 +73,7 @@ trait LMSEventMerge2bApp extends FRPDSLApplication {
 
 trait LMSEventMerge3App extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t1: Event[Int] = TimerEvent(5)
     val t2: Event[Int] = TimerEvent(10)
 
@@ -87,7 +87,7 @@ trait LMSEventMerge3App extends FRPDSLApplication {
 
 trait LMSEventMerge3bApp extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t1: Event[Int] = TimerEvent(5)
     val t2: Event[Int] = TimerEvent(10)
 
@@ -103,7 +103,7 @@ trait LMSEventMerge3bApp extends FRPDSLApplication {
 
 trait LMSEventMerge4App extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t: Event[Int] = TimerEvent(5)
 
     val c1 = t.constant(1)
@@ -120,7 +120,7 @@ trait LMSEventMerge4App extends FRPDSLApplication {
 
 trait LMSEventMerge5App extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t: Event[Int] = TimerEvent(5)
 
     val c1: Event[Int] = t.constant(1)
@@ -138,7 +138,7 @@ trait LMSEventMerge5App extends FRPDSLApplication {
 
 trait LMSEventMerge6aApp extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t: Event[Int] = TimerEvent(5)
     val tmm: Event[Int] = t.map((i: Rep[Int]) => i + 1)
     val tm: Event[Int] = tmm.map((i: Rep[Int]) => i * 2)
@@ -155,7 +155,7 @@ trait LMSEventMerge6aApp extends FRPDSLApplication {
 
 trait LMSEventMerge6bApp extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t: Event[Int] = TimerEvent(5)
     val tmm: Event[Int] = t.map((i: Rep[Int]) => i + 1)
     val tm: Event[Int] = tmm.map((i: Rep[Int]) => i * 2)
@@ -175,7 +175,7 @@ trait LMSEventMerge6bApp extends FRPDSLApplication {
 
 trait LMSEventMerge7App extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t: Event[Int] = TimerEvent(5)
 
     val c1: Event[Int] = t.constant(1)
@@ -194,7 +194,7 @@ trait LMSEventMerge7App extends FRPDSLApplication {
 
 trait LMSEventMerge8App extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t: Event[Int] = TimerEvent(0)
 
     //big left
@@ -222,7 +222,7 @@ trait LMSEventMerge8App extends FRPDSLApplication {
 
 trait LMSEventMerge9aApp extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t: Event[Int] = TimerEvent(2)
 
     val m2 = t.map((x) => {println("map2"); x * 2})
@@ -235,7 +235,7 @@ trait LMSEventMerge9aApp extends FRPDSLApplication {
 
 trait LMSEventMerge9bApp extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t: Event[Int] = TimerEvent(2)
 
     val m2 = t.map((x) => {println("map2"); x * 2})
@@ -248,7 +248,7 @@ trait LMSEventMerge9bApp extends FRPDSLApplication {
 
 trait LMSEventMerge10App extends FRPDSLApplication {
 
-  override def createMainFun: Unit = {
+  createModule ("module1") { () =>
     val t = TimerEvent(5)
     val mleft = t.map( x => {println("mleft"); x*2})
     val mleftleft = mleft.map( x => {println("mleftleft"); x*2})
@@ -264,7 +264,7 @@ trait LMSEventMerge10App extends FRPDSLApplication {
 
 trait LMSEventDoubleInputApp extends FRPDSLApplication {
 
-  override def createMainFun: Unit = {
+  createModule ("module1") { () =>
     val t1 = TimerEvent(5)
     val m1 = t1.map( x => {println("m1"); x*2})
     val t2 = TimerEvent(5)
@@ -279,7 +279,7 @@ object LMSEventAppRunner {
   def main(args: Array[String]): Unit = {
 
     withOutFile("LMSEventMapApp.c") {
-      new LMSEventMapApp with SMCFRPDSLApplicationrunner {
+      new LMSEventMapApp with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MapApp:")
         System.err.println("Creating flow graph...")
@@ -296,7 +296,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventFilterApp.c") {
-      new LMSEventFilterApp with SMCFRPDSLApplicationrunner {
+      new LMSEventFilterApp with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("FilterApp:")
         System.err.println("Creating flow graph...")
@@ -313,7 +313,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventConstantApp.c") {
-      new LMSEventConstantApp with SMCFRPDSLApplicationrunner {
+      new LMSEventConstantApp with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("ConstantApp:")
         System.err.println("Creating flow graph...")
@@ -330,7 +330,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge1App.c") {
-      new LMSEventMerge1App with SMCFRPDSLApplicationrunner {
+      new LMSEventMerge1App with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp1:")
         System.err.println("Creating flow graph...")
@@ -347,7 +347,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge2App.c") {
-      new LMSEventMerge2App with SMCFRPDSLApplicationrunner {
+      new LMSEventMerge2App with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp2:")
         System.err.println("Creating flow graph...")
@@ -364,7 +364,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge2bApp.c") {
-      new LMSEventMerge2bApp with SMCFRPDSLApplicationrunner {
+      new LMSEventMerge2bApp with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp2b:")
         System.err.println("Creating flow graph...")
@@ -381,7 +381,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge3App.c") {
-      new LMSEventMerge3App with SMCFRPDSLApplicationrunner {
+      new LMSEventMerge3App with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp3:")
         System.err.println("Creating flow graph...")
@@ -398,7 +398,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge3bApp.c") {
-      new LMSEventMerge3bApp with SMCFRPDSLApplicationrunner {
+      new LMSEventMerge3bApp with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp3b:")
         System.err.println("Creating flow graph...")
@@ -415,7 +415,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge4App.c") {
-      new LMSEventMerge4App with SMCFRPDSLApplicationrunner {
+      new LMSEventMerge4App with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp4:")
         System.err.println("Creating flow graph...")
@@ -432,7 +432,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge5App.c") {
-      new LMSEventMerge5App with SMCFRPDSLApplicationrunner {
+      new LMSEventMerge5App with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp5:")
         System.err.println("Creating flow graph...")
@@ -449,7 +449,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge6aApp.c") {
-      new LMSEventMerge6aApp with SMCFRPDSLApplicationrunner {
+      new LMSEventMerge6aApp with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp6a:")
         System.err.println("Creating flow graph...")
@@ -466,7 +466,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge6bApp.c") {
-      new LMSEventMerge6bApp with SMCFRPDSLApplicationrunner {
+      new LMSEventMerge6bApp with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp6b:")
         System.err.println("Creating flow graph...")
@@ -483,7 +483,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge7App.c") {
-      new LMSEventMerge7App with SMCFRPDSLApplicationrunner {
+      new LMSEventMerge7App with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp7:")
         System.err.println("Creating flow graph...")
@@ -499,7 +499,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge8App.c") {
-      new LMSEventMerge8App with SMCFRPDSLApplicationrunner {
+      new LMSEventMerge8App with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp8:")
         System.err.println("Creating flow graph...")
@@ -515,7 +515,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge9aApp.c") {
-      new LMSEventMerge9aApp with SMCFRPDSLApplicationrunner {
+      new LMSEventMerge9aApp with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp9a:")
         System.err.println("Creating flow graph...")
@@ -531,7 +531,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge9bApp.c") {
-      new LMSEventMerge9bApp with SMCFRPDSLApplicationrunner {
+      new LMSEventMerge9bApp with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp9b:")
         System.err.println("Creating flow graph...")
@@ -547,7 +547,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventMerge10App.c") {
-      new LMSEventMerge10App with SMCFRPDSLApplicationrunner {
+      new LMSEventMerge10App with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp10:")
         System.err.println("Creating flow graph...")
@@ -563,7 +563,7 @@ object LMSEventAppRunner {
     }
 
     withOutFile("LMSEventDoubleInputApp.c") {
-      new LMSEventDoubleInputApp with SMCFRPDSLApplicationrunner {
+      new LMSEventDoubleInputApp with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("DoubleInputApp:")
         System.err.println("Creating flow graph...")

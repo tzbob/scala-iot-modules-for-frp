@@ -4,7 +4,7 @@ import be.kuleuven.FRP_EMBEDDED.{CFRPDSLApplicationRunner, SMCFRPDSLApplicationr
 
 trait LMSBehaviorStartsWith1App extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { ( ) =>
     val t1: Event[Int] = TimerEvent(5) // every 5 sec
     val m = t1.map[Int]( (i) => 5 )
 
@@ -14,7 +14,7 @@ trait LMSBehaviorStartsWith1App extends FRPDSLApplication {
 
 trait LMSBehaviorFoldp1App extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t1: Event[Int] = TimerEvent(5) // every 5 sec
     val m = t1.map[Int]( (i) => 5 )
 
@@ -24,7 +24,7 @@ trait LMSBehaviorFoldp1App extends FRPDSLApplication {
 
 trait LMSBehaviorMap2App extends FRPDSLApplication {
 
-  override def createMainFun {
+  createModule ("module1") { () =>
     val t1: Event[Int] = TimerEvent(1) // every 5 sec
     val m1 = t1.map[Int]( (i) => 1 )
 
@@ -34,12 +34,12 @@ trait LMSBehaviorMap2App extends FRPDSLApplication {
     val m2 = t2.map( (i) => 2)
     val b2 = m2.foldp( (x:Rep[Int],y:Rep[Int]) => x+y, 1)
 
-    val map2 = b1.map2(b2, (x:Rep[Int],y:Rep[Int]) => x*y)
+    val map2 = b1.map2(b2, (x:Rep[Int],y:Rep[Int]) => x+y)
   }
 }
 
 trait LMSBehaviorChangesApp extends FRPDSLApplication {
-  override def createMainFun: Unit = {
+  createModule ("module1") { () =>
     val t = TimerEvent(1)
     val fp = t.foldp( (x:Rep[Int], y: Rep[Int])=>x+y, 1)
     val c = fp.changes()
@@ -48,7 +48,7 @@ trait LMSBehaviorChangesApp extends FRPDSLApplication {
 }
 
 trait LMSBehaviorSnapshotApp extends FRPDSLApplication {
-  override def createMainFun: Unit = {
+  createModule ("module1") { () =>
     val t = TimerEvent(10)
     val fp1 = t.foldp( (x:Rep[Int],y:Rep[Int])=>x+y, 0)
 
@@ -60,13 +60,29 @@ trait LMSBehaviorSnapshotApp extends FRPDSLApplication {
   }
 }
 
+trait LMSMultiModuleApp extends FRPDSLApplication {
+  createModule ("module1") { () =>
+    val t = TimerEvent(1)
+    val fp = t.foldp( (x:Rep[Int], y: Rep[Int])=>x+y, 1)
+    val c = fp.changes()
+    val fp2 = c.foldp( (x:Rep[Int], y: Rep[Int])=>x+y, 10)
+  }
+
+  createModule ("module2") { () =>
+    val t = TimerEvent(1)
+    val fp = t.foldp( (x:Rep[Int], y: Rep[Int])=>x+y, 2)
+    val c = fp.changes()
+    val fp2 = c.foldp( (x:Rep[Int], y: Rep[Int])=>x+y, 20)
+  }
+}
+
 import OutputGenerator.withOutFile
 
 object LMSBehaviorAppRunner {
   def main(args: Array[String]): Unit = {
 
     withOutFile("LMSBehaviorStartsWith1App.c") {
-      new LMSBehaviorStartsWith1App with SMCFRPDSLApplicationrunner {
+      new LMSBehaviorStartsWith1App with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("BehaviorStartsWith1App:")
         System.err.println("Creating flow graph...")
@@ -83,7 +99,7 @@ object LMSBehaviorAppRunner {
     }
 
     withOutFile("LMSBehaviorFoldp1App.c") {
-      new LMSBehaviorFoldp1App with SMCFRPDSLApplicationrunner {
+      new LMSBehaviorFoldp1App with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("BehaviorFoldp1App:")
         System.err.println("Creating flow graph...")
@@ -100,7 +116,7 @@ object LMSBehaviorAppRunner {
     }
 
     withOutFile("LMSBehaviorMap2App.c") {
-      new LMSBehaviorMap2App with SMCFRPDSLApplicationrunner {
+      new LMSBehaviorMap2App with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("BehaviorMap2App:")
         System.err.println("Creating flow graph...")
@@ -117,7 +133,7 @@ object LMSBehaviorAppRunner {
     }
 
     withOutFile("LMSBehaviorChangesApp.c") {
-      new LMSBehaviorChangesApp with SMCFRPDSLApplicationrunner {
+      new LMSBehaviorChangesApp with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("BehaviorChangesApp:")
         System.err.println("Creating flow graph...")
@@ -134,9 +150,26 @@ object LMSBehaviorAppRunner {
     }
 
     withOutFile("LMSBehaviorSnapshotApp.c") {
-      new LMSBehaviorSnapshotApp with SMCFRPDSLApplicationrunner {
+      new LMSBehaviorSnapshotApp with CFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("BehaviorSnapshotApp:")
+        System.err.println("Creating flow graph...")
+        createMainFun
+        System.err.println("\n")
+        buildFRPGraph()
+        System.err.println("\n")
+        val program = buildProgram()
+        System.err.println("\n")
+        emitProgram(program)
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
+      }
+    }
+
+    withOutFile("LMSMultiModuleApp.c") {
+      new LMSMultiModuleApp with SMCFRPDSLApplicationrunner {
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("MultiModuleApp:")
         System.err.println("Creating flow graph...")
         createMainFun
         System.err.println("\n")

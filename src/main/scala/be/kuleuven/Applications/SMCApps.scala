@@ -15,7 +15,7 @@ object SMCAppsRunner {
           () => {
             val xx = var_new[Int](5)
 
-            val infun = inputfun ("module1") { (x:Rep[Int], y:Rep[Int]) =>
+            val infun = inputfun ("module1", "top1") { (x:Rep[Int], y:Rep[Int]) =>
               val yy = var_new[Int](10)
               println(x+1)
               println(xx)
@@ -43,7 +43,7 @@ object SMCAppsRunner {
             val xx = var_new[Int](5)
             val modvar = vardeclmod_new[Int]("module2")
 
-            val infun = inputfun ("module2") { (x:Rep[Int],y:Rep[Int]) =>
+            val infun = inputfun ("module2", "top1") { (x:Rep[Int],y:Rep[Int]) =>
               val yy = var_new[Int](10)
               println(x+1)
               println(xx)

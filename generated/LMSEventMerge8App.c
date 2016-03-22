@@ -5,83 +5,83 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-SM_DATA(module1) bool x0;
-SM_DATA(module1) int32_t x1;
-SM_DATA(module1) bool x29;
-SM_DATA(module1) int32_t x30;
-SM_DATA(module1) bool x43;
-SM_DATA(module1) int32_t x44;
-SM_DATA(module1) bool x57;
-SM_DATA(module1) int32_t x58;
-SM_DATA(module1) bool x75;
-SM_DATA(module1) int32_t x76;
-SM_DATA(module1) bool x93;
-SM_DATA(module1) int32_t x94;
-SM_DATA(module1) bool x107;
-SM_DATA(module1) int32_t x108;
-SM_DATA(module1) bool x120;
-SM_DATA(module1) int32_t x121;
-SM_DATA(module1) bool x147;
-SM_DATA(module1) int32_t x148;
-SM_DATA(module1) bool x161;
-SM_DATA(module1) int32_t x162;
-SM_DATA(module1) bool x188;
-SM_DATA(module1) int32_t x189;
-SM_DATA(module1) bool x202;
-SM_DATA(module1) int32_t x203;
-SM_FUNC(module1) void x28 (uint8_t* x2,int32_t x3) {
-int32_t x6 = 0;
-int32_t x7 = 0;
-int32_t x5 = x3;
+bool x0;
+int x1;
+bool x29;
+int x30;
+bool x43;
+int x44;
+bool x57;
+int x58;
+bool x75;
+int x76;
+bool x93;
+int x94;
+bool x107;
+int x108;
+bool x120;
+int x121;
+bool x147;
+int x148;
+bool x161;
+int x162;
+bool x188;
+int x189;
+bool x202;
+int x203;
+void x28(uint8_t* x2,int x3) {
+int x6 = 0;
+int x7 = 0;
+int x5 = x3;
 uint8_t* x4 = x2;
 for (;;) {
-int32_t x8 = x7;
+int x8 = x7;
 bool x9 = x8 < x5;
 if (!x9) break;
-int32_t x11 = x7;
+int x11 = x7;
 uint8_t x12 = x4[x11];
-int32_t x16 = x6;
-int32_t x13 = (int32_t ) x12;
-int32_t x14 = x11 * 8;
-int32_t x15 = x13 << x14;
-int32_t x17 = x16 + x15;
+int x16 = x6;
+int x13 = (int ) x12;
+int x14 = x11 * 8;
+int x15 = x13 << x14;
+int x17 = x16 + x15;
 x6 = x17;
-int32_t x19 = x11 + 1;
+int x19 = x11 + 1;
 x7 = x19;
 }
 x0 = true;
-int32_t x24 = x6;
-int32_t x25 = (int32_t ) x24;
+int x24 = x6;
+int x25 = (int ) x24;
 x1 = x25;
 };
-SM_FUNC(module1) void x42 () {
+void x42() {
 bool x31 = x0;
 if (x31) {
 x29 = true;
-int32_t x33 = x1;
+int x33 = x1;
 printf("%s\n","map9");
-int32_t x35 = x33 + 10;
+int x35 = x33 + 10;
 x30 = x35;
 } else {
 x29 = false;
 }
 };
-SM_FUNC(module1) void x56 () {
+void x56() {
 bool x45 = x0;
 if (x45) {
 x43 = true;
-int32_t x47 = x1;
+int x47 = x1;
 printf("%s\n","map2");
-int32_t x49 = x47 + 1;
+int x49 = x47 + 1;
 x44 = x49;
 } else {
 x43 = false;
 }
 };
-SM_FUNC(module1) void x74 () {
+void x74() {
 bool x59 = x43;
 if (x59) {
-int32_t x60 = x44;
+int x60 = x44;
 printf("%s\n","filter5");
 bool x62 = x60 == 1;
 if (x62) {
@@ -94,10 +94,10 @@ x57 = false;
 x57 = false;
 }
 };
-SM_FUNC(module1) void x92 () {
+void x92() {
 bool x77 = x43;
 if (x77) {
-int32_t x78 = x44;
+int x78 = x44;
 printf("%s\n","filter3");
 bool x80 = x78 == 1;
 if (x80) {
@@ -110,49 +110,49 @@ x75 = false;
 x75 = false;
 }
 };
-SM_FUNC(module1) void x106 () {
+void x106() {
 bool x95 = x57;
 if (x95) {
 x93 = true;
-int32_t x97 = x58;
+int x97 = x58;
 printf("%s\n","map6");
-int32_t x99 = x97 * 2;
+int x99 = x97 * 2;
 x94 = x99;
 } else {
 x93 = false;
 }
 };
-SM_FUNC(module1) void x119 () {
+void x119() {
 bool x109 = x75;
 if (x109) {
 x107 = true;
-int32_t x111 = x76;
+int x111 = x76;
 printf("%s\n","constant4");
 x108 = 2;
 } else {
 x107 = false;
 }
 };
-SM_FUNC(module1) void x146 () {
+void x146() {
 bool x122 = x107;
 bool x123 = x93;
 bool x124 = x122 && x123;
 if (x124) {
 x120 = true;
-int32_t x126 = x108;
-int32_t x127 = x94;
+int x126 = x108;
+int x127 = x94;
 printf("%s\n","merge7");
-int32_t x129 = x126 + x127;
+int x129 = x126 + x127;
 x121 = x129;
 } else {
 if (x122) {
 x120 = true;
-int32_t x126 = x108;
+int x126 = x108;
 x121 = x126;
 } else {
 if (x123) {
 x120 = true;
-int32_t x127 = x94;
+int x127 = x94;
 x121 = x127;
 } else {
 x120 = false;
@@ -160,38 +160,38 @@ x120 = false;
 }
 }
 };
-SM_FUNC(module1) void x160 () {
+void x160() {
 bool x149 = x120;
 if (x149) {
 x147 = true;
-int32_t x151 = x121;
+int x151 = x121;
 printf("%s\n","map8");
-int32_t x153 = x151 + 3;
+int x153 = x151 + 3;
 x148 = x153;
 } else {
 x147 = false;
 }
 };
-SM_FUNC(module1) void x187 () {
+void x187() {
 bool x163 = x147;
 bool x164 = x29;
 bool x165 = x163 && x164;
 if (x165) {
 x161 = true;
-int32_t x167 = x148;
-int32_t x168 = x30;
+int x167 = x148;
+int x168 = x30;
 printf("%s\n","merge10");
-int32_t x170 = x167 + x168;
+int x170 = x167 + x168;
 x162 = x170;
 } else {
 if (x163) {
 x161 = true;
-int32_t x167 = x148;
+int x167 = x148;
 x162 = x167;
 } else {
 if (x164) {
 x161 = true;
-int32_t x168 = x30;
+int x168 = x30;
 x162 = x168;
 } else {
 x161 = false;
@@ -199,33 +199,33 @@ x161 = false;
 }
 }
 };
-SM_FUNC(module1) void x201 () {
+void x201() {
 bool x190 = x161;
 if (x190) {
 x188 = true;
-int32_t x192 = x162;
+int x192 = x162;
 printf("%s\n","map12");
-int32_t x194 = x192 * 2;
+int x194 = x192 * 2;
 x189 = x194;
 } else {
 x188 = false;
 }
 };
-SM_FUNC(module1) void x215 () {
+void x215() {
 bool x204 = x161;
 if (x204) {
 x202 = true;
-int32_t x206 = x162;
+int x206 = x162;
 printf("%s\n","map11");
-int32_t x208 = x206 * 2;
+int x208 = x206 * 2;
 x203 = x208;
 } else {
 x202 = false;
 }
 };
-SM_INPUT(module1,x234,x216,x217) {
+void top1(uint8_t* x216,int x217) {
 uint8_t* x218 = x216;
-int32_t x219 = x217;
+int x219 = x217;
 x28(x218,x219);
 x42();
 x56();

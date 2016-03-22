@@ -5,18 +5,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-SM_DATA(module1) bool x0;
-SM_DATA(module1) int x1;
-SM_DATA(module1) bool x29;
-SM_DATA(module1) int x30;
-SM_DATA(module1) bool x58;
-SM_DATA(module1) int x59;
-SM_DATA(module1) bool x70;
-SM_DATA(module1) int x71;
-SM_DATA(module1) int x82;
-SM_DATA(module1) int x92;
-SM_DATA(module1) int x102;
-SM_FUNC(module1) void x28 (uint8_t* x2,int x3) {
+bool x0;
+int x1;
+bool x29;
+int x30;
+bool x58;
+int x59;
+bool x70;
+int x71;
+int x82;
+int x92;
+int x102;
+void x28(uint8_t* x2,int x3) {
 int x6 = 0;
 int x7 = 0;
 int x5 = x3;
@@ -40,8 +40,8 @@ x0 = true;
 int x24 = x6;
 int x25 = (int ) x24;
 x1 = x25;
-}
-SM_FUNC(module1) void x81 () {
+};
+void x81() {
 bool x72 = x0;
 if (x72) {
 x70 = true;
@@ -50,8 +50,8 @@ x71 = 1;
 } else {
 x70 = false;
 }
-}
-SM_FUNC(module1) void x101 () {
+};
+void x101() {
 bool x93 = x70;
 if (x93) {
 int x94 = x92;
@@ -60,22 +60,22 @@ int x96 = x94 + x95;
 x92 = x96;
 } else {
 }
-}
-SM_FUNC(module1) void x108 () {
+};
+void x108() {
 int x103 = x92;
 int x104 = x82;
-int x105 = x103 * x104;
+int x105 = x103 + x104;
 x102 = x105;
-}
-SM_INPUT(module1,x119,x109,x110) {
+};
+void top1(uint8_t* x109,int x110) {
 uint8_t* x111 = x109;
 int x112 = x110;
 x28(x111,x112);
 x81();
 x101();
 x108();
-}
-SM_FUNC(module1) void x57 (uint8_t* x31,int x32) {
+};
+void x57(uint8_t* x31,int x32) {
 int x35 = 0;
 int x36 = 0;
 int x34 = x32;
@@ -99,8 +99,8 @@ x29 = true;
 int x53 = x35;
 int x54 = (int ) x53;
 x30 = x54;
-}
-SM_FUNC(module1) void x69 () {
+};
+void x69() {
 bool x60 = x29;
 if (x60) {
 x58 = true;
@@ -109,8 +109,8 @@ x59 = 2;
 } else {
 x58 = false;
 }
-}
-SM_FUNC(module1) void x91 () {
+};
+void x91() {
 bool x83 = x58;
 if (x83) {
 int x84 = x82;
@@ -119,23 +119,23 @@ int x86 = x84 + x85;
 x82 = x86;
 } else {
 }
-}
-SM_INPUT(module1,x131,x121,x122) {
+};
+void top4(uint8_t* x121,int x122) {
 uint8_t* x123 = x121;
 int x124 = x122;
 x57(x123,x124);
 x69();
 x91();
 x108();
-}
-SM_ENTRY(module1) void x140() {
+};
+void init_module1() {
 x82 = 1;
-int x134 = x92;
-int x135 = x82;
-int x136 = x134 * x135;
-x102 = x136;
 x92 = 1;
-}
+int x135 = x92;
+int x136 = x82;
+int x137 = x135 + x136;
+x102 = x137;
+};
 /*****************************************
   End of C Generated Code                  
 *******************************************/

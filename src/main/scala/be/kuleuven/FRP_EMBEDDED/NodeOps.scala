@@ -14,6 +14,7 @@ trait NodeOps extends Base {
     val inputNodeIDs: Set[NodeID]
     //val ancestorNodeIDs: List[NodeID] //TODO: remove, not needed anymore since no more split node needed
     val childNodeIDs: scala.collection.mutable.Set[NodeID]
+    val moduleName: String
     def addChild(id: NodeID): Unit
     def buildGraphTopDown(): Unit
 
@@ -29,6 +30,8 @@ trait NodeOps extends Base {
 trait NodeOpsImpl extends NodeOps {
   private val nodeMap: scala.collection.mutable.Map[NodeID,NodeImpl[_]] = scala.collection.mutable.HashMap()
   private val behaviorIDs: scala.collection.mutable.Set[NodeID] = scala.collection.mutable.HashSet()
+
+  var activeModule: String = ""
 
   def addNodeToNodemap(id: NodeID, node: NodeImpl[_]): Unit = {
     nodeMap += ((id, node))
@@ -61,11 +64,10 @@ trait NodeOpsImpl extends NodeOps {
     maxlevel
   }
 
-  def getNodesOnLevel(nodes: Map[NodeID,NodeImpl[_]], level: Int): Map[NodeID,NodeImpl[_]] = {
+  def getNodesOnLevel(nodes: List[NodeImpl[_]], level: Int): List[NodeImpl[_]] = {
     nodes.filter(
       x => x match {
-        case (_, e) => if(e.level == level) true else false
-        case _ => throw new IllegalStateException("Unsupported Node type")
+        case node => if(node.level == level) true else false
       }
     )
   }

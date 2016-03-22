@@ -5,15 +5,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-SM_DATA(module1) bool x0;
-SM_DATA(module1) int x1;
-SM_DATA(module1) bool x29;
-SM_DATA(module1) int x30;
-SM_DATA(module1) int x58;
-SM_DATA(module1) bool x68;
-SM_DATA(module1) int x69;
-SM_DATA(module1) int x80;
-SM_FUNC(module1) void x28 (uint8_t* x2,int x3) {
+bool x0;
+int x1;
+bool x29;
+int x30;
+int x58;
+bool x68;
+int x69;
+int x80;
+void x28(uint8_t* x2,int x3) {
 int x6 = 0;
 int x7 = 0;
 int x5 = x3;
@@ -37,8 +37,8 @@ x0 = true;
 int x24 = x6;
 int x25 = (int ) x24;
 x1 = x25;
-}
-SM_FUNC(module1) void x67 () {
+};
+void x67() {
 bool x59 = x0;
 if (x59) {
 int x60 = x58;
@@ -47,14 +47,14 @@ int x62 = x60 + x61;
 x58 = x62;
 } else {
 }
-}
-SM_INPUT(module1,x98,x90,x91) {
+};
+void top1(uint8_t* x90,int x91) {
 uint8_t* x92 = x90;
 int x93 = x91;
 x28(x92,x93);
 x67();
-}
-SM_FUNC(module1) void x57 (uint8_t* x31,int x32) {
+};
+void x57(uint8_t* x31,int x32) {
 int x35 = 0;
 int x36 = 0;
 int x34 = x32;
@@ -78,8 +78,8 @@ x29 = true;
 int x53 = x35;
 int x54 = (int ) x53;
 x30 = x54;
-}
-SM_FUNC(module1) void x79 () {
+};
+void x79() {
 bool x70 = x29;
 if (x70) {
 x68 = true;
@@ -88,8 +88,8 @@ x69 = x72;
 } else {
 x68 = false;
 }
-}
-SM_FUNC(module1) void x89 () {
+};
+void x89() {
 bool x81 = x68;
 if (x81) {
 int x82 = x80;
@@ -98,18 +98,18 @@ int x84 = x82 + x83;
 x80 = x84;
 } else {
 }
-}
-SM_INPUT(module1,x109,x100,x101) {
+};
+void top3(uint8_t* x100,int x101) {
 uint8_t* x102 = x100;
 int x103 = x101;
 x57(x102,x103);
 x79();
 x89();
-}
-SM_ENTRY(module1) void x114() {
-x80 = 0;
+};
+void init_module1() {
 x58 = 0;
-}
+x80 = 0;
+};
 /*****************************************
   End of C Generated Code                  
 *******************************************/

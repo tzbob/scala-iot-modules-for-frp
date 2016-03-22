@@ -9,6 +9,7 @@ trait FRPDSL
     extends ScalaOpsPkgExt with LiftPrimitives with LiftString with LiftVariables with LiftBoolean
     with EventOps with BehaviorOps {
 
+  protected val moduleMap: scala.collection.mutable.Map[String,()=>Unit] = scala.collection.mutable.HashMap()
   def generator: () => Rep[Unit]
 }
 
@@ -20,8 +21,8 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     // generate per level
     System.err.println("max level : "+ getMaxLevel)
     for( i <- 0 to getMaxLevel){
-      val nodes = getNodesOnLevel(getNodeMap, i)
-      nodes.foreach { case (_,x) => program = x.generateNode(program) }
+      val nodes = getNodesOnLevel(getNodeMap.values.toList, i)
+      nodes.foreach { node => program = node.generateNode(program) }
     }
 
     //get all input events
@@ -42,15 +43,30 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
   // SM_DATA can only contain declarations, so we need an initializer for all behaviors
   def generateBehaviorInit(f: () => Rep[Unit]): () => Rep[Unit] = {
     System.err.println()
-    System.err.println("Generating beh init fun for behaviors:")
-    getBehaviorNodes.foreach(x => x match { case (id,_) => System.err.println(id) })
+    System.err.println("Generating init functions for behaviors:")
+
+    for( (moduleName, _ ) <- moduleMap) {
+      System.err.println("Behaviors in module: " + moduleName)
+      getBehaviorNodes
+        .values
+        .filter( node => node.moduleName == moduleName)
+        .foreach( node => System.err.println(node.id) )
+    }
 
     () => {
       f()
-      val inits = entryfun0 ("module1") { () =>
-        getBehaviorNodes.values.foreach(_.getInitializer())
+      for( (moduleName, _ ) <- moduleMap) {
+        val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName == moduleName)
+
+        val inits = entryfun0 (moduleName, "init_"+moduleName) { () =>
+          for( i <- 0 to getMaxLevel){
+            getNodesOnLevel(behaviorsInModule.toList, i)
+            .foreach( _.getInitializer() )
+          }
+        }
+        doApplyDecl(inits)
       }
-      doApplyDecl(inits)
+
       unitToRepUnit( () )
     }
   }
@@ -64,13 +80,13 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     // get topological ordering
     val listbuilder = scala.collection.mutable.ListBuffer.empty[NodeImpl[_]]
     for( i <- 0 to getMaxLevel)
-      listbuilder ++= getNodesOnLevel(descendantNodes,i).values.toList
+      listbuilder ++= getNodesOnLevel(descendantNodes.values.toList,i)
     val eventsTO = listbuilder.toList
     eventsTO.foreach(x => System.err.println(x.id))
 
     () => {
       f()
-      val top = inputfun("module1") { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
+      val top = inputfun(input.moduleName, "top"+input.id) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
         input.eventfun(data,len)
         eventsTO.foreach( x => {(x.getFunction())( () ) } ) // apply the functions in this context
       }

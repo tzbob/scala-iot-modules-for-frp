@@ -5,10 +5,26 @@ package be.kuleuven.FRP_EMBEDDED
  */
 trait FRPDSLApplication extends FRPDSL {
   //def main(args: Array[String])
-
-  def createMainFun
+  
+  def createModule(moduleName: String) (graphfun: ()=>Unit ): Unit
+  def createMainFun(): Unit
 }
 
-trait FRPDSLApplicationRunner extends FRPDSLImpl
-trait CFRPDSLApplicationRunner extends CFRPDSLImpl
-trait SMCFRPDSLApplicationrunner extends SMCFRPDSLImpl
+trait FRPDSLApplicationRunner extends FRPDSLApplication with FRPDSLImpl {
+
+  override def createModule(moduleName: String) (graphfun: ()=>Unit ): Unit = {
+    if(moduleMap.contains(moduleName))
+      throw new IllegalArgumentException("Two modules with the same name.")
+    moduleMap += ((moduleName, graphfun))
+  }
+
+  override def createMainFun(): Unit = {
+    for( (moduleName, graphfun) <- moduleMap) {
+      activeModule = moduleName
+      graphfun()
+    }
+  }
+}
+
+trait CFRPDSLApplicationRunner extends FRPDSLApplicationRunner with CFRPDSLImpl
+trait SMCFRPDSLApplicationrunner extends FRPDSLApplicationRunner with SMCFRPDSLImpl
