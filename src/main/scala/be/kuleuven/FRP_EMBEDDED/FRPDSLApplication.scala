@@ -11,3 +11,4 @@ trait FRPDSLApplication extends FRPDSL {
 
 trait FRPDSLApplicationRunner extends FRPDSLImpl
 trait CFRPDSLApplicationRunner extends CFRPDSLImpl
+trait SMCFRPDSLApplicationrunner extends SMCFRPDSLImpl

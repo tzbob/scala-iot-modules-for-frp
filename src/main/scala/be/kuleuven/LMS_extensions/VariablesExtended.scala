@@ -9,7 +9,7 @@ trait VariablesExt extends Variables {
 
 }
 
-trait VariablesExpExt extends VariablesExp with VariablesExt {
+trait VariablesExpExt extends VariablesExp with VariablesExt with ExpressionsExt {
 
   case class NewVarDecl[T:Typ]() extends Def[Variable[T]] {
     def m = manifest[T]
@@ -51,7 +51,7 @@ trait CLikeGenVariablesExt extends CLikeGenVariables {
 
 trait CGenVariablesExt extends CGenEffect with CLikeGenVariablesExt
 
-trait SMCLikeGenVariables extends CLikeGenVariables {
+trait SMCLikeGenVariables extends CLikeGenVariables with SMCLikeCodeGen {
   val IR: VariablesExpExt
   import IR._
 

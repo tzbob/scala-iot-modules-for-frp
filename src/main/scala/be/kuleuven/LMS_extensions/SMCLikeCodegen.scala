@@ -15,6 +15,10 @@ trait SMCLikeCodeGen extends CLikeCodegen {
     if(remap(tpe) != "void") stream.println(remap(tpe) + " " + sym + " = " + rhs + ";")
   }*/
 
+  override def emitVarDecl(sym: Sym[Any]): Unit = {
+    stream.println(remap(sym.tp) + " " + quote(sym) + ";")
+  }
+
   override def emitValDef(sym: Sym[Any], rhs: String): Unit = {
     if (!isVoidType(sym.tp))
       stream.println(remap(sym.tp) + " " + quote(sym) + " = " + rhs + ";")

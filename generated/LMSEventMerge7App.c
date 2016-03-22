@@ -5,26 +5,26 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-bool  x0;
-int32_t  x1;
-bool  x6;
-int32_t  x7;
-bool  x18;
-int32_t  x19;
-bool  x30;
-int32_t  x31;
-bool  x47;
-int32_t  x48;
-bool  x64;
-int32_t  x65;
-bool  x77;
-int32_t  x78;
-bool  x94;
-int32_t  x95;
-bool  x107;
-int32_t  x108;
-bool  x133;
-int32_t  x134;
+bool x0;
+int32_t x1;
+bool x6;
+int32_t x7;
+bool x18;
+int32_t x19;
+bool x30;
+int32_t x31;
+bool x47;
+int32_t x48;
+bool x64;
+int32_t x65;
+bool x77;
+int32_t x78;
+bool x94;
+int32_t x95;
+bool x107;
+int32_t x108;
+bool x133;
+int32_t x134;
 void x2 () {
 x0 = true;
 x1 = 5;

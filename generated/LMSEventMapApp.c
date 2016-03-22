@@ -5,12 +5,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-bool  x0;
-int32_t  x1;
-bool  x6;
-int32_t  x7;
-bool  x19;
-bool  x20;
+bool x0;
+int32_t x1;
+bool x6;
+int32_t x7;
+bool x19;
+bool x20;
 void x2 () {
 x0 = true;
 x1 = 5;
