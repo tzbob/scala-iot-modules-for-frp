@@ -14,8 +14,6 @@ object LMSPointerAppRunner {
         val program: ()=>Rep[Unit] =
           () => {
             val testfun = fun { (x: Rep[Ptr[Int]]) =>
-              //println( repptr_readVal(x,1) )
-
               ptr_assignToVal(x, 20)
 
               val v = var_new[Int](5)
@@ -37,9 +35,23 @@ object LMSPointerAppRunner {
               unitToRepUnit( () )
             }
             doApplyDecl(ttf)
-            // END TESTING
 
-            // ARRAY TESTING
+            unitToRepUnit( () )
+          }
+
+        System.err.println("\n")
+        emitProgram(program)
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        System.err.println("\n\n")
+      }
+    }
+
+    withOutFile("LMSPointerArrayApp.c") {
+      new CFRPDSLApplicationRunner {
+        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+
+        val program: ()=>Rep[Unit] =
+          () => {
             val arrayfun = fun { (x:Rep[Ptr[Int]]) =>
 
               ptr_assignToValIndexed(x, 2, 20)
@@ -77,6 +89,8 @@ object LMSPointerAppRunner {
         System.err.println("\n\n")
       }
     }
+
+
   }
 }
 

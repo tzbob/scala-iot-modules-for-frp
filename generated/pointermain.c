@@ -4,15 +4,22 @@
 #include <stdbool.h>
 #include <string.h>
 
-//using namespace std;
-
+/*
 #include "LMSPointerApp.c"
 // => printf("res: %d\n",x??);
 
 int main() {
 	printf("Pointers:\n");
-	x12();
-	printf("Arrays and pointers:\n");
-	x35();
-	
+	x12();	
 }
+*/
+
+
+#include "LMSPointerArrayApp.c"
+
+int main() {
+	printf("Arrays and pointers:");
+	x10();
+}
+
+
