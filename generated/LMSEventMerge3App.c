@@ -17,6 +17,7 @@ bool x96;
 int x97;
 bool x122;
 int x123;
+int x135;
 void x28(uint8_t* x2,int x3) {
 int x6 = 0;
 int x7 = 0;
@@ -105,14 +106,15 @@ x123 = x127;
 x122 = false;
 }
 };
-void top1(uint8_t* x135,int x136) {
-uint8_t* x137 = x135;
-int x138 = x136;
-x28(x137,x138);
+void top1(uint8_t* x143,int x144) {
+uint8_t* x145 = x143;
+int x146 = x144;
+x28(x145,x146);
 x83();
 x121();
 x134();
 };
+int x155;
 void x57(uint8_t* x31,int x32) {
 int x35 = 0;
 int x36 = 0;
@@ -148,10 +150,10 @@ x85 = 2;
 x84 = false;
 }
 };
-void top2(uint8_t* x147,int x148) {
-uint8_t* x149 = x147;
-int x150 = x148;
-x57(x149,x150);
+void top2(uint8_t* x163,int x164) {
+uint8_t* x165 = x163;
+int x166 = x164;
+x57(x165,x166);
 x83();
 x95();
 x121();

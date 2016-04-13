@@ -7,9 +7,9 @@
 /*
 #include "LMSBehaviorStartsWith1App.c"
 int main() {
-	init_module1();
-	printf("behavior: %d\n",x41);
 	uint8_t data = 5;	
+	top1(&data, sizeof(data));
+	printf("behavior: %d\n",x41);
 	top1(&data, sizeof(data));
 	printf("behavior: %d\n",x41);
 }
@@ -20,8 +20,6 @@ int main() {
 // => printf("res: %d\n",x??);
 
 int main() {
-	init_module1();
-	printf("behavior: %d\n",x41);
 	uint8_t data = 5;
 	top1(&data, sizeof(data));
 	printf("behavior: %d\n",x41);
@@ -35,8 +33,6 @@ int main() {
 // => printf("res: %d\n",x??);
 
 int main() {
-	init_module1();
-	printf("behavior: %d\n",x102);
 	uint8_t data1 = 1;
 	top1(&data1, sizeof(data1));
 	printf("behavior: %d\n",x102);
@@ -55,8 +51,8 @@ int main() {
 // => printf("res: %d\n",x??);
 
 int main() {
-	init_module1();
-	printf("behavior: %d\n",x46);
+	//init_module1();
+	//printf("behavior: %d\n",x46);
 	uint8_t x = 1;
 	top1(&x, sizeof(x));
 	printf("behavior: %d\n",x46);
@@ -70,11 +66,6 @@ int main() {
 // => printf("res: %d\n",x??);
 
 int main() {
-	init_module1();
-
-	printf("initial:\n");
-	printf("behavior disconnected: %d\n",x58);
-	printf("behavior at snapshot: %d\n",x80);
 	uint8_t data1 = 10;
 	uint8_t data2 = 5;	
 	top3(&data2, sizeof(data2));

@@ -13,6 +13,7 @@ bool x58;
 int x59;
 bool x72;
 int x73;
+int x86;
 void x28(uint8_t* x2,int x3) {
 int x6 = 0;
 int x7 = 0;
@@ -50,12 +51,13 @@ x59 = x64;
 x58 = false;
 }
 };
-void top1(uint8_t* x86,int x87) {
-uint8_t* x88 = x86;
-int x89 = x87;
-x28(x88,x89);
+void top1(uint8_t* x94,int x95) {
+uint8_t* x96 = x94;
+int x97 = x95;
+x28(x96,x97);
 x71();
 };
+int x104;
 void x57(uint8_t* x31,int x32) {
 int x35 = 0;
 int x36 = 0;
@@ -93,10 +95,10 @@ x73 = x78;
 x72 = false;
 }
 };
-void top3(uint8_t* x96,int x97) {
-uint8_t* x98 = x96;
-int x99 = x97;
-x57(x98,x99);
+void top3(uint8_t* x112,int x113) {
+uint8_t* x114 = x112;
+int x115 = x113;
+x57(x114,x115);
 x85();
 };
 /*****************************************

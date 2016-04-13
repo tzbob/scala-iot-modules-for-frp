@@ -17,6 +17,17 @@ SM_DATA(module2) bool x85;
 SM_DATA(module2) int x86;
 SM_DATA(module1) int x92;
 SM_DATA(module2) int x102;
+SM_DATA(module1) int x112;
+SM_FUNC(module1) void x121 () {
+int x113 = x112;
+bool x114 = x113 == 0;
+if (x114) {
+x58 = 1;
+x92 = 10;
+x112 = 1;
+} else {
+}
+}
 SM_FUNC(module1) void x28 (uint8_t* x2,int x3) {
 int x6 = 0;
 int x7 = 0;
@@ -67,13 +78,25 @@ x92 = x96;
 } else {
 }
 }
-SM_INPUT(module1,top5,x112,x113) {
-uint8_t* x114 = x112;
-int x115 = x113;
-x28(x114,x115);
+SM_INPUT(module1,top5,x122,x123) {
+x121();
+uint8_t* x124 = x122;
+int x125 = x123;
+x28(x124,x125);
 x67();
 x84();
 x101();
+}
+SM_DATA(module2) int x135;
+SM_FUNC(module2) void x144 () {
+int x136 = x135;
+bool x137 = x136 == 0;
+if (x137) {
+x68 = 2;
+x102 = 20;
+x135 = 1;
+} else {
+}
 }
 SM_FUNC(module2) void x57 (uint8_t* x31,int x32) {
 int x35 = 0;
@@ -125,21 +148,14 @@ x102 = x106;
 } else {
 }
 }
-SM_INPUT(module2,top1,x124,x125) {
-uint8_t* x126 = x124;
-int x127 = x125;
-x57(x126,x127);
+SM_INPUT(module2,top1,x145,x146) {
+x144();
+uint8_t* x147 = x145;
+int x148 = x146;
+x57(x147,x148);
 x77();
 x91();
 x111();
-}
-SM_ENTRY(module2) void init_module2() {
-x68 = 2;
-x102 = 20;
-}
-SM_ENTRY(module1) void init_module1() {
-x58 = 1;
-x92 = 10;
 }
 /*****************************************
   End of C Generated Code                  

@@ -133,7 +133,7 @@ object LMSBehaviorAppRunner {
     }
 
     withOutFile("LMSBehaviorChangesApp.c") {
-      new LMSBehaviorChangesApp with CFRPDSLApplicationRunner {
+      new LMSBehaviorChangesApp with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("BehaviorChangesApp:")
         System.err.println("Creating flow graph...")

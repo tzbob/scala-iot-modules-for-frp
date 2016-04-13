@@ -21,6 +21,7 @@ bool x104;
 int x105;
 bool x130;
 int x131;
+int x143;
 void x28(uint8_t* x2,int x3) {
 int x6 = 0;
 int x7 = 0;
@@ -150,10 +151,10 @@ x131 = x135;
 x130 = false;
 }
 };
-void top1(uint8_t* x143,int x144) {
-uint8_t* x145 = x143;
-int x146 = x144;
-x28(x145,x146);
+void top1(uint8_t* x151,int x152) {
+uint8_t* x153 = x151;
+int x154 = x152;
+x28(x153,x154);
 x40();
 x52();
 x64();

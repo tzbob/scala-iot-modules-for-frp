@@ -16,6 +16,21 @@ int x71;
 int x82;
 int x92;
 int x102;
+int x109;
+void x122() {
+int x110 = x109;
+bool x111 = x110 == 0;
+if (x111) {
+x82 = 1;
+x92 = 1;
+int x114 = x92;
+int x115 = x82;
+int x116 = x114 + x115;
+x102 = x116;
+x109 = 1;
+} else {
+}
+};
 void x28(uint8_t* x2,int x3) {
 int x6 = 0;
 int x7 = 0;
@@ -67,13 +82,23 @@ int x104 = x82;
 int x105 = x103 + x104;
 x102 = x105;
 };
-void top1(uint8_t* x109,int x110) {
-uint8_t* x111 = x109;
-int x112 = x110;
-x28(x111,x112);
+void top1(uint8_t* x123,int x124) {
+x122();
+uint8_t* x125 = x123;
+int x126 = x124;
+x28(x125,x126);
 x81();
 x101();
 x108();
+};
+int x136;
+void x143() {
+int x137 = x136;
+bool x138 = x137 == 0;
+if (x138) {
+x136 = 1;
+} else {
+}
 };
 void x57(uint8_t* x31,int x32) {
 int x35 = 0;
@@ -120,21 +145,14 @@ x82 = x86;
 } else {
 }
 };
-void top4(uint8_t* x121,int x122) {
-uint8_t* x123 = x121;
-int x124 = x122;
-x57(x123,x124);
+void top4(uint8_t* x144,int x145) {
+x143();
+uint8_t* x146 = x144;
+int x147 = x145;
+x57(x146,x147);
 x69();
 x91();
 x108();
-};
-void init_module1() {
-x82 = 1;
-x92 = 1;
-int x135 = x92;
-int x136 = x82;
-int x137 = x135 + x136;
-x102 = x137;
 };
 /*****************************************
   End of C Generated Code                  

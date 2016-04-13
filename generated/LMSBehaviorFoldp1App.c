@@ -10,6 +10,16 @@ int x1;
 bool x29;
 int x30;
 int x41;
+int x51;
+void x59() {
+int x52 = x51;
+bool x53 = x52 == 0;
+if (x53) {
+x41 = 1;
+x51 = 1;
+} else {
+}
+};
 void x28(uint8_t* x2,int x3) {
 int x6 = 0;
 int x7 = 0;
@@ -55,15 +65,13 @@ x41 = x45;
 } else {
 }
 };
-void top1(uint8_t* x51,int x52) {
-uint8_t* x53 = x51;
-int x54 = x52;
-x28(x53,x54);
+void top1(uint8_t* x60,int x61) {
+x59();
+uint8_t* x62 = x60;
+int x63 = x61;
+x28(x62,x63);
 x40();
 x50();
-};
-void init_module1() {
-x41 = 1;
 };
 /*****************************************
   End of C Generated Code                  

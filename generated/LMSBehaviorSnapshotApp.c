@@ -13,6 +13,17 @@ int x58;
 bool x68;
 int x69;
 int x80;
+int x90;
+void x99() {
+int x91 = x90;
+bool x92 = x91 == 0;
+if (x92) {
+x58 = 0;
+x80 = 0;
+x90 = 1;
+} else {
+}
+};
 void x28(uint8_t* x2,int x3) {
 int x6 = 0;
 int x7 = 0;
@@ -48,11 +59,21 @@ x58 = x62;
 } else {
 }
 };
-void top1(uint8_t* x90,int x91) {
-uint8_t* x92 = x90;
-int x93 = x91;
-x28(x92,x93);
+void top1(uint8_t* x100,int x101) {
+x99();
+uint8_t* x102 = x100;
+int x103 = x101;
+x28(x102,x103);
 x67();
+};
+int x111;
+void x118() {
+int x112 = x111;
+bool x113 = x112 == 0;
+if (x113) {
+x111 = 1;
+} else {
+}
 };
 void x57(uint8_t* x31,int x32) {
 int x35 = 0;
@@ -99,16 +120,13 @@ x80 = x84;
 } else {
 }
 };
-void top3(uint8_t* x100,int x101) {
-uint8_t* x102 = x100;
-int x103 = x101;
-x57(x102,x103);
+void top3(uint8_t* x119,int x120) {
+x118();
+uint8_t* x121 = x119;
+int x122 = x120;
+x57(x121,x122);
 x79();
 x89();
-};
-void init_module1() {
-x58 = 0;
-x80 = 0;
 };
 /*****************************************
   End of C Generated Code                  
