@@ -1,8 +1,9 @@
 package be.kuleuven.FRP_EMBEDDED
 
-import be.kuleuven.LMS_extensions.{ScalaOpsPkgExpExt, ScalaOpsPkgExt}
+import be.kuleuven.LMS_extensions.{ScalaOpsPkgExpExt}
 
 import scala.collection.immutable.HashSet
+import scala.collection.mutable.ListBuffer
 
 trait EventOps extends NodeOps {
   behavior: BehaviorOps =>
@@ -27,7 +28,7 @@ trait EventOps extends NodeOps {
 
   def TimerEvent(i: Rep[Int])(implicit n: ModuleName)/*(implicit tI:Typ[Int])*/: Event[Int]
 
-  def out[A](e: Event[A])(implicit n: ModuleName): Unit
+  def out[A](name: String, e: Event[A])(implicit n: ModuleName): Unit
 }
 
 trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
@@ -128,13 +129,24 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     }
   }
 
-  private val outList = scala.collection.mutable.ListBuffer.empty[OutputEvent[_]]
-  def getOutList: List[OutputEvent[_]] = {
-    outList.toList
+  private val outMap:scala.collection.mutable.Map[ModuleName,ListBuffer[OutputEvent[_]]] = scala.collection.mutable.HashMap()
+  def getOutMap: Map[ModuleName, List[OutputEvent[_]]] = {
+    val newMap: scala.collection.mutable.Map[ModuleName,List[OutputEvent[_]]] = scala.collection.mutable.HashMap()
+    for( (mn, lb) <- outMap) {
+      newMap += ((mn, lb.toList))
+    }
+    newMap.toMap
   }
 
-  override def out[A](e: Event[A])(implicit n: ModuleName) = {
-    outList += new OutputEvent(e)
+  override def out[A](name: String, e: Event[A])(implicit n: ModuleName) {
+    outMap.get(n) match {
+      case Some(lb) =>
+        lb += new OutputEvent(e)
+      case None =>
+        val outList = scala.collection.mutable.ListBuffer.empty[OutputEvent[_]]
+        outList += new OutputEvent(e)
+        outMap += ((n, outList))
+    }
   }
 
   case class OutputEvent[A](parent: Event[A])(implicit mn: ModuleName) {

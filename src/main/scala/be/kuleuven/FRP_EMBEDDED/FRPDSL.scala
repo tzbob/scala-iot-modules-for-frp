@@ -86,7 +86,16 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     val eventsTO = listbuilder.toList
     eventsTO.foreach(x => System.err.println(x.id))
 
-    val outputs = getOutList.filter( x => x.inputNodeIDs.contains(input.id))
+    for( (mn, l) <- getOutMap) {
+      System.err.println(mn.name)
+    }
+    val outputs = getOutMap.get(input.moduleName) match {
+      case Some(outList) =>
+        outList.filter(x => x.inputNodeIDs.contains(input.id))
+      case None =>
+        Nil
+    }
+    //val outputs = getOutList.filter( x => x.inputNodeIDs.contains(input.id))
     outputs.foreach(x => System.err.println("Output for: " + x.parent.id))
 
 
