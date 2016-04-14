@@ -9,11 +9,13 @@ trait FRPDSL
     extends ScalaOpsPkgExt with LiftPrimitives with LiftString with LiftVariables with LiftBoolean
     with EventOps with BehaviorOps {
 
-  protected val moduleMap: scala.collection.mutable.Map[String,()=>Unit] = scala.collection.mutable.HashMap()
+
   def generator: () => Rep[Unit]
 }
 
 trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
+
+  protected val moduleMap: scala.collection.mutable.Map[String,()=>Unit] = scala.collection.mutable.HashMap()
 
   override def generator: () => Rep[Unit] = {
     var program: () => Rep[Unit] = () => unitToRepUnit( () )

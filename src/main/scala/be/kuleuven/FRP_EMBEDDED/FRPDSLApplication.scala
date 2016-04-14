@@ -8,6 +8,7 @@ trait FRPDSLApplication extends FRPDSL {
   
   def createModule(moduleName: String) (graphfun: ()=>Unit ): Unit
   def createMainFun(): Unit
+  def createApplication(): Unit
 }
 
 trait FRPDSLApplicationRunner extends FRPDSLApplication with FRPDSLImpl {

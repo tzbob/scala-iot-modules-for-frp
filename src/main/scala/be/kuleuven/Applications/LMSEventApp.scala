@@ -4,271 +4,309 @@ import be.kuleuven.FRP_EMBEDDED.{SMCFRPDSLApplicationrunner, CFRPDSLApplicationR
 
 trait LMSEventMapApp extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t1: Event[Int] = TimerEvent(5) // every 5 sec
-    val n1 = t1.map[Int]( (i) => 2*i )
-    val n2 = n1.map[Boolean]( (i) => infix_%(i,2)==0 )
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t1: Event[Int] = TimerEvent(5) // every 5 sec
+    val n1 = t1.map[Int]((i) => 2 * i)
+      val n2 = n1.map[Boolean]((i) => infix_%(i, 2) == 0)
+    }
   }
 }
 
 trait LMSEventFilterApp extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t1: Event[Int] = TimerEvent(5) // every 5 sec
-    val n1 = t1.map[Int]( (i:Rep[Int]) => 2*i )
-    val n2 = n1.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
-    val n3 = n2.map[Int]( (i:Rep[Int]) => i+1)
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t1: Event[Int] = TimerEvent(5) // every 5 sec
+    val n1 = t1.map[Int]((i: Rep[Int]) => 2 * i)
+      val n2 = n1.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
+      val n3 = n2.map[Int]((i: Rep[Int]) => i + 1)
+    }
   }
 }
 
 trait LMSEventConstantApp extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t1: Event[Int] = TimerEvent(5)
-    val c1: Event[Int] = t1.constant(10)
-    val m1 = c1.map[Int]( (i:Rep[Int]) => 2*i )
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t1: Event[Int] = TimerEvent(5)
+      val c1: Event[Int] = t1.constant(10)
+      val m1 = c1.map[Int]((i: Rep[Int]) => 2 * i)
+    }
   }
 }
 
 trait LMSEventMerge1App extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t1: Event[Int] = TimerEvent(5)
-    val c1 = t1.constant(1)
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t1: Event[Int] = TimerEvent(5)
+      val c1 = t1.constant(1)
 
-    val t2: Event[Int] = TimerEvent(10)
-    val c2 = t2.constant(2)
+      val t2: Event[Int] = TimerEvent(10)
+      val c2 = t2.constant(2)
 
-    val m = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
-    val n1 = m.map((x: Rep[Int]) => x * 2)
+      val m = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
+      val n1 = m.map((x: Rep[Int]) => x * 2)
+    }
   }
 }
 
 trait LMSEventMerge2App extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t1: Event[Int] = TimerEvent(5)
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t1: Event[Int] = TimerEvent(5)
 
-    val c1 = t1.constant(1)
-    val c2 = t1.constant(2)
+      val c1 = t1.constant(1)
+      val c2 = t1.constant(2)
 
-    val m = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
-    val n1 = m.map((x: Rep[Int]) => x * 2)
+      val m = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
+      val n1 = m.map((x: Rep[Int]) => x * 2)
+    }
   }
 }
 
 trait LMSEventMerge2bApp extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t1: Event[Int] = TimerEvent(5)
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t1: Event[Int] = TimerEvent(5)
 
-    val f1 = t1.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
-    val c1 = f1.constant(1)
-    val c2 = t1.constant(2)
+      val f1 = t1.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
+      val c1 = f1.constant(1)
+      val c2 = t1.constant(2)
 
-    val m = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
-    val n1 = m.map((x: Rep[Int]) => x * 2)
+      val m = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
+      val n1 = m.map((x: Rep[Int]) => x * 2)
+    }
   }
 }
 
 trait LMSEventMerge3App extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t1: Event[Int] = TimerEvent(5)
-    val t2: Event[Int] = TimerEvent(10)
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t1: Event[Int] = TimerEvent(5)
+      val t2: Event[Int] = TimerEvent(10)
 
-    val m1 = t1.merge(t2, (x: Rep[Int], y: Rep[Int]) => x * y)
-    val c2 = t2.constant(2)
+      val m1 = t1.merge(t2, (x: Rep[Int], y: Rep[Int]) => x * y)
+      val c2 = t2.constant(2)
 
-    val m2 = m1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
-    val n1 = m2.map((x: Rep[Int]) => x * 2)
+      val m2 = m1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
+      val n1 = m2.map((x: Rep[Int]) => x * 2)
+    }
   }
 }
 
 trait LMSEventMerge3bApp extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t1: Event[Int] = TimerEvent(5)
-    val t2: Event[Int] = TimerEvent(10)
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t1: Event[Int] = TimerEvent(5)
+      val t2: Event[Int] = TimerEvent(10)
 
-    val m1 = t1.merge(t2, (x: Rep[Int], y: Rep[Int]) => x * y)
-    val map1 = m1.map((x: Rep[Int]) => x * 3)
+      val m1 = t1.merge(t2, (x: Rep[Int], y: Rep[Int]) => x * y)
+      val map1 = m1.map((x: Rep[Int]) => x * 3)
 
-    val c2 = t2.constant(2)
+      val c2 = t2.constant(2)
 
-    val m2 = map1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
-    val n1 = m2.map((x: Rep[Int]) => x * 2)
+      val m2 = map1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
+      val n1 = m2.map((x: Rep[Int]) => x * 2)
+    }
   }
 }
 
 trait LMSEventMerge4App extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t: Event[Int] = TimerEvent(5)
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t: Event[Int] = TimerEvent(5)
 
-    val c1 = t.constant(1)
-    val c2 = t.constant(2)
-    val c3 = t.constant(3)
+      val c1 = t.constant(1)
+      val c2 = t.constant(2)
+      val c3 = t.constant(3)
 
-    val m1 = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
-    val n2 = m1.map((x: Rep[Int]) => x + 2)
-    val m2 = n2.merge(c3, (x: Rep[Int], y: Rep[Int]) => x + y)
+      val m1 = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
+      val n2 = m1.map((x: Rep[Int]) => x + 2)
+      val m2 = n2.merge(c3, (x: Rep[Int], y: Rep[Int]) => x + y)
 
-    val n1 = m2.map((x: Rep[Int]) => x * 2)
+      val n1 = m2.map((x: Rep[Int]) => x * 2)
+    }
   }
 }
 
 trait LMSEventMerge5App extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t: Event[Int] = TimerEvent(5)
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t: Event[Int] = TimerEvent(5)
 
-    val c1: Event[Int] = t.constant(1)
-    val f1: Event[Int] = c1.filter((i: Rep[Int]) => { println("filter3"); infix_%(i, 2) == 0 })
-    val map1: Event[Int] = f1.map((i: Rep[Int]) => { println("map4"); i + 1 })
+      val c1: Event[Int] = t.constant(1)
+      val f1: Event[Int] = c1.filter((i: Rep[Int]) => { println("filter3"); infix_%(i, 2) == 0 })
+      val map1: Event[Int] = f1.map((i: Rep[Int]) => { println("map4"); i + 1 })
 
-    val c2 = t.constant(2)
-    val f2: Event[Int] = c2.filter((i: Rep[Int]) => { println("filter6"); infix_%(i, 2) == 0 })
-    val map2: Event[Int] = f2.map((i: Rep[Int]) => { println("map7"); i + 1 })
+      val c2 = t.constant(2)
+      val f2: Event[Int] = c2.filter((i: Rep[Int]) => { println("filter6"); infix_%(i, 2) == 0 })
+      val map2: Event[Int] = f2.map((i: Rep[Int]) => { println("map7"); i + 1 })
 
-    val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => { println("merge8") ; x + y })
-    val map3 = m.map((x: Rep[Int]) => { println("map9"); x * 2 })
+      val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => { println("merge8"); x + y })
+      val map3 = m.map((x: Rep[Int]) => { println("map9"); x * 2 })
+    }
   }
 }
 
 trait LMSEventMerge6aApp extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t: Event[Int] = TimerEvent(5)
-    val tmm: Event[Int] = t.map((i: Rep[Int]) => i + 1)
-    val tm: Event[Int] = tmm.map((i: Rep[Int]) => i * 2)
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t: Event[Int] = TimerEvent(5)
+      val tmm: Event[Int] = t.map((i: Rep[Int]) => i + 1)
+      val tm: Event[Int] = tmm.map((i: Rep[Int]) => i * 2)
 
-    val f1: Event[Int] = tm.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
-    val map1: Event[Int] = f1.map((i: Rep[Int]) => i + 1)
+      val f1: Event[Int] = tm.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
+      val map1: Event[Int] = f1.map((i: Rep[Int]) => i + 1)
 
-    val map2: Event[Int] = tm.map((i: Rep[Int]) => i + 1)
+      val map2: Event[Int] = tm.map((i: Rep[Int]) => i + 1)
 
-    val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
-    val map3 = m.map((x: Rep[Int]) => x * 2)
+      val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
+      val map3 = m.map((x: Rep[Int]) => x * 2)
+    }
   }
 }
 
 trait LMSEventMerge6bApp extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t: Event[Int] = TimerEvent(5)
-    val tmm: Event[Int] = t.map((i: Rep[Int]) => i + 1)
-    val tm: Event[Int] = tmm.map((i: Rep[Int]) => i * 2)
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t: Event[Int] = TimerEvent(5)
+      val tmm: Event[Int] = t.map((i: Rep[Int]) => i + 1)
+      val tm: Event[Int] = tmm.map((i: Rep[Int]) => i * 2)
 
-    val c1: Event[Int] = tm.constant(1)
-    val f1: Event[Int] = c1.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
-    val map1: Event[Int] = f1.map((i: Rep[Int]) => i + 1)
+      val c1: Event[Int] = tm.constant(1)
+      val f1: Event[Int] = c1.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
+      val map1: Event[Int] = f1.map((i: Rep[Int]) => i + 1)
 
-    val c2 = tm.constant(2)
-    val f2: Event[Int] = c2.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
-    val map2: Event[Int] = f2.map((i: Rep[Int]) => i + 1)
+      val c2 = tm.constant(2)
+      val f2: Event[Int] = c2.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
+      val map2: Event[Int] = f2.map((i: Rep[Int]) => i + 1)
 
-    val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
-    val map3 = m.map((x: Rep[Int]) => x * 2)
+      val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
+      val map3 = m.map((x: Rep[Int]) => x * 2)
+    }
   }
 }
 
 trait LMSEventMerge7App extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t: Event[Int] = TimerEvent(5)
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t: Event[Int] = TimerEvent(5)
 
-    val c1: Event[Int] = t.constant(1)
-    val f1: Event[Int] = c1.filter((i: Rep[Int]) => i == 1)
-    val f1b: Event[Int] = f1.filter((i: Rep[Int]) => i == 2)
-    val map1: Event[Int] = f1b.map((i: Rep[Int]) => i + 1)
+      val c1: Event[Int] = t.constant(1)
+      val f1: Event[Int] = c1.filter((i: Rep[Int]) => i == 1)
+      val f1b: Event[Int] = f1.filter((i: Rep[Int]) => i == 2)
+      val map1: Event[Int] = f1b.map((i: Rep[Int]) => i + 1)
 
-    val c2 = t.constant(2)
-    val f2: Event[Int] = c2.filter((i: Rep[Int]) => i == 3)
-    val map2: Event[Int] = f2.map((i: Rep[Int]) => i * 3)
+      val c2 = t.constant(2)
+      val f2: Event[Int] = c2.filter((i: Rep[Int]) => i == 3)
+      val map2: Event[Int] = f2.map((i: Rep[Int]) => i * 3)
 
-    val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
-    val map3 = m.map((x: Rep[Int]) => x * 2)
+      val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
+      val map3 = m.map((x: Rep[Int]) => x * 2)
+    }
   }
 }
 
 trait LMSEventMerge8App extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t: Event[Int] = TimerEvent(0)
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t: Event[Int] = TimerEvent(0)
 
-    //big left
-    val m1: Event[Int] = t.map((i) => { println("map2"); i + 1 })
-    //small left
-    val f1: Event[Int] = m1.filter((i) => { println("filter3"); i == 1 })
-    val c1: Event[Int] = f1.map((i) => { println("constant4"); 2 })
-    //small right
-    val f2: Event[Int] = m1.filter((i) => { println("filter5"); i == 1 })
-    val m2: Event[Int] = f2.map( (i)=> { println("map6"); i*2 })
+      //big left
+      val m1: Event[Int] = t.map((i) => { println("map2"); i + 1 })
+      //small left
+      val f1: Event[Int] = m1.filter((i) => { println("filter3"); i == 1 })
+      val c1: Event[Int] = f1.map((i) => {
+        println("constant4"); 2
+      })
+      //small right
+      val f2: Event[Int] = m1.filter((i) => { println("filter5"); i == 1 })
+      val m2: Event[Int] = f2.map((i) => { println("map6"); i * 2 })
 
-    val merge1: Event[Int] = c1.merge(m2, (x, y) => { println("merge7"); x + y })
-    val m3: Event[Int] = merge1.map((i) => { println("map8"); i + 3 })
+      val merge1: Event[Int] = c1.merge(m2, (x, y) => { println("merge7"); x + y })
+      val m3: Event[Int] = merge1.map((i) => { println("map8"); i + 3 })
 
-    //big right
-    val m4: Event[Int] = t.map((i) => { println("map9"); i + 10 })
+      //big right
+      val m4: Event[Int] = t.map((i) => { println("map9"); i + 10 })
 
 
-    val m = m3.merge(m4, (x, y) => { println("merge10"); x + y })
-    val map3 = m.map((x) => {println("map11"); x * 2})
+      val m = m3.merge(m4, (x, y) => { println("merge10"); x + y })
+      val map3 = m.map((x) => { println("map11"); x * 2 })
 
-    val map4 = m.map((x) => {println("map12"); x * 2})
+      val map4 = m.map((x) => { println("map12"); x * 2 })
+    }
   }
 }
 
 trait LMSEventMerge9aApp extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t: Event[Int] = TimerEvent(2)
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t: Event[Int] = TimerEvent(2)
 
-    val m2 = t.map((x) => {println("map2"); x * 2})
-    val m3 = t.map((x) => {println("map3"); x * 2})
+      val m2 = t.map((x) => { println("map2"); x * 2 })
+      val m3 = t.map((x) => { println("map3"); x * 2 })
 
-    val merge4 = m2.merge(m3, (x, y) => { println("merge4"); x + y })
-    val merge5 = merge4.merge(m3, (x, y) => { println("merge5"); x + y })
+      val merge4 = m2.merge(m3, (x, y) => { println("merge4"); x + y })
+      val merge5 = merge4.merge(m3, (x, y) => { println("merge5"); x + y })
+    }
   }
 }
 
 trait LMSEventMerge9bApp extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t: Event[Int] = TimerEvent(2)
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t: Event[Int] = TimerEvent(2)
 
-    val m2 = t.map((x) => {println("map2"); x * 2})
-    val m3 = t.map((x) => {println("map3"); x * 2})
+      val m2 = t.map((x) => { println("map2"); x * 2 })
+      val m3 = t.map((x) => { println("map3"); x * 2 })
 
-    val merge4 = m2.merge(m3, (x, y) => { println("merge4"); x + y })
-    val merge5 = m3.merge(merge4, (x, y) => { println("merge5"); x + y })
+      val merge4 = m2.merge(m3, (x, y) => { println("merge4"); x + y })
+      val merge5 = m3.merge(merge4, (x, y) => { println("merge5"); x + y })
+    }
   }
 }
 
 trait LMSEventMerge10App extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t = TimerEvent(5)
-    val mleft = t.map( x => {println("mleft"); x*2})
-    val mleftleft = mleft.map( x => {println("mleftleft"); x*2})
-    val mleftright = mleft.map( x => {println("mleftright"); x })
-    val mleftmerge = mleftleft.merge(mleftright, (x,y) => {println("mleftmerge"); x+y} )
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t = TimerEvent(5)
+      val mleft = t.map(x => { println("mleft"); x * 2 })
+      val mleftleft = mleft.map(x => { println("mleftleft"); x * 2 })
+      val mleftright = mleft.map(x => { println("mleftright"); x })
+      val mleftmerge = mleftleft.merge(mleftright, (x, y) => { println("mleftmerge"); x + y })
 
-    val e1 = mleftmerge.map(x => {println("e1"); x})
+      val e1 = mleftmerge.map(x => { println("e1"); x })
 
-    val mright = t.map( x => {println("mright"); x+3})
-    val e2 = mleftmerge.merge(mright, (x,y)=> {println("e2"); x+y})
+      val mright = t.map(x => { println("mright"); x + 3 })
+      val e2 = mleftmerge.merge(mright, (x, y) => { println("e2"); x + y })
+    }
   }
 }
 
 trait LMSEventDoubleInputApp extends FRPDSLApplication {
 
-  createModule ("module1") { () =>
-    val t1 = TimerEvent(5)
-    val m1 = t1.map( x => {println("m1"); x*2})
-    val t2 = TimerEvent(5)
-    val m2 = t2.map( x => {println("m2"); x*2})
+  override def createApplication: Unit = {
+    createModule("module1") { () =>
+      val t1 = TimerEvent(5)
+      val m1 = t1.map(x => { println("m1"); x * 2 })
+      val t2 = TimerEvent(5)
+      val m2 = t2.map(x => { println("m2"); x * 2 })
+    }
   }
 }
 
@@ -283,6 +321,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MapApp:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -300,6 +339,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("FilterApp:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -317,6 +357,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("ConstantApp:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -334,6 +375,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp1:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -351,6 +393,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp2:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -368,6 +411,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp2b:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -385,6 +429,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp3:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -402,6 +447,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp3b:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -419,6 +465,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp4:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -436,6 +483,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp5:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -453,6 +501,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp6a:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -470,6 +519,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp6b:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -487,6 +537,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp7:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -503,6 +554,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp8:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -519,6 +571,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp9a:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -535,6 +588,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp9b:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -551,6 +605,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("MergeApp10:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
@@ -567,6 +622,7 @@ object LMSEventAppRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("DoubleInputApp:")
         System.err.println("Creating flow graph...")
+        createApplication
         createMainFun
         System.err.println("\n")
         buildFRPGraph()
