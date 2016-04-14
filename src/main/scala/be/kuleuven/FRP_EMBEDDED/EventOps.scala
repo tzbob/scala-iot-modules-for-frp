@@ -27,6 +27,7 @@ trait EventOps extends NodeOps {
 
   def TimerEvent(i: Rep[Int])/*(implicit tI:Typ[Int])*/: Event[Int]
 
+  def out[A](outputName: String, e: Event[A]): Unit
 }
 
 trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
@@ -125,6 +126,31 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
         throw new IllegalStateException("Input node should not be used anymore for eventfun. Handled in top level function")
       case _ => throw new IllegalStateException("Unsupported Event type")
     }
+  }
+
+  private val outList = scala.collection.mutable.ListBuffer.empty[OutputEvent[_]]
+  def getOutList: List[OutputEvent[_]] = {
+    outList.toList
+  }
+
+  override def out[A](outputName: String, e: Event[A]) = {
+    outList += new OutputEvent(outputName, e)
+  }
+
+  case class OutputEvent[A](outputName: String, parent: Event[A]) {
+    implicit val parentOut = parent.typOut
+    lazy val parentvalue: Rep[A] = readVar(getEventValue(parent))
+    lazy val parentfired: Rep[Boolean] = readVar(getEventFired(parent))
+    lazy val outfun: Rep[((Ptr[Byte], Int))=>Unit] = {
+      outputfun (activeModule, outputName) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
+        // TODO: this is only to show printing! make it generic maybe
+        // only generated with the C code generator
+        println(ptr_readVal(data))
+
+        unitToRepUnit( () )
+      }
+    }
+    val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
   }
 
   override def TimerEvent(i: Rep[Int]) = InputEvent[Int](i)  // only conceptual

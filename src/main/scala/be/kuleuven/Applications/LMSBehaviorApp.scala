@@ -44,6 +44,8 @@ trait LMSBehaviorChangesApp extends FRPDSLApplication {
     val fp = t.foldp( (x:Rep[Int], y: Rep[Int])=>x+y, 1)
     val c = fp.changes()
     val fp2 = c.foldp( (x:Rep[Int], y: Rep[Int])=>x+y, 10)
+    val c2 = fp2.changes()
+    out("out", c2)
   }
 }
 

@@ -84,13 +84,17 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     val eventsTO = listbuilder.toList
     eventsTO.foreach(x => System.err.println(x.id))
 
+    val outputs = getOutList.filter( x => x.inputNodeIDs.contains(input.id))
+    outputs.foreach(x => System.err.println("Output for: " + x.parent.id))
+
+
     val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName == input.moduleName)
 
     () => {
       f()
 
       val initialised = vardeclmod_new[Int](input.moduleName)
-      val initModule = namedfun0 (input.moduleName) { () =>
+      val initModule: Rep[(Unit)=>Unit] = namedfun0 (input.moduleName) { () =>
         if(readVar(initialised) == 0){
           for( i <- 0 to getMaxLevel){
             getNodesOnLevel(behaviorsInModule.toList, i)
@@ -98,11 +102,14 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
           }
           var_assign(initialised, 1)
         }
+        unitToRepUnit( () )
       }
       val top = inputfun(input.moduleName, "top"+input.id) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
         if(behaviorsInModule.size > 0) initModule()
         input.eventfun(data,len)
         eventsTO.foreach( x => {(x.getFunction())( () ) } ) // apply the functions in this context
+
+        outputs.foreach( x => doApplyOut(x.outputName, x.outfun, x.parentvalue))
       }
       doApplyDecl(top)
       unitToRepUnit( () )

@@ -55,9 +55,7 @@ int main() {
 	//printf("behavior: %d\n",x46);
 	uint8_t x = 1;
 	top1(&x, sizeof(x));
-	printf("behavior: %d\n",x46);
 	top1(&x, sizeof(x));
-	printf("behavior: %d\n",x46);
 }
 
 

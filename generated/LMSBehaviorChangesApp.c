@@ -11,14 +11,16 @@ SM_DATA(module1) int x29;
 SM_DATA(module1) bool x39;
 SM_DATA(module1) int x40;
 SM_DATA(module1) int x46;
-SM_DATA(module1) int x56;
-SM_FUNC(module1) void x65 () {
-int x57 = x56;
-bool x58 = x57 == 0;
-if (x58) {
+SM_DATA(module1) bool x56;
+SM_DATA(module1) int x57;
+SM_DATA(module1) int x63;
+SM_FUNC(module1) void x72 () {
+int x64 = x63;
+bool x65 = x64 == 0;
+if (x65) {
 x29 = 1;
 x46 = 10;
-x56 = 1;
+x63 = 1;
 } else {
 }
 }
@@ -72,14 +74,23 @@ x46 = x50;
 } else {
 }
 }
-SM_INPUT(module1,top1,x66,x67) {
-x65();
-uint8_t* x68 = x66;
-int x69 = x67;
-x28(x68,x69);
+SM_FUNC(module1) void x62 () {
+x56 = true;
+int x59 = x46;
+x57 = x59;
+}
+SM_OUTPUT(module1,x91);
+SM_INPUT(module1,top1,x73,x74) {
+x72();
+uint8_t* x75 = x73;
+int x76 = x74;
+x28(x75,x76);
 x38();
 x45();
 x55();
+x62();
+int x92 = x57;
+x91((uint8_t*)&x92, sizeof(x92));
 }
 /*****************************************
   End of C Generated Code                  
