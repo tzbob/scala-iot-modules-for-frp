@@ -6,24 +6,22 @@ package be.kuleuven.FRP_EMBEDDED
 trait FRPDSLApplication extends FRPDSL {
   //def main(args: Array[String])
   
-  def createModule(moduleName: String) (graphfun: ()=>Unit ): Unit
-  def createMainFun(): Unit
+  def createModule (graphfun: (ModuleName)=>Unit ): Unit
   def createApplication(): Unit
 }
 
 trait FRPDSLApplicationRunner extends FRPDSLApplication with FRPDSLImpl {
 
-  override def createModule(moduleName: String) (graphfun: ()=>Unit ): Unit = {
-    if(moduleMap.contains(moduleName))
-      throw new IllegalArgumentException("Two modules with the same name.")
-    moduleMap += ((moduleName, graphfun))
+  object ModuleNumber {
+    private var id: Int = 0
+    def nextid = {id += 1;id}
   }
 
-  override def createMainFun(): Unit = {
-    for( (moduleName, graphfun) <- moduleMap) {
-      activeModule = moduleName
-      graphfun()
-    }
+  override def createModule (graphfun: (ModuleName)=>Unit ): Unit = {
+    val name: String = (new String("mod")).concat(ModuleNumber.nextid.toString)
+    moduleList += name
+    val mod = new ModuleName(name)
+    graphfun(mod)
   }
 }
 

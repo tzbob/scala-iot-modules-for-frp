@@ -16,18 +16,18 @@ trait EventOps extends NodeOps {
     val typOut: Typ[Out]
 
     // Public part
-    def constant[B:Typ] (c: Rep[B]): Event[B]
-    def map[B:Typ] (f: Rep[A] => Rep[B]): Event[B]
-    def filter (f: Rep[A] => Rep[Boolean]): Event[A]
-    def merge (e: Event[A], f:(Rep[A],Rep[A])=>Rep[A]): Event[A]
+    def constant[B:Typ] (c: Rep[B])(implicit n: ModuleName): Event[B]
+    def map[B:Typ] (f: Rep[A] => Rep[B])(implicit n: ModuleName): Event[B]
+    def filter (f: Rep[A] => Rep[Boolean])(implicit n: ModuleName): Event[A]
+    def merge (e: Event[A], f:(Rep[A],Rep[A])=>Rep[A])(implicit n: ModuleName): Event[A]
 
-    def startsWith(i: Rep[A]): Behavior[A]
-    def foldp[B:Typ]( f:((Rep[B],Rep[A]) => Rep[B]), init: Rep[B]): Behavior[B]
+    def startsWith(i: Rep[A])(implicit n: ModuleName): Behavior[A]
+    def foldp[B:Typ]( f:((Rep[B],Rep[A]) => Rep[B]), init: Rep[B])(implicit n: ModuleName): Behavior[B]
   }
 
-  def TimerEvent(i: Rep[Int])/*(implicit tI:Typ[Int])*/: Event[Int]
+  def TimerEvent(i: Rep[Int])(implicit n: ModuleName)/*(implicit tI:Typ[Int])*/: Event[Int]
 
-  def out[A](outputName: String, e: Event[A]): Unit
+  def out[A](e: Event[A])(implicit n: ModuleName): Unit
 }
 
 trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
@@ -133,16 +133,16 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     outList.toList
   }
 
-  override def out[A](outputName: String, e: Event[A]) = {
-    outList += new OutputEvent(outputName, e)
+  override def out[A](e: Event[A])(implicit n: ModuleName) = {
+    outList += new OutputEvent(e)
   }
 
-  case class OutputEvent[A](outputName: String, parent: Event[A]) {
+  case class OutputEvent[A](parent: Event[A])(implicit mn: ModuleName) {
     implicit val parentOut = parent.typOut
     lazy val parentvalue: Rep[A] = readVar(getEventValue(parent))
     lazy val parentfired: Rep[Boolean] = readVar(getEventFired(parent))
     lazy val outfun: Rep[((Ptr[Byte], Int))=>Unit] = {
-      outputfun (activeModule, outputName) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
+      outputfun (mn.name, "dummy") { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
         // TODO: this is only to show printing! make it generic maybe
         // only generated with the C code generator
         println(ptr_readVal(data))
@@ -153,13 +153,13 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
   }
 
-  override def TimerEvent(i: Rep[Int]) = InputEvent[Int](i)  // only conceptual
+  override def TimerEvent(i: Rep[Int])(implicit n: ModuleName) = InputEvent[Int](i)  // only conceptual
 
-  case class InputEvent[A] (i: Rep[A])(implicit tA:Typ[A]) extends EventNode[Unit,A] {
+  case class InputEvent[A] (i: Rep[A])(implicit tA:Typ[A], mn: ModuleName) extends EventNode[Unit,A] {
     val inputFun: () => Rep[Out] = () => i
     implicit val ptrbytetyp = ptrTyp[Byte]
     lazy val eventfun: Rep[((Ptr[Byte], Int)) => Unit] = {
-      namedfun2 (moduleName) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
+      namedfun2 (mn.name) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
         val input: Var[Int] = var_new[Int](unit(0))
         val i: Var[Int] = var_new[Int](unit(0))
         while(i<len){
@@ -182,14 +182,14 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     System.err.println("Create InputEvent(ID:" + id + "): " + inputNodeIDs)
   }
 
-  case class ConstantEvent[A,B](parent: Event[A], c : Rep[B])(implicit tB:Typ[B]) extends EventNode[A,B] {
+  case class ConstantEvent[A,B](parent: Event[A], c : Rep[B])(implicit tB:Typ[B], mn: ModuleName) extends EventNode[A,B] {
     override implicit val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = tB
     val constFun: Rep[In]=>Rep[Out] = _ => c
     lazy val parentvalue: Rep[In] = readVar(getEventValue(parent))
     lazy val parentfired: Rep[Boolean] = readVar(getEventFired(parent))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (moduleName) { () =>
+      namedfun0 (mn.name) { () =>
         if(parentfired) {
           var_assign(fired, unit(true))
           var_assign[Out](value, constFun(parentvalue))
@@ -205,14 +205,14 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     System.err.println("Create ConstantEvent(ID:" + id + "): " + inputNodeIDs)
   }
 
-  case class MapEvent[A,B](parent: Event[A], f: Rep[A] => Rep[B])(implicit tB:Typ[B]) extends EventNode[A,B] {
+  case class MapEvent[A,B](parent: Event[A], f: Rep[A] => Rep[B])(implicit tB:Typ[B], mn: ModuleName) extends EventNode[A,B] {
     override implicit val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = tB
     val mapFun: Rep[In]=>Rep[Out] = f
     lazy val parentvalue: Rep[In] = readVar(getEventValue(parent))
     lazy val parentfired: Rep[Boolean] = readVar(getEventFired(parent))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (moduleName) { () =>
+      namedfun0 (mn.name) { () =>
         if(parentfired) {
           var_assign(fired, unit(true))
           var_assign[Out](value, mapFun(parentvalue))
@@ -227,14 +227,14 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     System.err.println("Create MapEvent(ID:" + id + "): " + inputNodeIDs)
   }
 
-  case class FilterEvent[A](parent: Event[A], f: Rep[A] => Rep[Boolean])(implicit val tA: Typ[A]) extends EventNode[A,A] {
+  case class FilterEvent[A](parent: Event[A], f: Rep[A] => Rep[Boolean])(implicit val tA: Typ[A], mn: ModuleName) extends EventNode[A,A] {
     override val typIn: Typ[In] = parent.typOut //tA?
     override val typOut: Typ[Out] = typIn //tA?
     val filterFun: Rep[In]=>Rep[Boolean] = f
     lazy val parentvalue: Rep[In] = readVar(getEventValue(parent))
     lazy val parentfired: Rep[Boolean] = readVar(getEventFired(parent))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (moduleName) { () =>
+      namedfun0 (mn.name) { () =>
         if(parentfired) {
           if(filterFun(parentvalue) ) {
             var_assign(fired, unit(true))
@@ -255,7 +255,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     System.err.println("Create FilterEvent(ID:" + id + "): " + inputNodeIDs)
   }
 
-  case class MergeEvent[A](parents: (Event[A],Event[A]), f: (Rep[A],Rep[A])=>Rep[A] )(implicit tA:Typ[A]) extends EventNode[A,A] {
+  case class MergeEvent[A](parents: (Event[A],Event[A]), f: (Rep[A],Rep[A])=>Rep[A] )(implicit tA:Typ[A], mn: ModuleName) extends EventNode[A,A] {
     val mergeFun: (Rep[In],Rep[In])=>Rep[Out] = f
     //val parentEvents: List[Event[In]] = parents._1::parents._2::Nil
     val parentLeft: Event[In] = parents._1
@@ -272,7 +272,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     lazy val parentrightvalue: Rep[In] = readVar(getEventValue(parentRight))
     lazy val parentrightfired: Rep[Boolean] = readVar(getEventFired(parentRight))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (moduleName) { () =>
+      namedfun0 (mn.name) { () =>
         if(parentleftfired && parentrightfired ) {
           var_assign(fired, unit(true))
           var_assign[Out](value, mergeFun(parentleftvalue, parentrightvalue))
@@ -294,13 +294,13 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     System.err.println("Create MergeEvent(ID:" + id + "): " + inputNodeIDs + ". Left: " + inputIDsLeft + ", Right: " + inputIDsRight)
   }
 
-  case class ChangesEvent[A](parent: Behavior[A])(implicit val tA: Typ[A]) extends EventNode[A,A] {
+  case class ChangesEvent[A](parent: Behavior[A])(implicit val tA: Typ[A], mn: ModuleName) extends EventNode[A,A] {
     override val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = typIn
 
     lazy val parentvalue: Rep[In] = readVar(getBehaviorValue(parent))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (moduleName) { () =>
+      namedfun0 (mn.name) { () =>
           var_assign(fired, unit(true))
           var_assign[Out](value, parentvalue)
       }
@@ -312,14 +312,14 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
 
   }
 
-  case class SnapshotEvent[A:Typ,B:Typ](parentBeh: Behavior[A], parentEvent: Event[B]) extends EventNode[B,A] {
+  case class SnapshotEvent[A:Typ,B:Typ](parentBeh: Behavior[A], parentEvent: Event[B])(implicit mn: ModuleName) extends EventNode[B,A] {
     override val typIn: Typ[In] = parentEvent.typOut
     override val typOut: Typ[Out] = parentBeh.typOut
 
     lazy val parentvalue: Rep[Out] = readVar(getBehaviorValue(parentBeh))
     lazy val parentEventFired: Rep[Boolean] = readVar(getEventFired(parentEvent))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (moduleName) { () =>
+      namedfun0 (mn.name) { () =>
         if(parentEventFired) {
           var_assign(fired, unit(true))
           var_assign[Out](value, parentvalue)
@@ -337,7 +337,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     System.err.println("Create SnapshotEvent(ID:" + id + "): " + inputNodeIDs)
   }
 
-  abstract class EventNode[A,B:Typ] extends EventImpl[B] with NodeImpl[B] {
+  abstract class EventNode[A,B:Typ](implicit mn: ModuleName) extends EventImpl[B] with NodeImpl[B] {
     addNodeToNodemap(id,this)
     override type In = A
     override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()
@@ -345,12 +345,12 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
       childNodeIDs.add(id)
     }
 
-    override val moduleName = activeModule
+    override val moduleName = mn
 
     //lazy val fired = vardecl_new[Boolean]()
-    lazy val fired = vardeclmod_new[Boolean](moduleName)
+    lazy val fired = vardeclmod_new[Boolean](moduleName.name)
     //lazy val value = vardecl_new[B]()
-    lazy val value = vardeclmod_new[B](moduleName)
+    lazy val value = vardeclmod_new[B](moduleName.name)
 
     override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
           if (isInputEvent(this)) {
@@ -387,15 +387,15 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
   }
 
   trait EventImpl[A] extends Event[A] {
-    override def constant[B:Typ](c: Rep[B]): Event[B] = ConstantEvent[A,B](this, c)
-    override def map[B:Typ](f: Rep[A] => Rep[B]): Event[B] = MapEvent[A,B](this, f)
-    override def filter(f: Rep[A] => Rep[Boolean]): Event[A] = FilterEvent[A](this, f)(typOut)
-    override def merge(e: Event[A], f: (Rep[A],Rep[A])=>Rep[A]) = MergeEvent[A]( (this, e), f)(typOut)
+    override def constant[B:Typ](c: Rep[B])(implicit n: ModuleName): Event[B] = ConstantEvent[A,B](this, c)
+    override def map[B:Typ](f: Rep[A] => Rep[B])(implicit n: ModuleName): Event[B] = MapEvent[A,B](this, f)
+    override def filter(f: Rep[A] => Rep[Boolean])(implicit n: ModuleName): Event[A] = FilterEvent[A](this, f)(typOut,n)
+    override def merge(e: Event[A], f: (Rep[A],Rep[A])=>Rep[A])(implicit n: ModuleName) = MergeEvent[A]( (this, e), f)(typOut, n)
 
-    override def startsWith(i: Rep[A]): Behavior[A] = StartsWithBehavior(this, i)(typOut)
-    override def foldp[B:Typ](f: (Rep[B], Rep[A]) => Rep[B], init: Rep[B]): Behavior[B] = {
+    override def startsWith(i: Rep[A])(implicit n: ModuleName): Behavior[A] = StartsWithBehavior(this, i)(typOut,n)
+    override def foldp[B](f: (Rep[B], Rep[A]) => Rep[B], init: Rep[B])(implicit tB: Typ[B],n: ModuleName): Behavior[B] = {
       implicit val tOut = typOut
-      FoldpBehavior[B,A](this, f, init)
+      FoldpBehavior[B,A](this, f, init)(tB,typOut,n)
     }
   }
 }

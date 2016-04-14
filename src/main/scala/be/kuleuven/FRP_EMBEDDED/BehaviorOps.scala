@@ -10,27 +10,27 @@ trait BehaviorOps extends NodeOps {
   trait Behavior[A] extends Node[A] {
     val typOut: Typ[A]
 
-    def valueNow (): Rep[A]
+    //def valueNow (): Rep[A]
 
     // map2: Combine 2 behaviors (merge-like). Whenever a behaviors value changes, the output behavior applies
     // the function f to both child behaviors, changing its value to the result of that function
-    def map2[B:Typ,C:Typ] (b: Behavior[B], f: (Rep[A], Rep[B])=>Rep[C]): Behavior[C]
+    def map2[B:Typ,C:Typ] (b: Behavior[B], f: (Rep[A], Rep[B])=>Rep[C])(implicit n: ModuleName): Behavior[C]
     //def map3
     //def map4
     //...
 
     // General snapshot: Output event fires an event containing result of function of current value of behavior,
     // whenever the input event e (carrying the function to be applied to value of behavior) fires an event
-    def genSnapshot[B] (e: Event[A=>B]): Event[B]
+    def genSnapshot[B] (e: Event[A=>B])(implicit n: ModuleName): Event[B]
     // Snapshot: Output event fires an event containing the current value of behavior,
     // each time input e fires an event
-    def snapshot[B:Typ] (e: Event[B]): Event[A]
+    def snapshot[B:Typ] (e: Event[B])(implicit n: ModuleName): Event[A]
     // changes: create an event stream that fires an event each time the value of the behavior changes,
     // carrying the new value
-    def changes (): Event[A]
+    def changes ()(implicit n: ModuleName): Event[A]
   }
 
-  def constantB[A:Typ](value: Rep[A]): Behavior[A]
+  def constantB[A:Typ](value: Rep[A])(implicit n: ModuleName): Behavior[A]
 }
 
 trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
@@ -88,16 +88,16 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     }
   }
 
-  override def constantB[A:Typ](c: Rep[A]): Behavior[A] = new ConstantBehavior[A](c)
+  override def constantB[A:Typ](c: Rep[A])(implicit n: ModuleName): Behavior[A] = new ConstantBehavior[A](c)
 
-  case class ConstantBehavior[A](init: Rep[A])(implicit val tA: Typ[A]) extends BehaviorNode[A] {
+  case class ConstantBehavior[A](init: Rep[A])(implicit val tA: Typ[A], mn: ModuleName) extends BehaviorNode[A] {
     override val typOut = tA
     val level = 0
     override val inputNodeIDs: Set[NodeID] = HashSet(this.id)
     //lazy val value = var_new[A](init)
-    lazy val value = vardeclmod_new[A](moduleName)
+    lazy val value = vardeclmod_new[A](mn.name)
     lazy val valueInit = var_assign[A](value, init)
-    override def valueNow(): Rep[A] = readVar(value)
+    //override def valueNow(): Rep[A] = readVar(value)
     override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
       () => {
         f()
@@ -109,7 +109,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     System.err.println("Create ConstantBehavior(ID:" + id + "): " + inputNodeIDs)
   }
 
-  case class Map2Behavior[A:Typ,B:Typ,C](parents: (Behavior[A],Behavior[B]), f: (Rep[A],Rep[B])=>Rep[C])(implicit val tC: Typ[C]) extends BehaviorNode[C]{
+  case class Map2Behavior[A:Typ,B:Typ,C](parents: (Behavior[A],Behavior[B]), f: (Rep[A],Rep[B])=>Rep[C])(implicit val tC: Typ[C], mn: ModuleName) extends BehaviorNode[C]{
     override val typOut = tC
     val parentLeft: Behavior[A] = parents._1
     val parentRight: Behavior[B] = parents._2
@@ -120,10 +120,10 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     lazy val parentleftvalue = getBehaviorValue(parentLeft)
     lazy val parentrightvalue = getBehaviorValue(parentRight)
     //lazy val value = var_new[C](f(parentleftvalue, parentrightvalue))
-    lazy val value = vardeclmod_new[C](moduleName)
+    lazy val value = vardeclmod_new[C](mn.name)
     lazy val valueInit = var_assign[C](value, f(parentleftvalue, parentrightvalue))
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (moduleName) { () =>
+      namedfun0 (mn.name) { () =>
         var_assign[C](value, f(parentleftvalue, parentrightvalue))
         unitToRepUnit( () )
       }
@@ -138,24 +138,24 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
       }
     }
 
-    override def valueNow(): Rep[C] = readVar(value)
+    //override def valueNow(): Rep[C] = readVar(value)
 
     System.err.println("Create Map2Behavior(ID:" + id + "): " + inputNodeIDs)
   }
 
-  case class FoldpBehavior[A,B:Typ](parent: Event[B], f: (Rep[A],Rep[B])=>Rep[A], init: Rep[A])(implicit val tA: Typ[A]) extends BehaviorNode[A] {
+  case class FoldpBehavior[A,B](parent: Event[B], f: (Rep[A],Rep[B])=>Rep[A], init: Rep[A])(implicit val tA: Typ[A], val tB: Typ[B], mn: ModuleName) extends BehaviorNode[A] {
     override val typOut = tA
     override val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
     //lazy val value = var_new[A](init)
-    lazy val value = vardeclmod_new[A](moduleName)
+    lazy val value = vardeclmod_new[A](mn.name)
     lazy val valueInit = var_assign[A](value, init)
 
     lazy val parentvalue: Rep[B] = getEventValue(parent)
     lazy val parentfired: Rep[Boolean] = getEventFired(parent)
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (moduleName) { () =>
+      namedfun0 (mn.name) { () =>
         if(parentfired) {
           var_assign[A](value, f(readVar(value), parentvalue))
         }
@@ -172,24 +172,24 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
       }
     }
 
-    override def valueNow(): Rep[A] = readVar(value)
+    //override def valueNow(): Rep[A] = readVar(value)
 
     System.err.println("Create FoldpBehavior(ID:" + id + "): " + inputNodeIDs)
   }
 
-  case class StartsWithBehavior[A](parent: Event[A], init: Rep[A])(implicit val tA: Typ[A]) extends BehaviorNode[A] {
+  case class StartsWithBehavior[A](parent: Event[A], init: Rep[A])(implicit val tA: Typ[A], mn: ModuleName) extends BehaviorNode[A] {
     override val typOut = tA
     override val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
     //lazy val value = var_new[A](init)
-    lazy val value = vardeclmod_new[A](moduleName)
+    lazy val value = vardeclmod_new[A](mn.name)
     lazy val valueInit = var_assign[A](value, init)
 
     lazy val parentvalue: Rep[A] = getEventValue(parent)
     lazy val parentfired: Rep[Boolean] = getEventFired(parent)
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (moduleName) { () =>
+      namedfun0 (mn.name) { () =>
         if(parentfired) {
           var_assign[A](value, parentvalue)
         }
@@ -206,16 +206,16 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
       }
     }
 
-    override def valueNow(): Rep[A] = readVar(value)
+    //override def valueNow(): Rep[A] = readVar(value)
 
     System.err.println("Create StartsWithBehavior(ID:" + id + "): " + inputNodeIDs)
   }
 
-  abstract class BehaviorNode[A] extends BehaviorImpl[A] with NodeImpl[A] {
+  abstract class BehaviorNode[A](implicit mn: ModuleName) extends BehaviorImpl[A] with NodeImpl[A] {
     addNodeToNodemap(id,this)
     addBehaviorID(id)
 
-    override val moduleName = activeModule
+    override val moduleName = mn
 
     override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()
     override def addChild(id: NodeID): Unit = {
@@ -239,15 +239,15 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
 
   trait BehaviorImpl[A] extends Behavior[A] {
 
-    override def snapshot[B:Typ](e: Event[B]): Event[A] = {
+    override def snapshot[B:Typ](e: Event[B])(implicit n: ModuleName): Event[A] = {
       implicit val tOut = typOut
       SnapshotEvent(this, e)
     }
-    override def changes(): Event[A] = ChangesEvent(this)(typOut)
-    override def map2[B:Typ, C:Typ](b: Behavior[B], f: (Rep[A], Rep[B]) => Rep[C]): Behavior[C] = {
+    override def changes()(implicit n: ModuleName): Event[A] = ChangesEvent(this)(typOut,n)
+    override def map2[B:Typ, C:Typ](b: Behavior[B], f: (Rep[A], Rep[B]) => Rep[C])(implicit n: ModuleName): Behavior[C] = {
       implicit val tOut: Typ[A] = typOut
       Map2Behavior((this, b), f)
     }
-    override def genSnapshot[B](e: Event[(A) => B]): Event[B] = ???
+    override def genSnapshot[B](e: Event[(A) => B])(implicit n: ModuleName): Event[B] = ???
   }
 }
