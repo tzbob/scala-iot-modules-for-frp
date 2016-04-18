@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <stdbool.h>
 bool x0;
 int x1;
@@ -175,10 +176,10 @@ x157 = x161;
 x156 = false;
 }
 };
-void top1(uint8_t* x177,int x178) {
-uint8_t* x179 = x177;
-int x180 = x178;
-x28(x179,x180);
+void top1(uint8_t* x187,int x188) {
+uint8_t* x189 = x187;
+int x190 = x188;
+x28(x189,x190);
 x40();
 x52();
 x69();

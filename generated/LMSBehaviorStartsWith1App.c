@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <stdbool.h>
 bool x0;
 int x1;
@@ -11,7 +12,7 @@ bool x29;
 int x30;
 int x41;
 int x49;
-void x57() {
+void x59() {
 int x50 = x49;
 bool x51 = x50 == 0;
 if (x51) {
@@ -19,6 +20,8 @@ x41 = 1;
 x49 = 1;
 } else {
 }
+x29 = false;
+x0 = false;
 };
 void x28(uint8_t* x2,int x3) {
 int x6 = 0;
@@ -63,11 +66,11 @@ x41 = x43;
 } else {
 }
 };
-void top1(uint8_t* x58,int x59) {
-x57();
-uint8_t* x60 = x58;
-int x61 = x59;
-x28(x60,x61);
+void top1(uint8_t* x60,int x61) {
+x59();
+uint8_t* x62 = x60;
+int x63 = x61;
+x28(x62,x63);
 x40();
 x48();
 };

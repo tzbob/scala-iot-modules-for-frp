@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <stdbool.h>
 bool x0;
 int x1;
@@ -13,16 +14,22 @@ int x58;
 bool x68;
 int x69;
 int x80;
-int x90;
-void x99() {
-int x91 = x90;
-bool x92 = x91 == 0;
-if (x92) {
+bool x90;
+int x91;
+int x97;
+void x110() {
+int x98 = x97;
+bool x99 = x98 == 0;
+if (x99) {
 x58 = 0;
 x80 = 0;
-x90 = 1;
+x97 = 1;
 } else {
 }
+x0 = false;
+x90 = false;
+x29 = false;
+x68 = false;
 };
 void x28(uint8_t* x2,int x3) {
 int x6 = 0;
@@ -59,21 +66,12 @@ x58 = x62;
 } else {
 }
 };
-void top1(uint8_t* x100,int x101) {
-x99();
-uint8_t* x102 = x100;
-int x103 = x101;
-x28(x102,x103);
+void top1(uint8_t* x111,int x112) {
+x110();
+uint8_t* x113 = x111;
+int x114 = x112;
+x28(x113,x114);
 x67();
-};
-int x111;
-void x118() {
-int x112 = x111;
-bool x113 = x112 == 0;
-if (x113) {
-x111 = 1;
-} else {
-}
 };
 void x57(uint8_t* x31,int x32) {
 int x35 = 0;
@@ -120,13 +118,29 @@ x80 = x84;
 } else {
 }
 };
-void top3(uint8_t* x119,int x120) {
-x118();
-uint8_t* x121 = x119;
-int x122 = x120;
-x57(x121,x122);
+void x96() {
+x90 = true;
+int x93 = x80;
+x91 = x93;
+};
+void x139(uint8_t* x132,int x133) {
+uint8_t* x134 = x132;
+uint8_t x136 = *x134;
+printf("%u\n",x136);
+};
+void x143() {
+int x140 = x91;
+x139((uint8_t*)&x140, sizeof(x140));
+};
+void top3(uint8_t* x122,int x123) {
+x110();
+uint8_t* x124 = x122;
+int x125 = x123;
+x57(x124,x125);
 x79();
 x89();
+x96();
+x143();
 };
 /*****************************************
   End of C Generated Code                  

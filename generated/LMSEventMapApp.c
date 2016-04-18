@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <stdbool.h>
 bool x0;
 int x1;
@@ -60,10 +61,10 @@ x43 = x48;
 x42 = false;
 }
 };
-void top1(uint8_t* x64,int x65) {
-uint8_t* x66 = x64;
-int x67 = x65;
-x28(x66,x67);
+void top1(uint8_t* x67,int x68) {
+uint8_t* x69 = x67;
+int x70 = x68;
+x28(x69,x70);
 x41();
 x55();
 };

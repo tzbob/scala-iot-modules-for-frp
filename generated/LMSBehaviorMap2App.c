@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <stdbool.h>
 bool x0;
 int x1;
@@ -17,7 +18,7 @@ int x82;
 int x92;
 int x102;
 int x109;
-void x122() {
+void x126() {
 int x110 = x109;
 bool x111 = x110 == 0;
 if (x111) {
@@ -30,6 +31,10 @@ x102 = x116;
 x109 = 1;
 } else {
 }
+x58 = false;
+x0 = false;
+x70 = false;
+x29 = false;
 };
 void x28(uint8_t* x2,int x3) {
 int x6 = 0;
@@ -82,23 +87,14 @@ int x104 = x82;
 int x105 = x103 + x104;
 x102 = x105;
 };
-void top1(uint8_t* x123,int x124) {
-x122();
-uint8_t* x125 = x123;
-int x126 = x124;
-x28(x125,x126);
+void top1(uint8_t* x127,int x128) {
+x126();
+uint8_t* x129 = x127;
+int x130 = x128;
+x28(x129,x130);
 x81();
 x101();
 x108();
-};
-int x136;
-void x143() {
-int x137 = x136;
-bool x138 = x137 == 0;
-if (x138) {
-x136 = 1;
-} else {
-}
 };
 void x57(uint8_t* x31,int x32) {
 int x35 = 0;
@@ -145,11 +141,11 @@ x82 = x86;
 } else {
 }
 };
-void top4(uint8_t* x144,int x145) {
-x143();
-uint8_t* x146 = x144;
-int x147 = x145;
-x57(x146,x147);
+void top4(uint8_t* x140,int x141) {
+x126();
+uint8_t* x142 = x140;
+int x143 = x141;
+x57(x142,x143);
 x69();
 x91();
 x108();

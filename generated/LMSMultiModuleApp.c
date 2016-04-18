@@ -4,31 +4,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <stdbool.h>
-SM_DATA(mod2) bool x0;
-SM_DATA(mod2) int x1;
-SM_DATA(mod1) bool x29;
-SM_DATA(mod1) int x30;
-SM_DATA(mod2) int x58;
-SM_DATA(mod1) int x68;
-SM_DATA(mod2) bool x78;
-SM_DATA(mod2) int x79;
-SM_DATA(mod1) bool x85;
-SM_DATA(mod1) int x86;
-SM_DATA(mod2) int x92;
-SM_DATA(mod1) int x102;
-SM_DATA(mod2) int x112;
-SM_FUNC(mod2) void x121 () {
-int x113 = x112;
-bool x114 = x113 == 0;
-if (x114) {
-x58 = 2;
-x92 = 20;
-x112 = 1;
+SM_DATA(mod1) bool x0;
+SM_DATA(mod1) int x1;
+SM_DATA(mod1) int x29;
+SM_DATA(mod1) bool x39;
+SM_DATA(mod1) int x40;
+SM_DATA(mod1) int x46;
+SM_DATA(mod1) bool x56;
+SM_DATA(mod1) int x57;
+SM_DATA(mod1) int x63;
+SM_FUNC(mod1) void x75 () {
+int x64 = x63;
+bool x65 = x64 == 0;
+if (x65) {
+x29 = 1;
+x46 = 10;
+x63 = 1;
 } else {
 }
+x56 = false;
+x0 = false;
+x39 = false;
 }
-SM_FUNC(mod2) void x28 (uint8_t* x2,int x3) {
+SM_FUNC(mod1) void x28 (uint8_t* x2,int x3) {
 int x6 = 0;
 int x7 = 0;
 int x5 = x3;
@@ -53,109 +53,144 @@ int x24 = x6;
 int x25 = (int ) x24;
 x1 = x25;
 }
-SM_FUNC(mod2) void x67 () {
-bool x59 = x0;
-if (x59) {
-int x60 = x58;
-int x61 = x1;
-int x62 = x60 + x61;
-x58 = x62;
+SM_FUNC(mod1) void x38 () {
+bool x30 = x0;
+if (x30) {
+int x31 = x29;
+int x32 = x1;
+int x33 = x31 + x32;
+x29 = x33;
 } else {
 }
 }
-SM_FUNC(mod2) void x84 () {
-x78 = true;
-int x81 = x58;
-x79 = x81;
+SM_FUNC(mod1) void x45 () {
+x39 = true;
+int x42 = x29;
+x40 = x42;
 }
-SM_FUNC(mod2) void x101 () {
-bool x93 = x78;
-if (x93) {
-int x94 = x92;
-int x95 = x79;
-int x96 = x94 + x95;
-x92 = x96;
+SM_FUNC(mod1) void x55 () {
+bool x47 = x39;
+if (x47) {
+int x48 = x46;
+int x49 = x40;
+int x50 = x48 + x49;
+x46 = x50;
 } else {
 }
 }
-SM_INPUT(mod2,top5,x122,x123) {
-x121();
-uint8_t* x124 = x122;
-int x125 = x123;
-x28(x124,x125);
-x67();
-x84();
-x101();
+SM_FUNC(mod1) void x62 () {
+x56 = true;
+int x59 = x46;
+x57 = x59;
 }
-SM_DATA(mod1) int x135;
-SM_FUNC(mod1) void x144 () {
-int x136 = x135;
-bool x137 = x136 == 0;
-if (x137) {
-x68 = 1;
-x102 = 10;
-x135 = 1;
+SM_OUTPUT(mod1,x94);
+SM_FUNC(mod1) void x98 () {
+int x95 = x57;
+x94((uint8_t*)&x95, sizeof(x95));
+}
+SM_INPUT(mod1,top1,x76,x77) {
+x75();
+uint8_t* x78 = x76;
+int x79 = x77;
+x28(x78,x79);
+x38();
+x45();
+x55();
+x62();
+x98();
+}
+SM_DATA(mod2) bool x103;
+SM_DATA(mod2) int x104;
+SM_DATA(mod2) int x132;
+SM_DATA(mod2) bool x142;
+SM_DATA(mod2) int x143;
+SM_DATA(mod2) int x149;
+SM_DATA(mod2) bool x159;
+SM_DATA(mod2) int x160;
+SM_DATA(mod2) int x166;
+SM_FUNC(mod2) void x178 () {
+int x167 = x166;
+bool x168 = x167 == 0;
+if (x168) {
+x132 = 2;
+x149 = 20;
+x166 = 1;
 } else {
 }
+x159 = false;
+x103 = false;
+x142 = false;
 }
-SM_FUNC(mod1) void x57 (uint8_t* x31,int x32) {
-int x35 = 0;
-int x36 = 0;
-int x34 = x32;
-uint8_t* x33 = x31;
+SM_FUNC(mod2) void x131 (uint8_t* x105,int x106) {
+int x109 = 0;
+int x110 = 0;
+int x108 = x106;
+uint8_t* x107 = x105;
 for (;;) {
-int x37 = x36;
-bool x38 = x37 < x34;
-if (!x38) break;
-int x40 = x36;
-uint8_t x41 = x33[x40];
-int x45 = x35;
-int x42 = (int ) x41;
-int x43 = x40 * 8;
-int x44 = x42 << x43;
-int x46 = x45 + x44;
-x35 = x46;
-int x48 = x40 + 1;
-x36 = x48;
+int x111 = x110;
+bool x112 = x111 < x108;
+if (!x112) break;
+int x114 = x110;
+uint8_t x115 = x107[x114];
+int x119 = x109;
+int x116 = (int ) x115;
+int x117 = x114 * 8;
+int x118 = x116 << x117;
+int x120 = x119 + x118;
+x109 = x120;
+int x122 = x114 + 1;
+x110 = x122;
 }
-x29 = true;
-int x53 = x35;
-int x54 = (int ) x53;
-x30 = x54;
+x103 = true;
+int x127 = x109;
+int x128 = (int ) x127;
+x104 = x128;
 }
-SM_FUNC(mod1) void x77 () {
-bool x69 = x29;
-if (x69) {
-int x70 = x68;
-int x71 = x30;
-int x72 = x70 + x71;
-x68 = x72;
+SM_FUNC(mod2) void x141 () {
+bool x133 = x103;
+if (x133) {
+int x134 = x132;
+int x135 = x104;
+int x136 = x134 + x135;
+x132 = x136;
 } else {
 }
 }
-SM_FUNC(mod1) void x91 () {
-x85 = true;
-int x88 = x68;
-x86 = x88;
+SM_FUNC(mod2) void x148 () {
+x142 = true;
+int x145 = x132;
+x143 = x145;
 }
-SM_FUNC(mod1) void x111 () {
-bool x103 = x85;
-if (x103) {
-int x104 = x102;
-int x105 = x86;
-int x106 = x104 + x105;
-x102 = x106;
+SM_FUNC(mod2) void x158 () {
+bool x150 = x142;
+if (x150) {
+int x151 = x149;
+int x152 = x143;
+int x153 = x151 + x152;
+x149 = x153;
 } else {
 }
 }
-SM_INPUT(mod1,top1,x145,x146) {
-x144();
-uint8_t* x147 = x145;
-int x148 = x146;
-x57(x147,x148);
-x77();
-x91();
-x111();
+SM_FUNC(mod2) void x165 () {
+x159 = true;
+int x162 = x149;
+x160 = x162;
+}
+SM_OUTPUT(mod2,x197);
+SM_FUNC(mod2) void x201 () {
+int x198 = x160;
+x197((uint8_t*)&x198, sizeof(x198));
+}
+SM_INPUT(mod2,top6,x179,x180) {
+x178();
+uint8_t* x181 = x179;
+int x182 = x180;
+x131(x181,x182);
+x141();
+x148();
+x158();
+x165();
+x201();
 }
 /*****************************************
   End of C Generated Code                  
