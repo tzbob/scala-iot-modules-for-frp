@@ -21,7 +21,7 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
 
   case class NamedLambda[A:Typ,B:Typ](moduleName: String, f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
   case class NamedLambdaInput[A:Typ,B:Typ](moduleName: String,funName: String, f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
-  // TODO: reduce to case class to the minimum needed, it's actually just a dummy function
+  // TODO: reduce to case class to the minimum needed, it's actually just a dummy function in case of SMC
   case class NamedLambdaOutput[A:Typ,B:Typ](moduleName: String,funName: String, f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
   case class NamedLambdaEntry[A:Typ,B:Typ](moduleName: String, funName: String, f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
   case class ApplyDecl[A:Typ,B:Typ](f: Exp[A => B]) extends Def[B] { val mA = manifest[A]; val mB = manifest[B] }
@@ -53,6 +53,9 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
   override def doApplyOut[A:Typ,B:Typ,C](funName: String, f: Exp[A => B], arg: Exp[C])(implicit pos: SourceContext): Exp[B] = {
     //val x1 = unbox(arg) // no need for anymore
     f match {
+      case Def(NamedLambdaOutput(_,_,_,_,y)) =>
+        val ye = summarizeEffects(y)
+        reflectEffect(ApplyOut(funName, f, arg), ye)
       case _ =>
         reflectEffect(ApplyOut(funName, f, arg))
     }
