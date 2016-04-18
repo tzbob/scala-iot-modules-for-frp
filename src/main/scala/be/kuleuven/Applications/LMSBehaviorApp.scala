@@ -70,6 +70,7 @@ trait LMSBehaviorSnapshotApp extends FRPDSLApplication {
       val ss = fp1.snapshot(t2)
 
       val fp2 = ss.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 0)
+      out("out", fp2.changes())
     }
   }
 }
@@ -82,6 +83,7 @@ trait LMSMultiModuleApp extends FRPDSLApplication {
       val fp = t.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 1)
       val c = fp.changes()
       val fp2 = c.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 10)
+      out("out1", fp2.changes())
     }
 
     createModule { implicit n:ModuleName =>
@@ -89,6 +91,7 @@ trait LMSMultiModuleApp extends FRPDSLApplication {
       val fp = t.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 2)
       val c = fp.changes()
       val fp2 = c.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 20)
+      out("out2", fp2.changes())
     }
   }
 }
@@ -151,7 +154,7 @@ object LMSBehaviorAppRunner {
     }
 
     withOutFile("LMSBehaviorChangesApp.c") {
-      new LMSBehaviorChangesApp with CFRPDSLApplicationRunner {
+      new LMSBehaviorChangesApp with SMCFRPDSLApplicationrunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("BehaviorChangesApp:")
         System.err.println("Creating flow graph...")

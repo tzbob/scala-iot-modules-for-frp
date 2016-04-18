@@ -19,8 +19,8 @@ trait FRPDSLApplicationRunner extends FRPDSLApplication with FRPDSLImpl {
 
   override def createModule (graphfun: (ModuleName)=>Unit ): Unit = {
     val name: String = (new String("mod")).concat(ModuleNumber.nextid.toString)
-    moduleList += name
     val mod = new ModuleName(name)
+    moduleNameList += mod
     graphfun(mod)
   }
 }

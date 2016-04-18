@@ -45,6 +45,17 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     listbuilder.toList
   }
 
+  def getEventNodes: List[Event[_]] = {
+    val listbuilder = scala.collection.mutable.ListBuffer.empty[Event[_]]
+    getNodeMap.values.foreach( n =>
+          getOptionEvent(n) match {
+            case Some(e) => listbuilder += e
+            case None => // do not add it
+          }
+    )
+    listbuilder.toList
+  }
+
   def buildGraphTopDownEvent[T](e: Event[T]): Unit = {
     e match {
       case en @ MergeEvent(_,_) =>
@@ -129,6 +140,19 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     }
   }
 
+  def getOptionEvent[X](n: NodeImpl[X]): Option[Event[X]] = {
+    n match {
+      case en @ MergeEvent(_,_) => Some(en)
+      case en @ ConstantEvent(_,_) => Some(en)
+      case en @ FilterEvent(_,_) => Some(en)
+      case en @ MapEvent(_,_) => Some(en)
+      case en @ ChangesEvent(_) => Some(en)
+      case en @ SnapshotEvent(_,_) => Some(en)
+      case en @ InputEvent(_) => Some(en)
+      case _ => None
+    }
+  }
+
   private val outMap:scala.collection.mutable.Map[ModuleName,ListBuffer[OutputEvent[_]]] = scala.collection.mutable.HashMap()
   def getOutMap: Map[ModuleName, List[OutputEvent[_]]] = {
     val newMap: scala.collection.mutable.Map[ModuleName,List[OutputEvent[_]]] = scala.collection.mutable.HashMap()
@@ -161,6 +185,16 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
 
         unitToRepUnit( () )
       }
+    }
+
+    lazy val eventfun: Rep[(Unit)=>Unit] = {
+      namedfun0 (mn.name) { () =>
+        if(parentfired){
+          doApplyOut("dummy", outfun, parentvalue)
+        }
+        unitToRepUnit( () )
+      }
+
     }
     val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
   }

@@ -15,65 +15,65 @@ trait FRPDSL
 
 trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
-  protected val moduleList = scala.collection.mutable.ListBuffer[String]()
+  protected val moduleNameList = scala.collection.mutable.ListBuffer[ModuleName]()
 
   override def generator: () => Rep[Unit] = {
     var program: () => Rep[Unit] = () => unitToRepUnit( () )
 
-    // generate per level
-    System.err.println("max level : "+ getMaxLevel)
-    for( i <- 0 to getMaxLevel){
-      val nodes = getNodesOnLevel(getNodeMap.values.toList, i)
-      nodes.foreach { node => program = node.generateNode(program) }
+
+    for( mn <- moduleNameList.toList) {
+      // generate per level
+      System.err.println("max level : " + getMaxLevel)
+      for (i <- 0 to getMaxLevel) {
+        val nodes = getNodesOnLevel(getNodeMap.values.toList, i)
+        val modnodes = nodes.filter(n => n.moduleName == mn)
+        modnodes.foreach { node => program = node.generateNode(program) }
+      }
+
+      //get all input events
+      val inputs = getInputEventNodes
+      val modinputs = inputs.filter(n => n.moduleName == mn)
+
+      // function to reset all event fired values
+      val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName == mn)
+
+      lazy val initialised = vardeclmod_new[Int](mn.name)
+      lazy val initModule: Rep[(Unit) => Unit] = namedfun0(mn.name) { () =>
+        if (readVar(initialised) == 0) {
+          for (i <- 0 to getMaxLevel) {
+            getNodesOnLevel(behaviorsInModule.toList, i)
+              .foreach(_.getInitializer())
+          }
+          var_assign(initialised, 1)
+        }
+
+        getEventNodes
+          .filter(e => e.moduleName == mn)
+          .foreach(e => var_assign(getEventFired(e), false))
+        unitToRepUnit(())
+      }
+
+      val progNow = program
+      program =
+        () => {
+          progNow()
+          initialised
+          initModule
+          unitToRepUnit(())
+        }
+
+      // generate top functions
+      for( ie <- modinputs) {
+        System.err.println("Generate dependencies of inputnode " + ie.id)
+        program = generateTopFunction(ie, program, initModule)
+      }
     }
-
-    //get all input events
-    val inputMap = getInputEventNodes
-
-    // generate top functions
-    for( ie <- inputMap) {
-      System.err.println("Generate dependencies of inputnode " + ie.id)
-      program = generateTopFunction(ie, program)
-    }
-
-    //TODO: this migrated to the top function - can be deleted
-    //program = generateBehaviorInit(program)
 
     program
   }
 
-  // SM_DATA can only contain declarations, so we need an initializer for all behaviors
-  def generateBehaviorInit(f: () => Rep[Unit]): () => Rep[Unit] = {
-    System.err.println()
-    System.err.println("Generating init functions for behaviors:")
+  def generateTopFunction[X](input: InputEvent[X], f: () => Rep[Unit], initModule: => Rep[(Unit)=>Unit]): () => Rep[Unit] = {
 
-    for( moduleName <- moduleList) {
-      System.err.println("Behaviors in module: " + moduleName)
-      getBehaviorNodes
-        .values
-        .filter( node => node.moduleName.name == moduleName)
-        .foreach( node => System.err.println(node.id) )
-    }
-
-    () => {
-      f()
-      for( moduleName <- moduleList) {
-        val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName.name == moduleName)
-
-        val inits = entryfun0 (moduleName, "init_"+moduleName) { () =>
-          for( i <- 0 to getMaxLevel){
-            getNodesOnLevel(behaviorsInModule.toList, i)
-            .foreach( _.getInitializer() )
-          }
-        }
-        doApplyDecl(inits)
-      }
-
-      unitToRepUnit( () )
-    }
-  }
-
-  def generateTopFunction[X](input: InputEvent[X], f: () => Rep[Unit]): () => Rep[Unit] = {
     System.err.println("top" + input.id)
 
     val descendantIDs = getDecendantNodeIDs(input).filter(id => id != input.id)
@@ -89,38 +89,27 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     for( (mn, l) <- getOutMap) {
       System.err.println(mn.name)
     }
+
     val outputs = getOutMap.get(input.moduleName) match {
       case Some(outList) =>
         outList.filter(x => x.inputNodeIDs.contains(input.id))
       case None =>
         Nil
     }
-    //val outputs = getOutList.filter( x => x.inputNodeIDs.contains(input.id))
+
     outputs.foreach(x => System.err.println("Output for: " + x.parent.id))
-
-
     val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName == input.moduleName)
 
     () => {
       f()
 
-      val initialised = vardeclmod_new[Int](input.moduleName.name)
-      val initModule: Rep[(Unit)=>Unit] = namedfun0 (input.moduleName.name) { () =>
-        if(readVar(initialised) == 0){
-          for( i <- 0 to getMaxLevel){
-            getNodesOnLevel(behaviorsInModule.toList, i)
-              .foreach( _.getInitializer() )
-          }
-          var_assign(initialised, 1)
-        }
-        unitToRepUnit( () )
-      }
       val top = inputfun(input.moduleName.name, "top"+input.id) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
         if(behaviorsInModule.size > 0) initModule()
         input.eventfun(data,len)
         eventsTO.foreach( x => {(x.getFunction())( () ) } ) // apply the functions in this context
 
-        outputs.foreach( x => doApplyOut("dummy", x.outfun, x.parentvalue))
+        //outputs.foreach( x => doApplyOut("dummy", x.outfun, x.parentvalue)) // This gives you effect errors!
+        outputs.foreach( x => x.eventfun( () ) )
       }
       doApplyDecl(top)
       unitToRepUnit( () )

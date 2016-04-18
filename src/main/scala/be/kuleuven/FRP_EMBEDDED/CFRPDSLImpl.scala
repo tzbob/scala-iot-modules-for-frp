@@ -25,10 +25,11 @@ trait CFRPDSLImpl extends FRPDSLImpl
     System.err.println("InputEvents:")
     inputevents.foreach(System.err.println )
 
+    //TODO: remove, or call it a leaf node
     //get all end nodes
-    val outputNodes = getOutputNodes.values.toList
-    System.err.println("OutputNodes:")
-    outputNodes.foreach(System.err.println )
+    val leafNodes = getOutputNodes.values.toList
+    System.err.println("LeafNodes:")
+    leafNodes.foreach(System.err.println )
   }
 
   def buildProgram(): () => Rep[Unit] = {
