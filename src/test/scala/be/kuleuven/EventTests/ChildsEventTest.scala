@@ -10,7 +10,7 @@ class ChildsEventTest extends FunSuite {
       import scala.collection.immutable.{Set => SSet}
 
       override def createApplication: Unit = {
-        createModule { implicit n: ModuleName =>
+        createModule[Nothing] { implicit n: ModuleName =>
           val t: Event[Int] = TimerEvent(5)
 
           val c1: Event[Int] = t.constant(1)
@@ -50,6 +50,7 @@ class ChildsEventTest extends FunSuite {
           assert(t.childNodeIDs.contains(c2.id))
           assert(t.childNodeIDs.equals(SSet(c2.id, c1.id)))
           assert(t.childNodeIDs.equals(SSet(c1.id, c2.id)))
+          None
         }
       }
     }.createApplication
@@ -61,7 +62,7 @@ class ChildsEventTest extends FunSuite {
       import scala.collection.immutable.{Set => SSet}
 
       override def createApplication: Unit = {
-        createModule { implicit n: ModuleName =>
+        createModule[Nothing] { implicit n: ModuleName =>
           val t: Event[Int] = TimerEvent(2)
 
           val m2 = t.map((x) => {
@@ -90,6 +91,7 @@ class ChildsEventTest extends FunSuite {
           assert(m2.childNodeIDs.contains(merge4.id))
           assert(t.childNodeIDs.contains(m2.id))
           assert(t.childNodeIDs.contains(m3.id))
+          None
         }
       }
     }.createApplication
@@ -101,7 +103,7 @@ class ChildsEventTest extends FunSuite {
       import scala.collection.immutable.{Set => SSet}
 
       override def createApplication: Unit = {
-        createModule { implicit n: ModuleName =>
+        createModule[Nothing] { implicit n: ModuleName =>
           val t: Event[Int] = TimerEvent(2)
 
           val m2 = t.map((x) => {
@@ -131,6 +133,7 @@ class ChildsEventTest extends FunSuite {
           assert(m2.childNodeIDs.contains(m22.id))
           assert(m3.childNodeIDs.contains(m33.id))
           assert(t.childNodeIDs.equals(SSet(m2.id, m3.id)))
+          None
         }
       }
     }.createApplication

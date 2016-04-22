@@ -5,11 +5,12 @@ import be.kuleuven.FRP_EMBEDDED.{CFRPDSLApplicationRunner, OutputGenerator, FRPD
 trait LMSFunction1App extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit name: ModuleName =>
+    createModule[Nothing] { implicit name: ModuleName =>
       val t1: Event[Int] = TimerEvent(5) // every 5 sec
       val n1 = t1.map[Int => Int]((i) => (x: Rep[Int]) => x + 1)
       // FUNCTION values not suppported because of static functions in C
       val n2: Behavior[Int] = n1.foldp[Int]((x, f) => f(x), 0)
+      None
     }
   }
 }

@@ -83,10 +83,14 @@ x56 = true;
 int x59 = x46;
 x57 = x59;
 }
-SM_OUTPUT(mod1,x94);
-SM_FUNC(mod1) void x98 () {
-int x95 = x57;
-x94((uint8_t*)&x95, sizeof(x95));
+SM_OUTPUT(mod1,x95);
+SM_FUNC(mod1) void x101 () {
+bool x87 = x56;
+if (x87) {
+int x96 = x57;
+x95((uint8_t*)&x96, sizeof(x96));
+} else {
+}
 }
 SM_INPUT(mod1,top1,x76,x77) {
 x75();
@@ -97,7 +101,7 @@ x38();
 x45();
 x55();
 x62();
-x98();
+x101();
 }
 /*****************************************
   End of C Generated Code                  

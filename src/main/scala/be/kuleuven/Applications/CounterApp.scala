@@ -1,11 +1,11 @@
 package be.kuleuven.Applications
 
-import be.kuleuven.FRP_EMBEDDED.{SMCFRPDSLApplicationrunner, CFRPDSLApplicationRunner, OutputGenerator, FRPDSLApplication}
+import be.kuleuven.FRP_EMBEDDED.{SMCFRPDSLApplicationRunner, CFRPDSLApplicationRunner, OutputGenerator, FRPDSLApplication}
 
 trait Counter1App extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n: ModuleName =>
+    createModule[Int] { implicit n: ModuleName =>
       val input1 = TimerEvent(1)
       val input2 = TimerEvent(1)
       val negate2 = input2.map( (i: Rep[Int]) => 0-i)
@@ -15,7 +15,8 @@ trait Counter1App extends FRPDSLApplication {
         merged.filter( x => Math.abs(x) < 10)
       val counter =
         filtered.foldp((state:Rep[Int],x:Rep[Int])=>state + x, 0)
-      out("counterOut", counter.changes())
+      Some(out("counterOut", counter.changes()))
+
     }
   }
 
@@ -27,7 +28,7 @@ object CounterAppRunner {
   def main(args: Array[String]): Unit = {
 
     withOutFile("Counter1App.c") {
-      new Counter1App with SMCFRPDSLApplicationrunner {
+      new Counter1App with SMCFRPDSLApplicationRunner {
         System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
         System.err.println("Counter1App:")
         System.err.println("Creating flow graph...")

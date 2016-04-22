@@ -27,8 +27,10 @@ trait EventOps extends NodeOps {
   }
 
   def TimerEvent(i: Rep[Int])(implicit n: ModuleName)/*(implicit tI:Typ[Int])*/: Event[Int]
+  def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit n: ModuleName): Event[A]
 
-  def out[A](name: String, e: Event[A])(implicit n: ModuleName): Unit
+  def out[A:Typ](name: String, e: Event[A])(implicit n: ModuleName): OutputEvent[A]
+  abstract class OutputEvent[A:Typ]
 }
 
 trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
@@ -38,7 +40,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     val listbuilder = scala.collection.mutable.ListBuffer.empty[InputEvent[_]]
     getNodeMap.foreach(
       x => x match {
-        case (_, i@ InputEvent(_)) => listbuilder += i
+        case (_, i@ InputEvent( )) => listbuilder += i
         case _ => //do not add it
       }
     )
@@ -79,7 +81,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
         en.parentEvent.addChild(e.id)
         en.parentEvent.buildGraphTopDown()
         // Behaviorparent is left out!
-      case en @ InputEvent(_) =>
+      case en @ InputEvent( ) =>
       // no parents
       case _ => throw new IllegalStateException("Unsupported Event type")
     }
@@ -87,14 +89,14 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
 
   def isInputEvent[T: Typ](e: Event[T]): Boolean = {
     e match {
-      case InputEvent(_) => true
+      case InputEvent( ) => true
       case _ => false
     }
   }
 
   def getInputEventFunction[T: Typ](e: Event[T]): Rep[((Ptr[Byte], Int)) => Unit] = {
     e match {
-      case i @ InputEvent(_) => i.eventfun
+      case i @ InputEvent( ) => i.eventfun
       case _ => throw new IllegalStateException("Not an input event node.")
     }
   }
@@ -105,7 +107,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
       case en @ ConstantEvent(_,_) => en.value
       case en @ FilterEvent(_,_) => en.value
       case en @ MapEvent(_,_) => en.value
-      case en @ InputEvent(_) => en.value
+      case en @ InputEvent( ) => en.value
       case en @ ChangesEvent(_) => en.value
       case en @ SnapshotEvent(_,_) => en.value
       case _ => throw new IllegalStateException("Unsupported Event type")
@@ -118,7 +120,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
       case en @ ConstantEvent(_,_) => en.fired
       case en @ FilterEvent(_,_) => en.fired
       case en @ MapEvent(_,_) => en.fired
-      case en @ InputEvent(_) => en.fired
+      case en @ InputEvent( ) => en.fired
       case en @ ChangesEvent(_) => en.fired
       case en @ SnapshotEvent(_,_) => en.fired
       case _ => throw new IllegalStateException("Unsupported Event type")
@@ -133,7 +135,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
       case en @ MapEvent(_,_) => en.eventfun
       case en @ ChangesEvent(_) => en.eventfun
       case en @ SnapshotEvent(_,_) => en.eventfun
-      case en @ InputEvent(_) =>
+      case en @ InputEvent( ) =>
         //en.eventfun
         throw new IllegalStateException("Input node should not be used anymore for eventfun. Handled in top level function")
       case _ => throw new IllegalStateException("Unsupported Event type")
@@ -148,7 +150,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
       case en @ MapEvent(_,_) => Some(en)
       case en @ ChangesEvent(_) => Some(en)
       case en @ SnapshotEvent(_,_) => Some(en)
-      case en @ InputEvent(_) => Some(en)
+      case en @ InputEvent( ) => Some(en)
       case _ => None
     }
   }
@@ -162,19 +164,22 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     newMap.toMap
   }
 
-  override def out[A](name: String, e: Event[A])(implicit n: ModuleName) {
+  override def out[A:Typ](name: String, e: Event[A])(implicit n: ModuleName): OutputEvent[A] = {
+    val output = new ConcreteOutputEvent(e)
     outMap.get(n) match {
       case Some(lb) =>
-        lb += new OutputEvent(e)
+        lb += output
       case None =>
         val outList = scala.collection.mutable.ListBuffer.empty[OutputEvent[_]]
-        outList += new OutputEvent(e)
+        outList += output
         outMap += ((n, outList))
     }
+
+    output
   }
 
-  case class OutputEvent[A](parent: Event[A])(implicit mn: ModuleName) {
-    implicit val parentOut = parent.typOut
+  case class ConcreteOutputEvent[A:Typ](parent: Event[A])(implicit mn: ModuleName) extends OutputEvent[A] {
+    //implicit val parentOut = parent.typOut
     lazy val parentvalue: Rep[A] = readVar(getEventValue(parent))
     lazy val parentfired: Rep[Boolean] = readVar(getEventFired(parent))
     lazy val outfun: Rep[((Ptr[Byte], Int))=>Unit] = {
@@ -199,10 +204,11 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
   }
 
-  override def TimerEvent(i: Rep[Int])(implicit n: ModuleName) = InputEvent[Int](i)  // only conceptual
+  override def TimerEvent(i: Rep[Int])(implicit n: ModuleName) = InputEvent[Int]( )  // only conceptual
+  override def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit n: ModuleName) = InputEvent[A]( )
 
-  case class InputEvent[A] (i: Rep[A])(implicit tA:Typ[A], mn: ModuleName) extends EventNode[Unit,A] {
-    val inputFun: () => Rep[Out] = () => i
+  case class InputEvent[A]()(implicit tA:Typ[A], mn: ModuleName) extends EventNode[Unit,A] {
+    //val inputFun: () => Rep[Out] = () => i
     implicit val ptrbytetyp = ptrTyp[Byte]
     lazy val eventfun: Rep[((Ptr[Byte], Int)) => Unit] = {
       namedfun2 (mn.name) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>

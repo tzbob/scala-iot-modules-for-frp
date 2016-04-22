@@ -9,7 +9,7 @@ class LevelEventTest extends FunSuite {
     new CFRPDSLApplicationRunner {
 
       override def createApplication: Unit = {
-        createModule { implicit n: ModuleName =>
+        createModule[Nothing] { implicit n: ModuleName =>
           val t: Event[Int] = TimerEvent(5)
           val m1: Event[Int] = t.map((x) => x * 2)
           val m2: Event[Int] = m1.map((x) => x * 4)
@@ -18,6 +18,7 @@ class LevelEventTest extends FunSuite {
           assert(m1.level === 1)
           assert(m2.level === 2)
           assert(getMaxLevel === 2)
+          None
         }
       }
     }.createApplication
@@ -27,7 +28,7 @@ class LevelEventTest extends FunSuite {
     new CFRPDSLApplicationRunner {
 
       override def createApplication: Unit = {
-        createModule { implicit n: ModuleName =>
+        createModule[Nothing] { implicit n: ModuleName =>
           val t = TimerEvent(5)
           val mleft = t.map(x => x * 2)
           val mleftleft = mleft.map(x => x * 2)
@@ -48,6 +49,7 @@ class LevelEventTest extends FunSuite {
           assert(e1.level === 4)
           assert(e2.level === 4)
           assert(getMaxLevel === 4)
+          None
         }
       }
     }.createApplication

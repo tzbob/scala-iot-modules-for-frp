@@ -123,14 +123,18 @@ x90 = true;
 int x93 = x80;
 x91 = x93;
 };
-void x139(uint8_t* x132,int x133) {
-uint8_t* x134 = x132;
-uint8_t x136 = *x134;
-printf("%u\n",x136);
+void x140(uint8_t* x133,int x134) {
+uint8_t* x135 = x133;
+uint8_t x137 = *x135;
+printf("%u\n",x137);
 };
-void x143() {
-int x140 = x91;
-x139((uint8_t*)&x140, sizeof(x140));
+void x146() {
+bool x132 = x90;
+if (x132) {
+int x141 = x91;
+x140((uint8_t*)&x141, sizeof(x141));
+} else {
+}
 };
 void top3(uint8_t* x122,int x123) {
 x110();
@@ -140,7 +144,7 @@ x57(x124,x125);
 x79();
 x89();
 x96();
-x143();
+x146();
 };
 /*****************************************
   End of C Generated Code                  

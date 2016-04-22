@@ -1,14 +1,15 @@
 package be.kuleuven.Applications
 
-import be.kuleuven.FRP_EMBEDDED.{SMCFRPDSLApplicationrunner, CFRPDSLApplicationRunner, OutputGenerator, FRPDSLApplication}
+import be.kuleuven.FRP_EMBEDDED.{SMCFRPDSLApplicationRunner, CFRPDSLApplicationRunner, OutputGenerator, FRPDSLApplication}
 
 trait LMSEventMapApp extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t1: Event[Int] = TimerEvent(5) // every 5 sec
       val n1 = t1.map[Int]((i) => 2 * i)
       val n2 = n1.map[Boolean]((i) => infix_%(i, 2) == 0)
+      None
     }
   }
 }
@@ -16,11 +17,12 @@ trait LMSEventMapApp extends FRPDSLApplication {
 trait LMSEventFilterApp extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t1: Event[Int] = TimerEvent(5) // every 5 sec
       val n1 = t1.map[Int]((i: Rep[Int]) => 2 * i)
       val n2 = n1.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
       val n3 = n2.map[Int]((i: Rep[Int]) => i + 1)
+      None
     }
   }
 }
@@ -28,10 +30,11 @@ trait LMSEventFilterApp extends FRPDSLApplication {
 trait LMSEventConstantApp extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t1: Event[Int] = TimerEvent(5)
       val c1: Event[Int] = t1.constant(10)
       val m1 = c1.map[Int]((i: Rep[Int]) => 2 * i)
+      None
     }
   }
 }
@@ -39,7 +42,7 @@ trait LMSEventConstantApp extends FRPDSLApplication {
 trait LMSEventMerge1App extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t1: Event[Int] = TimerEvent(5)
       val c1 = t1.constant(1)
 
@@ -48,6 +51,7 @@ trait LMSEventMerge1App extends FRPDSLApplication {
 
       val m = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
       val n1 = m.map((x: Rep[Int]) => x * 2)
+      None
     }
   }
 }
@@ -55,7 +59,7 @@ trait LMSEventMerge1App extends FRPDSLApplication {
 trait LMSEventMerge2App extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t1: Event[Int] = TimerEvent(5)
 
       val c1 = t1.constant(1)
@@ -63,6 +67,7 @@ trait LMSEventMerge2App extends FRPDSLApplication {
 
       val m = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
       val n1 = m.map((x: Rep[Int]) => x * 2)
+      None
     }
   }
 }
@@ -70,7 +75,7 @@ trait LMSEventMerge2App extends FRPDSLApplication {
 trait LMSEventMerge2bApp extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t1: Event[Int] = TimerEvent(5)
 
       val f1 = t1.filter((i: Rep[Int]) => infix_%(i, 2) == 0)
@@ -79,6 +84,7 @@ trait LMSEventMerge2bApp extends FRPDSLApplication {
 
       val m = c1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
       val n1 = m.map((x: Rep[Int]) => x * 2)
+      None
     }
   }
 }
@@ -86,7 +92,7 @@ trait LMSEventMerge2bApp extends FRPDSLApplication {
 trait LMSEventMerge3App extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t1: Event[Int] = TimerEvent(5)
       val t2: Event[Int] = TimerEvent(10)
 
@@ -95,6 +101,7 @@ trait LMSEventMerge3App extends FRPDSLApplication {
 
       val m2 = m1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
       val n1 = m2.map((x: Rep[Int]) => x * 2)
+      None
     }
   }
 }
@@ -102,7 +109,7 @@ trait LMSEventMerge3App extends FRPDSLApplication {
 trait LMSEventMerge3bApp extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t1: Event[Int] = TimerEvent(5)
       val t2: Event[Int] = TimerEvent(10)
 
@@ -113,6 +120,7 @@ trait LMSEventMerge3bApp extends FRPDSLApplication {
 
       val m2 = map1.merge(c2, (x: Rep[Int], y: Rep[Int]) => x + y)
       val n1 = m2.map((x: Rep[Int]) => x * 2)
+      None
     }
   }
 }
@@ -120,7 +128,7 @@ trait LMSEventMerge3bApp extends FRPDSLApplication {
 trait LMSEventMerge4App extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t: Event[Int] = TimerEvent(5)
 
       val c1 = t.constant(1)
@@ -132,6 +140,7 @@ trait LMSEventMerge4App extends FRPDSLApplication {
       val m2 = n2.merge(c3, (x: Rep[Int], y: Rep[Int]) => x + y)
 
       val n1 = m2.map((x: Rep[Int]) => x * 2)
+      None
     }
   }
 }
@@ -139,7 +148,7 @@ trait LMSEventMerge4App extends FRPDSLApplication {
 trait LMSEventMerge5App extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t: Event[Int] = TimerEvent(5)
 
       val c1: Event[Int] = t.constant(1)
@@ -152,6 +161,7 @@ trait LMSEventMerge5App extends FRPDSLApplication {
 
       val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => { println("merge8"); x + y })
       val map3 = m.map((x: Rep[Int]) => { println("map9"); x * 2 })
+      None
     }
   }
 }
@@ -159,7 +169,7 @@ trait LMSEventMerge5App extends FRPDSLApplication {
 trait LMSEventMerge6aApp extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t: Event[Int] = TimerEvent(5)
       val tmm: Event[Int] = t.map((i: Rep[Int]) => i + 1)
       val tm: Event[Int] = tmm.map((i: Rep[Int]) => i * 2)
@@ -171,6 +181,7 @@ trait LMSEventMerge6aApp extends FRPDSLApplication {
 
       val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
       val map3 = m.map((x: Rep[Int]) => x * 2)
+      None
     }
   }
 }
@@ -178,7 +189,7 @@ trait LMSEventMerge6aApp extends FRPDSLApplication {
 trait LMSEventMerge6bApp extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t: Event[Int] = TimerEvent(5)
       val tmm: Event[Int] = t.map((i: Rep[Int]) => i + 1)
       val tm: Event[Int] = tmm.map((i: Rep[Int]) => i * 2)
@@ -193,6 +204,7 @@ trait LMSEventMerge6bApp extends FRPDSLApplication {
 
       val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
       val map3 = m.map((x: Rep[Int]) => x * 2)
+      None
     }
   }
 }
@@ -200,7 +212,7 @@ trait LMSEventMerge6bApp extends FRPDSLApplication {
 trait LMSEventMerge7App extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t: Event[Int] = TimerEvent(5)
 
       val c1: Event[Int] = t.constant(1)
@@ -214,6 +226,7 @@ trait LMSEventMerge7App extends FRPDSLApplication {
 
       val m = map1.merge(map2, (x: Rep[Int], y: Rep[Int]) => x + y)
       val map3 = m.map((x: Rep[Int]) => x * 2)
+      None
     }
   }
 }
@@ -221,7 +234,7 @@ trait LMSEventMerge7App extends FRPDSLApplication {
 trait LMSEventMerge8App extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t: Event[Int] = TimerEvent(0)
 
       //big left
@@ -246,6 +259,7 @@ trait LMSEventMerge8App extends FRPDSLApplication {
       val map3 = m.map((x) => { println("map11"); x * 2 })
 
       val map4 = m.map((x) => { println("map12"); x * 2 })
+      None
     }
   }
 }
@@ -253,7 +267,7 @@ trait LMSEventMerge8App extends FRPDSLApplication {
 trait LMSEventMerge9aApp extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t: Event[Int] = TimerEvent(2)
 
       val m2 = t.map((x) => { println("map2"); x * 2 })
@@ -261,6 +275,7 @@ trait LMSEventMerge9aApp extends FRPDSLApplication {
 
       val merge4 = m2.merge(m3, (x, y) => { println("merge4"); x + y })
       val merge5 = merge4.merge(m3, (x, y) => { println("merge5"); x + y })
+      None
     }
   }
 }
@@ -268,7 +283,7 @@ trait LMSEventMerge9aApp extends FRPDSLApplication {
 trait LMSEventMerge9bApp extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t: Event[Int] = TimerEvent(2)
 
       val m2 = t.map((x) => { println("map2"); x * 2 })
@@ -276,6 +291,7 @@ trait LMSEventMerge9bApp extends FRPDSLApplication {
 
       val merge4 = m2.merge(m3, (x, y) => { println("merge4"); x + y })
       val merge5 = m3.merge(merge4, (x, y) => { println("merge5"); x + y })
+      None
     }
   }
 }
@@ -283,7 +299,7 @@ trait LMSEventMerge9bApp extends FRPDSLApplication {
 trait LMSEventMerge10App extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t = TimerEvent(5)
       val mleft = t.map(x => { println("mleft"); x * 2 })
       val mleftleft = mleft.map(x => { println("mleftleft"); x * 2 })
@@ -294,6 +310,7 @@ trait LMSEventMerge10App extends FRPDSLApplication {
 
       val mright = t.map(x => { println("mright"); x + 3 })
       val e2 = mleftmerge.merge(mright, (x, y) => { println("e2"); x + y })
+      None
     }
   }
 }
@@ -301,11 +318,12 @@ trait LMSEventMerge10App extends FRPDSLApplication {
 trait LMSEventDoubleInputApp extends FRPDSLApplication {
 
   override def createApplication: Unit = {
-    createModule { implicit n:ModuleName =>
+    createModule[Nothing] { implicit n:ModuleName =>
       val t1 = TimerEvent(5)
       val m1 = t1.map(x => { println("m1"); x * 2 })
       val t2 = TimerEvent(5)
       val m2 = t2.map(x => { println("m2"); x * 2 })
+      None
     }
   }
 }

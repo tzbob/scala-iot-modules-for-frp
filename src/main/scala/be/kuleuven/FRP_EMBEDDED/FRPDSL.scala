@@ -92,12 +92,13 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
     val outputs = getOutMap.get(input.moduleName) match {
       case Some(outList) =>
-        outList.filter(x => x.inputNodeIDs.contains(input.id))
+        outList.filter(x => x match { case coe @ ConcreteOutputEvent(_) => coe.inputNodeIDs.contains(input.id) })
       case None =>
         Nil
     }
 
-    outputs.foreach(x => System.err.println("Output for: " + x.parent.id))
+    //TODO: fix concrete output
+    outputs.foreach(x => x match { case coe @ ConcreteOutputEvent(_) => System.err.println("Output for: " + coe.parent.id) })
     val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName == input.moduleName)
 
     () => {
@@ -109,7 +110,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
         eventsTO.foreach( x => {(x.getFunction())( () ) } ) // apply the functions in this context
 
         //outputs.foreach( x => doApplyOut("dummy", x.outfun, x.parentvalue)) // This gives you effect errors!
-        outputs.foreach( x => x.eventfun( () ) )
+        outputs.foreach( x => x match { case coe @ ConcreteOutputEvent(_) => coe.eventfun( () ) })
       }
       doApplyDecl(top)
       unitToRepUnit( () )
