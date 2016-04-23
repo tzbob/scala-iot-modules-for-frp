@@ -109,7 +109,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     System.err.println("Create Map2Behavior(ID:" + id + "): " + inputNodeIDs)
   }
 
-  case class FoldpBehavior[A,B](parent: Event[B], f: (Rep[A],Rep[B])=>Rep[A], init: Rep[A])(implicit val tA: Typ[A], val tB: Typ[B], mn: ModuleName) extends BehaviorNode[A] {
+  case class FoldpBehavior[A,B](parent: Event[B], f: (Rep[B],Rep[A])=>Rep[A], init: Rep[A])(implicit val tA: Typ[A], val tB: Typ[B], mn: ModuleName) extends BehaviorNode[A] {
     override val typOut = tA
     override val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
@@ -124,7 +124,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
         if(parentfired) {
-          var_assign[A](value, f(readVar(value), parentvalue))
+          var_assign[A](value, f(parentvalue,readVar(value)))
         }
         unitToRepUnit( () )
       }

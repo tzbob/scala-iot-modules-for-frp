@@ -105,9 +105,9 @@ x97 = false;
 void x124() {
 bool x116 = x97;
 if (x116) {
-int x117 = x115;
-int x118 = x98;
-int x119 = x117 + x118;
+int x117 = x98;
+int x118 = x115;
+int x119 = x118 + x117;
 x115 = x119;
 } else {
 }

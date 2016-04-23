@@ -15,7 +15,7 @@ trait Counter1App extends FRPDSLApplication {
       val filtered =
         merged.filter( x => Math.abs(x) < 10)
       val counter =
-        filtered.foldp((state:Rep[Int],x:Rep[Int])=>state + x, 0)
+        filtered.foldp((x:Rep[Int], state:Rep[Int])=>state + x, 0)
       Some(out("counterOut", counter.changes()))
 
     }
