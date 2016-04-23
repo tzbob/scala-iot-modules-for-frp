@@ -2,10 +2,11 @@ package be.kuleuven.Applications
 
 import be.kuleuven.FRP_EMBEDDED.{SMCFRPDSLApplicationRunner, CFRPDSLApplicationRunner, OutputGenerator, FRPDSLApplication}
 
+
 trait Counter1App extends FRPDSLApplication {
 
-  override def createApplication: Unit = {
-    createModule[Int] { implicit n: ModuleName =>
+  override def createApplication: List[Module[_]] = {
+    val mod1 = createModule[Int] { implicit n: ModuleName =>
       val input1 = TimerEvent(1)
       val input2 = TimerEvent(1)
       val negate2 = input2.map( (i: Rep[Int]) => 0-i)
@@ -18,6 +19,8 @@ trait Counter1App extends FRPDSLApplication {
       Some(out("counterOut", counter.changes()))
 
     }
+
+    mod1::Nil
   }
 
 }
@@ -28,22 +31,9 @@ object CounterAppRunner {
   def main(args: Array[String]): Unit = {
 
     withOutFile("Counter1App.c") {
-      new Counter1App with SMCFRPDSLApplicationRunner {
-        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.err.println("Counter1App:")
-        System.err.println("Creating flow graph...")
-        createApplication
-        System.err.println("\n")
-        buildFRPGraph()
-        System.err.println("\n")
-        val program = buildProgram()
-        System.err.println("\n")
-        emitProgram(program)
-        System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        System.err.println("\n\n")
-      }
+      System.err.println("Counter1App:")
+      new Counter1App with SMCFRPDSLApplicationRunner
     }
-
 
   }
 }

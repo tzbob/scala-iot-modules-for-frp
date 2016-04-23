@@ -14,28 +14,6 @@ trait CFRPDSLImpl extends FRPDSLImpl
 
   val codegen = new CCodeGenPkgExtended { val IR: self.type = self }
 
-  def buildFRPGraph(): Unit = {
-    getNodeMap.foreach(
-      x => x match {
-        case (_, n) => n.buildGraphTopDown()
-      }
-    )
-
-    val inputevents = getInputEventNodes
-    System.err.println("InputEvents:")
-    inputevents.foreach(System.err.println )
-
-    //TODO: remove, or call it a leaf node
-    //get all end nodes
-    val leafNodes = getOutputNodes.values.toList
-    System.err.println("LeafNodes:")
-    leafNodes.foreach(System.err.println )
-  }
-
-  def buildProgram(): () => Rep[Unit] = {
-    generator
-  }
-
   def emitProgram(program: ()=>Rep[Unit]): Unit = {
     val stream = new PrintWriter(System.out)
     codegen.emitProgram(program, stream)

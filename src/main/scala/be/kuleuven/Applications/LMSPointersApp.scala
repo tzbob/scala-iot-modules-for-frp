@@ -10,7 +10,7 @@ object LMSPointerAppRunner {
     withOutFile("LMSPointerApp.c") {
       new SMCFRPDSLApplicationRunner {
 
-        override def createApplication: Unit = {
+        override def createApplication: List[Module[_]] = {
           System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
 
           val program: () => Rep[Unit] =
@@ -45,6 +45,7 @@ object LMSPointerAppRunner {
           emitProgram(program)
           System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
           System.err.println("\n\n")
+          null
         }
       }.createApplication
     }
@@ -52,7 +53,7 @@ object LMSPointerAppRunner {
     withOutFile("LMSPointerArrayApp.c") {
       new SMCFRPDSLApplicationRunner {
 
-        override def createApplication: Unit = {
+        override def createApplication: List[Module[_]] = {
           System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
 
           val program: () => Rep[Unit] =
@@ -92,6 +93,7 @@ object LMSPointerAppRunner {
           emitProgram(program)
           System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
           System.err.println("\n\n")
+          null
         }
       }.createApplication
     }

@@ -95,7 +95,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     val level = 0
     override val inputNodeIDs: Set[NodeID] = HashSet(this.id)
     //lazy val value = var_new[A](init)
-    lazy val value = vardeclmod_new[A](mn.name)
+    lazy val value = vardeclmod_new[A](mn.str)
     lazy val valueInit = var_assign[A](value, init)
     //override def valueNow(): Rep[A] = readVar(value)
     override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
@@ -120,10 +120,10 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     lazy val parentleftvalue = getBehaviorValue(parentLeft)
     lazy val parentrightvalue = getBehaviorValue(parentRight)
     //lazy val value = var_new[C](f(parentleftvalue, parentrightvalue))
-    lazy val value = vardeclmod_new[C](mn.name)
+    lazy val value = vardeclmod_new[C](mn.str)
     lazy val valueInit = var_assign[C](value, f(parentleftvalue, parentrightvalue))
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (mn.name) { () =>
+      namedfun0 (mn.str) { () =>
         var_assign[C](value, f(parentleftvalue, parentrightvalue))
         unitToRepUnit( () )
       }
@@ -149,13 +149,13 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
     //lazy val value = var_new[A](init)
-    lazy val value = vardeclmod_new[A](mn.name)
+    lazy val value = vardeclmod_new[A](mn.str)
     lazy val valueInit = var_assign[A](value, init)
 
     lazy val parentvalue: Rep[B] = getEventValue(parent)
     lazy val parentfired: Rep[Boolean] = getEventFired(parent)
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (mn.name) { () =>
+      namedfun0 (mn.str) { () =>
         if(parentfired) {
           var_assign[A](value, f(readVar(value), parentvalue))
         }
@@ -183,13 +183,13 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
     //lazy val value = var_new[A](init)
-    lazy val value = vardeclmod_new[A](mn.name)
+    lazy val value = vardeclmod_new[A](mn.str)
     lazy val valueInit = var_assign[A](value, init)
 
     lazy val parentvalue: Rep[A] = getEventValue(parent)
     lazy val parentfired: Rep[Boolean] = getEventFired(parent)
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (mn.name) { () =>
+      namedfun0 (mn.str) { () =>
         if(parentfired) {
           var_assign[A](value, parentvalue)
         }

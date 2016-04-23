@@ -5,13 +5,12 @@ package be.kuleuven.FRP_EMBEDDED
  */
 trait FRPDSLApplication extends FRPDSL {
   //def main(args: Array[String])
-
-  abstract class Module[A] {
-    val output: OutputEvent[A]
-  }
-
+  
   def createModule[A] (graphfun: (ModuleName)=>Option[OutputEvent[A]] ): Module[A]
-  def createApplication(): Unit
+  def createApplication(): List[Module[_]]
+  //TODO: make it return a list of modules
+  // This list of modules can be fed to generator -> generateModule
+  // -> would imply loosing the moduleList = more functional programming
 }
 
 trait FRPDSLApplicationRunner extends FRPDSLApplication with FRPDSLImpl {
@@ -24,21 +23,49 @@ trait FRPDSLApplicationRunner extends FRPDSLApplication with FRPDSLImpl {
   override def createModule[A] (graphfun: (ModuleName)=>Option[OutputEvent[A]] ): Module[A] = {
     val name: String = (new String("mod")).concat(ModuleNumber.nextid.toString)
     val mod = new ModuleName(name)
-    moduleNameList += mod
-    graphfun(mod)
 
-    val out = getOutMap.get(mod) match {
-      case Some(outList) =>
-        outList.head
+    val optOut = graphfun(mod)
+
+    val out = optOut match {
+      case Some(out) =>
+        out
       case None =>
         null
     }
 
-    new Module[A] {
-      override val output = out.asInstanceOf[OutputEvent[A]]
+    val module = new Module[A] {
+      override val name = mod
+      override val output = out
     }
+    //moduleList += module
+
+    module
   }
 }
 
-trait CFRPDSLApplicationRunner extends FRPDSLApplicationRunner with CFRPDSLImpl
-trait SMCFRPDSLApplicationRunner extends FRPDSLApplicationRunner with SMCFRPDSLImpl
+trait CFRPDSLApplicationRunner extends FRPDSLApplicationRunner with CFRPDSLImpl {
+  System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+  System.err.println("Creating flow graph...")
+  val modList = createApplication
+  System.err.println("\n")
+  buildFRPGraph()
+  System.err.println("\n")
+  val program = buildProgram(modList)
+  System.err.println("\n")
+  emitProgram(program)
+  System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+  System.err.println("\n\n")
+}
+trait SMCFRPDSLApplicationRunner extends FRPDSLApplicationRunner with SMCFRPDSLImpl {
+  System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+  System.err.println("Creating flow graph...")
+  val modList = createApplication
+  System.err.println("\n")
+  buildFRPGraph()
+  System.err.println("\n")
+  val program = buildProgram(modList)
+  System.err.println("\n")
+  emitProgram(program)
+  System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+  System.err.println("\n\n")
+}

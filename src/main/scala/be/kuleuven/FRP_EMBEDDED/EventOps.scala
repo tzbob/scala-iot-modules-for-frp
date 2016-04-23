@@ -29,8 +29,8 @@ trait EventOps extends NodeOps {
   def TimerEvent(i: Rep[Int])(implicit n: ModuleName)/*(implicit tI:Typ[Int])*/: Event[Int]
   def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit n: ModuleName): Event[A]
 
-  def out[A:Typ](name: String, e: Event[A])(implicit n: ModuleName): OutputEvent[A]
   abstract class OutputEvent[A:Typ]
+  def out[A:Typ](name: String, e: Event[A])(implicit n: ModuleName): OutputEvent[A]
 }
 
 trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
@@ -155,25 +155,26 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     }
   }
 
-  private val outMap:scala.collection.mutable.Map[ModuleName,ListBuffer[OutputEvent[_]]] = scala.collection.mutable.HashMap()
+  // TODO: put back if we want to define outputs with out-operation
+  /*private val outMap:scala.collection.mutable.Map[ModuleName,ListBuffer[OutputEvent[_]]] = scala.collection.mutable.HashMap()
   def getOutMap: Map[ModuleName, List[OutputEvent[_]]] = {
     val newMap: scala.collection.mutable.Map[ModuleName,List[OutputEvent[_]]] = scala.collection.mutable.HashMap()
     for( (mn, lb) <- outMap) {
       newMap += ((mn, lb.toList))
     }
     newMap.toMap
-  }
+  }*/
 
   override def out[A:Typ](name: String, e: Event[A])(implicit n: ModuleName): OutputEvent[A] = {
     val output = new ConcreteOutputEvent(e)
-    outMap.get(n) match {
+    /*outMap.get(n) match {
       case Some(lb) =>
         lb += output
       case None =>
         val outList = scala.collection.mutable.ListBuffer.empty[OutputEvent[_]]
         outList += output
         outMap += ((n, outList))
-    }
+    }*/
 
     output
   }
@@ -183,7 +184,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     lazy val parentvalue: Rep[A] = readVar(getEventValue(parent))
     lazy val parentfired: Rep[Boolean] = readVar(getEventFired(parent))
     lazy val outfun: Rep[((Ptr[Byte], Int))=>Unit] = {
-      outputfun (mn.name, "dummy") { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
+      outputfun (mn.str, "dummy") { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
         // TODO: this is only to show printing! make it generic maybe
         // only generated with the C code generator
         println(ptr_readVal(data))
@@ -193,7 +194,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     }
 
     lazy val eventfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (mn.name) { () =>
+      namedfun0 (mn.str) { () =>
         if(parentfired){
           doApplyOut("dummy", outfun, parentvalue)
         }
@@ -211,7 +212,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     //val inputFun: () => Rep[Out] = () => i
     implicit val ptrbytetyp = ptrTyp[Byte]
     lazy val eventfun: Rep[((Ptr[Byte], Int)) => Unit] = {
-      namedfun2 (mn.name) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
+      namedfun2 (mn.str) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
         val input: Var[Int] = var_new[Int](unit(0))
         val i: Var[Int] = var_new[Int](unit(0))
         while(i<len){
@@ -241,7 +242,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     lazy val parentvalue: Rep[In] = readVar(getEventValue(parent))
     lazy val parentfired: Rep[Boolean] = readVar(getEventFired(parent))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (mn.name) { () =>
+      namedfun0 (mn.str) { () =>
         if(parentfired) {
           var_assign(fired, unit(true))
           var_assign[Out](value, constFun(parentvalue))
@@ -264,7 +265,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     lazy val parentvalue: Rep[In] = readVar(getEventValue(parent))
     lazy val parentfired: Rep[Boolean] = readVar(getEventFired(parent))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (mn.name) { () =>
+      namedfun0 (mn.str) { () =>
         if(parentfired) {
           var_assign(fired, unit(true))
           var_assign[Out](value, mapFun(parentvalue))
@@ -286,7 +287,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     lazy val parentvalue: Rep[In] = readVar(getEventValue(parent))
     lazy val parentfired: Rep[Boolean] = readVar(getEventFired(parent))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (mn.name) { () =>
+      namedfun0 (mn.str) { () =>
         if(parentfired) {
           if(filterFun(parentvalue) ) {
             var_assign(fired, unit(true))
@@ -324,7 +325,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     lazy val parentrightvalue: Rep[In] = readVar(getEventValue(parentRight))
     lazy val parentrightfired: Rep[Boolean] = readVar(getEventFired(parentRight))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (mn.name) { () =>
+      namedfun0 (mn.str) { () =>
         if(parentleftfired && parentrightfired ) {
           var_assign(fired, unit(true))
           var_assign[Out](value, mergeFun(parentleftvalue, parentrightvalue))
@@ -352,7 +353,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
 
     lazy val parentvalue: Rep[In] = readVar(getBehaviorValue(parent))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (mn.name) { () =>
+      namedfun0 (mn.str) { () =>
           var_assign(fired, unit(true))
           var_assign[Out](value, parentvalue)
       }
@@ -371,7 +372,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     lazy val parentvalue: Rep[Out] = readVar(getBehaviorValue(parentBeh))
     lazy val parentEventFired: Rep[Boolean] = readVar(getEventFired(parentEvent))
     lazy val eventfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (mn.name) { () =>
+      namedfun0 (mn.str) { () =>
         if(parentEventFired) {
           var_assign(fired, unit(true))
           var_assign[Out](value, parentvalue)
@@ -400,9 +401,9 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     override val moduleName = mn
 
     //lazy val fired = vardecl_new[Boolean]()
-    lazy val fired = vardeclmod_new[Boolean](moduleName.name)
+    lazy val fired = vardeclmod_new[Boolean](moduleName.str)
     //lazy val value = vardecl_new[B]()
-    lazy val value = vardeclmod_new[B](moduleName.name)
+    lazy val value = vardeclmod_new[B](moduleName.str)
 
     override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
           if (isInputEvent(this)) {

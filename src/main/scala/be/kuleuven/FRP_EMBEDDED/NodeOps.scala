@@ -5,7 +5,9 @@ import scala.lms.common.Base
 trait NodeOps extends Base {
 
   type NodeID = Int
-  class ModuleName private[FRP_EMBEDDED] (val name: String) // packet private constructor
+  class ModuleName private[FRP_EMBEDDED] (val str: String) { // packet private constructor
+    override def toString(): String = str
+  }
 
   trait Node[A] {
 

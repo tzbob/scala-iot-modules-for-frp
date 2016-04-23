@@ -10,7 +10,7 @@ object SMCAppsRunner {
     withOutFile("SMCInputApp.c") {
       new SMCFRPDSLApplicationRunner {
 
-        override def createApplication: Unit = {
+        override def createApplication: List[Module[_]] = {
           System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
 
           val program: () => Rep[Unit] =
@@ -35,6 +35,7 @@ object SMCAppsRunner {
           emitProgram(program)
           System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
           System.err.println("\n\n")
+          null
         }
       }.createApplication
     }
