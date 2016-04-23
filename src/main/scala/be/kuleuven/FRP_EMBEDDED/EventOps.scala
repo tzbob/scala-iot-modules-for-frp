@@ -58,35 +58,6 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     listbuilder.toList
   }
 
-  def buildGraphTopDownEvent[T](e: Event[T]): Unit = {
-    e match {
-      case en @ MergeEvent(_,_) =>
-        en.parentLeft.addChild(e.id)
-        en.parentLeft.buildGraphTopDown()
-        en.parentRight.addChild(e.id)
-        en.parentRight.buildGraphTopDown()
-      case en @ ConstantEvent(_,_) =>
-        en.parent.addChild(e.id)
-        en.parent.buildGraphTopDown()
-      case en @ FilterEvent(_,_) =>
-        en.parent.addChild(e.id)
-        en.parent.buildGraphTopDown()
-      case en @ MapEvent(_,_) =>
-        en.parent.addChild(e.id)
-        en.parent.buildGraphTopDown()
-      case en @ ChangesEvent(_) =>
-        en.parent.addChild(e.id)
-        en.parent.buildGraphTopDown()
-      case en @ SnapshotEvent(_,_) =>
-        en.parentEvent.addChild(e.id)
-        en.parentEvent.buildGraphTopDown()
-        // Behaviorparent is left out!
-      case en @ InputEvent( ) =>
-      // no parents
-      case _ => throw new IllegalStateException("Unsupported Event type")
-    }
-  }
-
   def isInputEvent[T: Typ](e: Event[T]): Boolean = {
     e match {
       case InputEvent( ) => true
@@ -94,10 +65,10 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     }
   }
 
-  def getInputEventFunction[T: Typ](e: Event[T]): Rep[((Ptr[Byte], Int)) => Unit] = {
+  def getInputEvent[T:Typ](e:Event[T]): Option[InputEvent[T]] = {
     e match {
-      case i @ InputEvent( ) => i.eventfun
-      case _ => throw new IllegalStateException("Not an input event node.")
+      case i @ InputEvent( ) => Some(i)
+      case _ => None
     }
   }
 
@@ -168,6 +139,9 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     }
     override def getFunction() =
       throw new IllegalStateException("Input node should not be used anymore for eventfun. Handled in top level function")
+    override def buildGraphTopDown() = {
+      // has no parents, nothing to do!
+    }
 
     val level = 0
     override val typIn: Typ[In] = typ[Unit]
@@ -194,6 +168,10 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
       }
     }
     override def getFunction() = eventfun
+    override def buildGraphTopDown() = {
+      parent.addChild(id)
+      parent.buildGraphTopDown()
+    }
 
     val level = parent.level + 1
 
@@ -219,6 +197,10 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
       }
     }
     override def getFunction() = eventfun
+    override def buildGraphTopDown() = {
+      parent.addChild(id)
+      parent.buildGraphTopDown()
+    }
 
     val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
@@ -248,6 +230,10 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
       }
     }
     override def getFunction() = eventfun
+    override def buildGraphTopDown() = {
+      parent.addChild(id)
+      parent.buildGraphTopDown()
+    }
 
     val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
@@ -291,6 +277,12 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
       }
     }
     override def getFunction() = eventfun
+    override def buildGraphTopDown() = {
+      parentLeft.addChild(id)
+      parentLeft.buildGraphTopDown()
+      parentRight.addChild(id)
+      parentRight.buildGraphTopDown()
+    }
 
     System.err.println("Create MergeEvent(ID:" + id + "): " + inputNodeIDs + ". Left: " + inputIDsLeft + ", Right: " + inputIDsRight)
   }
@@ -307,6 +299,10 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
       }
     }
     override def getFunction() = eventfun
+    override def buildGraphTopDown() = {
+      parent.addChild(id)
+      parent.buildGraphTopDown()
+    }
 
     val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
@@ -332,6 +328,11 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
       }
     }
     override def getFunction() = eventfun
+    override def buildGraphTopDown() = {
+      parentEvent.addChild(id)
+      parentEvent.buildGraphTopDown()
+      //Behaviorparent is left out!
+    }
 
     // Important! This nodes is only tied to the chain of the event parent
     // This is made explicit in buildGraphTopDown function
@@ -362,7 +363,10 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
               f()
               fired
               value
-              getInputEventFunction(this)
+              getInputEvent(this) match {
+                case Some(i) => i.eventfun
+                case None => throw new Exception("Not cool. You should check using isInputEvent!")
+              }
               unitToRepUnit(())
             }
           }
@@ -381,9 +385,6 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
 
     override def getInitializer(): Rep[Unit] = unitToRepUnit( () )
 
-    override def buildGraphTopDown(): Unit = {
-      buildGraphTopDownEvent(this)
-    }
   }
 
   trait EventImpl[A] extends Event[A] {

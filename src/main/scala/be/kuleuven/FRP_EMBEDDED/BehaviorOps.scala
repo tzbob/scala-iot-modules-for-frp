@@ -44,23 +44,6 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     )
   }
 
-  def buildGraphTopDownBehavior[B](b: Behavior[B]): Unit = {
-    b match {
-      case bn @ StartsWithBehavior(_,_) =>
-        bn.parent.addChild(b.id)
-        bn.parent.buildGraphTopDown()
-      case bn @ FoldpBehavior(_,_,_) =>
-        bn.parent.addChild(b.id)
-        bn.parent.buildGraphTopDown()
-      case bn @ Map2Behavior(_,_) =>
-        bn.parentLeft.addChild(b.id)
-        bn.parentLeft.buildGraphTopDown()
-        bn.parentRight.addChild(b.id)
-        bn.parentRight.buildGraphTopDown()
-      case _ => throw new IllegalStateException("Unsupported Behavior type")
-    }
-  }
-
   override def constantB[A:Typ](c: Rep[A])(implicit n: ModuleName): Behavior[A] = new ConstantBehavior[A](c)
 
   case class ConstantBehavior[A](init: Rep[A])(implicit val tA: Typ[A], mn: ModuleName) extends BehaviorNode[A] {
@@ -78,7 +61,10 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
         unitToRepUnit( () )
       }
     }
-    override def getFunction() = throw new IllegalStateException("Not defined on ConstantBehavior")
+    override def getFunction() =
+      throw new IllegalStateException("Not defined on ConstantBehavior") //TODO: implement
+    override def buildGraphTopDown() =
+      throw new IllegalStateException("Not defined on ConstantBehavior") //TODO: implement
 
     System.err.println("Create ConstantBehavior(ID:" + id + "): " + inputNodeIDs)
   }
@@ -104,6 +90,12 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
       }
     }
     override def getFunction() = behaviorfun
+    override def buildGraphTopDown() = {
+      parentLeft.addChild(id)
+      parentLeft.buildGraphTopDown()
+      parentRight.addChild(id)
+      parentRight.buildGraphTopDown()
+    }
 
     override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
       () => {
@@ -138,6 +130,10 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
       }
     }
     override def getFunction() = behaviorfun
+    override def buildGraphTopDown() = {
+      parent.addChild(id)
+      parent.buildGraphTopDown()
+    }
 
     override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
       () => {
@@ -172,6 +168,10 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
       }
     }
     override def getFunction() = behaviorfun
+    override def buildGraphTopDown() = {
+      parent.addChild(id)
+      parent.buildGraphTopDown()
+    }
 
     override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
       () => {
@@ -194,10 +194,6 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()
     override def addChild(id: NodeID): Unit = {
       childNodeIDs.add(id)
-    }
-
-    override def buildGraphTopDown(): Unit = {
-      buildGraphTopDownBehavior(this)
     }
 
   }
