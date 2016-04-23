@@ -74,8 +74,8 @@ x70 = false;
 void x101() {
 bool x93 = x70;
 if (x93) {
-int x94 = x92;
-int x95 = x71;
+int x94 = x71;
+int x95 = x92;
 int x96 = x94 + x95;
 x92 = x96;
 } else {
@@ -134,8 +134,8 @@ x58 = false;
 void x91() {
 bool x83 = x58;
 if (x83) {
-int x84 = x82;
-int x85 = x59;
+int x84 = x59;
+int x85 = x82;
 int x86 = x84 + x85;
 x82 = x86;
 } else {

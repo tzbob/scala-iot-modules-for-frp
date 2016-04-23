@@ -56,8 +56,8 @@ x1 = x25;
 SM_FUNC(mod1) void x38 () {
 bool x30 = x0;
 if (x30) {
-int x31 = x29;
-int x32 = x1;
+int x31 = x1;
+int x32 = x29;
 int x33 = x31 + x32;
 x29 = x33;
 } else {
@@ -71,8 +71,8 @@ x40 = x42;
 SM_FUNC(mod1) void x55 () {
 bool x47 = x39;
 if (x47) {
-int x48 = x46;
-int x49 = x40;
+int x48 = x40;
+int x49 = x46;
 int x50 = x48 + x49;
 x46 = x50;
 } else {
@@ -153,8 +153,8 @@ x107 = x131;
 SM_FUNC(mod2) void x144 () {
 bool x136 = x106;
 if (x136) {
-int x137 = x135;
-int x138 = x107;
+int x137 = x107;
+int x138 = x135;
 int x139 = x137 + x138;
 x135 = x139;
 } else {
@@ -168,8 +168,8 @@ x146 = x148;
 SM_FUNC(mod2) void x161 () {
 bool x153 = x145;
 if (x153) {
-int x154 = x152;
-int x155 = x146;
+int x154 = x146;
+int x155 = x152;
 int x156 = x154 + x155;
 x152 = x156;
 } else {

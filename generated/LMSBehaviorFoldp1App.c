@@ -61,8 +61,8 @@ x29 = false;
 void x50() {
 bool x42 = x29;
 if (x42) {
-int x43 = x41;
-int x44 = x30;
+int x43 = x30;
+int x44 = x41;
 int x45 = x43 + x44;
 x41 = x45;
 } else {
