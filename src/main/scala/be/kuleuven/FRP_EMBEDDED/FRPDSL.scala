@@ -1,20 +1,13 @@
 package be.kuleuven.FRP_EMBEDDED
 
-import be.kuleuven.LMS_extensions.{TupledFunctionsExt, ScalaOpsPkgExt}
-
-import scala.lms.common._
-import java.lang.{Integer => JInteger}
-
-trait FRPDSL
-    extends ScalaOpsPkgExt with LiftPrimitives with LiftString with LiftVariables with LiftBoolean
-    with EventOps with BehaviorOps {
+trait FRPDSL extends EventOps with BehaviorOps {
 
   abstract class Module[A] {
     val name: ModuleName
     val output: OutputEvent[A]
   }
 
-  def generator(module: Module[_]): () => Rep[Unit]
+  def generateModule(module: Module[_]): () => Rep[Unit]
 }
 
 trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
@@ -42,13 +35,13 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
       val progNow = program
       program = () => {
         progNow()
-        generator(module)()
+        generateModule(module)()
       }
     }
     program
   }
 
-  override def generator(module: Module[_]): () => Rep[Unit] = {
+  override def generateModule(module: Module[_]): () => Rep[Unit] = {
     var program: () => Rep[Unit] = () => unitToRepUnit( () )
 
 
@@ -115,8 +108,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
     val eventsTO = listbuilder.toList
     eventsTO.foreach(x => System.err.println(x.id))
 
-    //TODO: fix concrete output
-    //outputs.foreach(x => x match { case coe @ ConcreteOutputEvent(_) => System.err.println("Output for: " + coe.parent.id) })
+    //TODO: maybe get rid of concrete output
     m.output match {
       case coe @ ConcreteOutputEvent(_) => System.err.println("Output for: " + coe.parent.id)
       case _ => System.err.println("No outputs for this module")

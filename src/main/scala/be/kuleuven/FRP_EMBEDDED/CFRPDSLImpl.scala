@@ -20,3 +20,18 @@ trait CFRPDSLImpl extends FRPDSLImpl
   }
 
 }
+
+trait CFRPDSLApplicationRunner extends FRPDSLApplicationRunner with CFRPDSLImpl {
+
+  System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+  System.err.println("Creating flow graph...")
+  val modList = createApplication
+  System.err.println("\n")
+  buildFRPGraph()
+  System.err.println("\n")
+  val program = buildProgram(modList)
+  System.err.println("\n")
+  emitProgram(program)
+  System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+  System.err.println("\n\n")
+}

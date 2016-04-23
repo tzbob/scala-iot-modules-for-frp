@@ -5,7 +5,7 @@ import be.kuleuven.FRP_EMBEDDED.{CFRPDSLApplicationRunner, SMCFRPDSLApplicationR
 trait LMSBehaviorStartsWith1App extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
-    createModule[Nothing] { implicit n:ModuleName =>
+    createModule { implicit n:ModuleName =>
       val t1: Event[Int] = TimerEvent(5) // every 5 sec
       val m = t1.map[Int]( (i) => 5 )
 
@@ -18,7 +18,7 @@ trait LMSBehaviorStartsWith1App extends FRPDSLApplication {
 trait LMSBehaviorFoldp1App extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
-    createModule[Nothing] { implicit n:ModuleName =>
+    createModule { implicit n:ModuleName =>
       val t1: Event[Int] = TimerEvent(5) // every 5 sec
       val m = t1.map[Int]((i) => 5)
 
@@ -31,9 +31,9 @@ trait LMSBehaviorFoldp1App extends FRPDSLApplication {
 trait LMSBehaviorMap2App extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
-    createModule[Nothing] { implicit n:ModuleName =>
+    createModule { implicit n:ModuleName =>
       val t1: Event[Int] = TimerEvent(1) // every 5 sec
-    val m1 = t1.map[Int]((i) => 1)
+      val m1 = t1.map[Int]((i) => 1)
 
       val b1 = m1.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 1)
 
@@ -89,13 +89,15 @@ trait LMSMultiModuleApp extends FRPDSLApplication {
       Some(out("out1", fp2.changes()))
     }
 
-    createModule[Int] { implicit n:ModuleName =>
+    val mod2 = createModule[Int] { implicit n:ModuleName =>
       val t = ExternalEvent(mod1.output)
       val fp = t.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 2)
       val c = fp.changes()
       val fp2 = c.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 20)
       Some(out("out2", fp2.changes()))
-    }::Nil
+    }
+
+    mod1::mod2::Nil
   }
 }
 
