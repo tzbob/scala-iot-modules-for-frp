@@ -79,7 +79,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
         getEventNodes
           .filter(e => e.moduleName == module.name)
-          .foreach(e => var_assign(getEventFired(e), false))
+          .foreach(e => var_assign(e.getFired(), false))
         unitToRepUnit(())
       }
 

@@ -32,7 +32,7 @@ object CounterAppRunner {
 
     withOutFile("Counter1App.c") {
       System.err.println("Counter1App:")
-      new Counter1App with SMCFRPDSLApplicationRunner
+      new Counter1App with CFRPDSLApplicationRunner
     }
 
   }

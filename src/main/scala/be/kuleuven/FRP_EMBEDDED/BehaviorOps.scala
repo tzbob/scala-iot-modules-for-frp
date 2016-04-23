@@ -8,9 +8,9 @@ trait BehaviorOps extends NodeOps {
   event: EventOps =>
 
   trait Behavior[A] extends Node[A] {
-    val typOut: Typ[A]
-
-    //def valueNow (): Rep[A]
+    private[FRP_EMBEDDED] val typOut: Typ[A]
+    private[FRP_EMBEDDED] def getValue(): Var[A]
+    private[FRP_EMBEDDED] def getInitializer(): Rep[Unit]
 
     // map2: Combine 2 behaviors (merge-like). Whenever a behaviors value changes, the output behavior applies
     // the function f to both child behaviors, changing its value to the result of that function
@@ -44,33 +44,6 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     )
   }
 
-  def getBehaviorValue[T:Typ](b: Behavior[T]): Var[T] = {
-    b match {
-      case bn @ StartsWithBehavior(_,_) => bn.value
-      case bn @ FoldpBehavior(_,_,_) => bn.value
-      case bn @ Map2Behavior(_,_) => bn.value
-      case _ => throw new IllegalStateException("Unsupported Behavior type")
-    }
-  }
-
-  def getBehaviorFunction[B](b: Behavior[B]): Rep[(Unit)=>Unit] = {
-    b match {
-      case bn @ StartsWithBehavior(_,_) => bn.behaviorfun
-      case bn @ FoldpBehavior(_,_,_) => bn.behaviorfun
-      case bn @ Map2Behavior(_,_) => bn.behaviorfun
-      case _ => throw new IllegalStateException("Unsupported Behavior type")
-    }
-  }
-
-  def getBehaviorInitializer[B](b: Behavior[B]): Rep[Unit] = {
-    b match {
-      case bn @ StartsWithBehavior(_,_) => bn.valueInit
-      case bn @ FoldpBehavior(_,_,_) => bn.valueInit
-      case bn @ Map2Behavior(_,_) => bn.valueInit
-      case _ => throw new IllegalStateException("Unsupported Behavior type")
-    }
-  }
-
   def buildGraphTopDownBehavior[B](b: Behavior[B]): Unit = {
     b match {
       case bn @ StartsWithBehavior(_,_) =>
@@ -94,10 +67,10 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     override val typOut = tA
     val level = 0
     override val inputNodeIDs: Set[NodeID] = HashSet(this.id)
-    //lazy val value = var_new[A](init)
     lazy val value = vardeclmod_new[A](mn.str)
+    override def getValue = value
     lazy val valueInit = var_assign[A](value, init)
-    //override def valueNow(): Rep[A] = readVar(value)
+    override def getInitializer() = valueInit
     override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
       () => {
         f()
@@ -105,6 +78,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
         unitToRepUnit( () )
       }
     }
+    override def getFunction() = throw new IllegalStateException("Not defined on ConstantBehavior")
 
     System.err.println("Create ConstantBehavior(ID:" + id + "): " + inputNodeIDs)
   }
@@ -117,17 +91,19 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
 
     override val inputNodeIDs: Set[NodeID] = parentLeft.inputNodeIDs ++ parentRight.inputNodeIDs
 
-    lazy val parentleftvalue = getBehaviorValue(parentLeft)
-    lazy val parentrightvalue = getBehaviorValue(parentRight)
-    //lazy val value = var_new[C](f(parentleftvalue, parentrightvalue))
+    lazy val parentleftvalue = parentLeft.getValue()
+    lazy val parentrightvalue = parentRight.getValue()
     lazy val value = vardeclmod_new[C](mn.str)
+    override def getValue = value
     lazy val valueInit = var_assign[C](value, f(parentleftvalue, parentrightvalue))
+    override def getInitializer() = valueInit
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
         var_assign[C](value, f(parentleftvalue, parentrightvalue))
         unitToRepUnit( () )
       }
     }
+    override def getFunction() = behaviorfun
 
     override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
       () => {
@@ -137,8 +113,6 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
         unitToRepUnit( () )
       }
     }
-
-    //override def valueNow(): Rep[C] = readVar(value)
 
     System.err.println("Create Map2Behavior(ID:" + id + "): " + inputNodeIDs)
   }
@@ -148,12 +122,13 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     override val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
-    //lazy val value = var_new[A](init)
     lazy val value = vardeclmod_new[A](mn.str)
+    override def getValue = value
     lazy val valueInit = var_assign[A](value, init)
+    override def getInitializer() = valueInit
 
-    lazy val parentvalue: Rep[B] = getEventValue(parent)
-    lazy val parentfired: Rep[Boolean] = getEventFired(parent)
+    lazy val parentvalue: Rep[B] = parent.getValue()
+    lazy val parentfired: Rep[Boolean] = parent.getFired()
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
         if(parentfired) {
@@ -162,6 +137,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
         unitToRepUnit( () )
       }
     }
+    override def getFunction() = behaviorfun
 
     override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
       () => {
@@ -171,8 +147,6 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
         unitToRepUnit( () )
       }
     }
-
-    //override def valueNow(): Rep[A] = readVar(value)
 
     System.err.println("Create FoldpBehavior(ID:" + id + "): " + inputNodeIDs)
   }
@@ -182,12 +156,13 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     override val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
-    //lazy val value = var_new[A](init)
     lazy val value = vardeclmod_new[A](mn.str)
+    override def getValue = value
     lazy val valueInit = var_assign[A](value, init)
+    override def getInitializer() = valueInit
 
-    lazy val parentvalue: Rep[A] = getEventValue(parent)
-    lazy val parentfired: Rep[Boolean] = getEventFired(parent)
+    lazy val parentvalue: Rep[A] = parent.getValue()
+    lazy val parentfired: Rep[Boolean] = parent.getFired()
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
         if(parentfired) {
@@ -196,6 +171,7 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
         unitToRepUnit( () )
       }
     }
+    override def getFunction() = behaviorfun
 
     override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
       () => {
@@ -205,8 +181,6 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
         unitToRepUnit( () )
       }
     }
-
-    //override def valueNow(): Rep[A] = readVar(value)
 
     System.err.println("Create StartsWithBehavior(ID:" + id + "): " + inputNodeIDs)
   }
@@ -222,19 +196,10 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
       childNodeIDs.add(id)
     }
 
-    override def getInitializer(): Rep[Unit] = {
-      getBehaviorInitializer(this)
-    }
-
-    override def getFunction(): Rep[(Unit)=>Unit] = {
-      getBehaviorFunction(this)
-    }
     override def buildGraphTopDown(): Unit = {
       buildGraphTopDownBehavior(this)
     }
 
-    //lazy val value = vardecl_new[A]()
-    //override def valueNow(): Rep[A] = readVar(value)
   }
 
   trait BehaviorImpl[A] extends Behavior[A] {

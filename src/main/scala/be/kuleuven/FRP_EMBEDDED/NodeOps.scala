@@ -1,10 +1,10 @@
 package be.kuleuven.FRP_EMBEDDED
 
-import scala.lms.common.Base
+import be.kuleuven.LMS_extensions.ScalaOpsPkgExt
 
-trait NodeOps extends Base {
+trait NodeOps extends ScalaOpsPkgExt {
 
-  type NodeID = Int
+  private[FRP_EMBEDDED] type NodeID = Int
   class ModuleName private[FRP_EMBEDDED] (val str: String) { // packet private constructor
     override def toString(): String = str
   }
@@ -12,14 +12,15 @@ trait NodeOps extends Base {
   trait Node[A] {
 
     // all private
-    val id: NodeID = Node.nextid
-    val level: Int // for topological order
-    val inputNodeIDs: Set[NodeID]
-    //val ancestorNodeIDs: List[NodeID] //TODO: remove, not needed anymore since no more split node needed
-    val childNodeIDs: scala.collection.mutable.Set[NodeID]
-    val moduleName: ModuleName
-    def addChild(id: NodeID): Unit
-    def buildGraphTopDown(): Unit
+    private[FRP_EMBEDDED] val id: NodeID = Node.nextid
+    private[FRP_EMBEDDED] val level: Int // for topological order
+    private[FRP_EMBEDDED] val inputNodeIDs: Set[NodeID]
+    private[FRP_EMBEDDED] val childNodeIDs: scala.collection.mutable.Set[NodeID]
+    private[FRP_EMBEDDED] val moduleName: ModuleName
+    private[FRP_EMBEDDED] def addChild(id: NodeID): Unit
+    private[FRP_EMBEDDED] def buildGraphTopDown(): Unit
+
+    private[FRP_EMBEDDED] def getFunction(): Rep[(Unit)=>Unit]
 
   }
 
@@ -94,7 +95,7 @@ trait NodeOpsImpl extends NodeOps {
 
   trait NodeImpl[A] extends Node[A] {
     def generateNode(f: () => Rep[Unit]): () => Rep[Unit]
-    def getFunction(): Rep[(Unit)=>Unit]
+    //def getFunction(): Rep[(Unit)=>Unit]
     def getInitializer(): Rep[Unit]
 
     override def toString: String = {

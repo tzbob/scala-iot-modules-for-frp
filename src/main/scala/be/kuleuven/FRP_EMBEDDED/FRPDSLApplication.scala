@@ -37,7 +37,6 @@ trait FRPDSLApplicationRunner extends FRPDSLApplication with FRPDSLImpl {
       override val name = mod
       override val output = out
     }
-    //moduleList += module
 
     module
   }
