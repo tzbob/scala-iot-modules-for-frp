@@ -8,7 +8,7 @@ class LevelEventTest extends FunSuite {
   test("simpleGraph") {
     new CFRPDSLApplicationRunner {
 
-      override def createApplication: Unit = {
+      override def createApplication: List[Module[_]] = {
         createModule[Nothing] { implicit n: ModuleName =>
           val t: Event[Int] = TimerEvent(5)
           val m1: Event[Int] = t.map((x) => x * 2)
@@ -20,6 +20,7 @@ class LevelEventTest extends FunSuite {
           assert(getMaxLevel === 2)
           None
         }
+        Nil
       }
     }.createApplication
   }
@@ -27,7 +28,7 @@ class LevelEventTest extends FunSuite {
   test("complexGraph") {
     new CFRPDSLApplicationRunner {
 
-      override def createApplication: Unit = {
+      override def createApplication: List[Module[_]] = {
         createModule[Nothing] { implicit n: ModuleName =>
           val t = TimerEvent(5)
           val mleft = t.map(x => x * 2)
@@ -51,6 +52,7 @@ class LevelEventTest extends FunSuite {
           assert(getMaxLevel === 4)
           None
         }
+        Nil
       }
     }.createApplication
   }

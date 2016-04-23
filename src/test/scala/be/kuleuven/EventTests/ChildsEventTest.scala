@@ -9,7 +9,7 @@ class ChildsEventTest extends FunSuite {
     new CFRPDSLApplicationRunner {
       import scala.collection.immutable.{Set => SSet}
 
-      override def createApplication: Unit = {
+      override def createApplication: List[Module[_]] = {
         createModule[Nothing] { implicit n: ModuleName =>
           val t: Event[Int] = TimerEvent(5)
 
@@ -52,6 +52,7 @@ class ChildsEventTest extends FunSuite {
           assert(t.childNodeIDs.equals(SSet(c1.id, c2.id)))
           None
         }
+        Nil
       }
     }.createApplication
   }
@@ -61,7 +62,7 @@ class ChildsEventTest extends FunSuite {
 
       import scala.collection.immutable.{Set => SSet}
 
-      override def createApplication: Unit = {
+      override def createApplication: List[Module[_]] = {
         createModule[Nothing] { implicit n: ModuleName =>
           val t: Event[Int] = TimerEvent(2)
 
@@ -93,6 +94,7 @@ class ChildsEventTest extends FunSuite {
           assert(t.childNodeIDs.contains(m3.id))
           None
         }
+        Nil
       }
     }.createApplication
   }
@@ -102,7 +104,7 @@ class ChildsEventTest extends FunSuite {
 
       import scala.collection.immutable.{Set => SSet}
 
-      override def createApplication: Unit = {
+      override def createApplication: List[Module[_]] = {
         createModule[Nothing] { implicit n: ModuleName =>
           val t: Event[Int] = TimerEvent(2)
 
@@ -135,6 +137,7 @@ class ChildsEventTest extends FunSuite {
           assert(t.childNodeIDs.equals(SSet(m2.id, m3.id)))
           None
         }
+        Nil
       }
     }.createApplication
   }
