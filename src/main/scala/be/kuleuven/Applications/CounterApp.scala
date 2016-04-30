@@ -57,12 +57,12 @@ object CounterAppRunner {
 
     withOutFile("Counter1App.c") {
       System.err.println("Counter1App:")
-      new Counter1App with CFRPDSLApplicationRunner
+      (new Counter1App with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("Counter2App.c") {
       System.err.println("Counter2App:")
-      new Counter2App with CFRPDSLApplicationRunner
+      (new Counter2App with CFRPDSLApplicationRunner).run
     }
 
   }

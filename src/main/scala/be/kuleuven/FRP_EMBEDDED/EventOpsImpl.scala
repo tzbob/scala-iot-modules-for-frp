@@ -352,6 +352,10 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
 
     override def getInitializer(): Rep[Unit] = unitToRepUnit( () )
 
+    override def createValue(): Var[_] = throw new Exception("Fix me")
+    override def createFired(): Var[Boolean] = throw new Exception("Fix me")
+    override def renewNode(): Unit = throw new Exception("Fix me")
+
   }
 
   trait EventImpl[A] extends Event[A] {

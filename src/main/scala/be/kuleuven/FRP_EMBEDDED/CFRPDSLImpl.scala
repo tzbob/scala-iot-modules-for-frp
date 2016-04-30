@@ -9,31 +9,41 @@ import scala.lms.common._
 /*
  * Implementation of the FRP DSL to generate C code
  */
-trait CFRPDSLImpl extends FRPDSLImpl
-    with ScalaOpsPkgExpExt { self =>
 
+trait CFRPDSL_Impl extends FRPDSL_Impl with ScalaOpsPkgExpExt { self =>
   val codegen = new CCodeGenPkgExtended { val IR: self.type = self }
 
   def emitProgram(program: ()=>Rep[Unit]): Unit = {
     val stream = new PrintWriter(System.out)
     codegen.emitProgram(program, stream)
   }
-
 }
 
-trait CFRPDSLApplicationRunner extends FRPDSLApplicationRunner with CFRPDSLImpl {
+trait CFRPDSLImpl extends CFRPDSL_Impl with FRPDSLImpl
+trait CFRPDSLOptImpl extends CFRPDSL_Impl with FRPDSLOptImpl
 
-  System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-  System.err.println("Creating flow graph...")
-  val modList = createApplication
-  System.err.println("\n")
-  buildFRPGraph()
-  System.err.println("\n")
-  val program = buildProgram(modList)
-  System.err.println("\n")
-  emitProgram(program)
-  System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
-  System.err.println("\n\n")
+trait CFRPDSLApplicationRunner_Impl extends CFRPDSL_Impl with FRPDSLApplication {
+
+  def run(): Unit = {
+    System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    System.err.println("Creating flow graph...")
+    val modList = createApplication
+    System.err.println("\n")
+    buildFRPGraph()
+    System.err.println("\n")
+    val program = buildProgram(modList)
+    System.err.println("\n")
+    emitProgram(program)
+    System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    System.err.println("\n\n")
+  }
 }
+
+// C + FRPDSL
+trait CFRPDSLApplicationRunner extends CFRPDSLApplicationRunner_Impl
+  with FRPDSLApplicationRunner with CFRPDSLImpl
+// C + FrpDSL OPT
+trait CFRPDSLOptApplicationRunner extends CFRPDSLApplicationRunner_Impl
+  with FRPDSLOptApplicationRunner with CFRPDSLOptImpl
 
 trait RawCFRPDSLApplicationRunner extends FRPDSLApplicationRunner with CFRPDSLImpl

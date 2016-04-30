@@ -336,92 +336,92 @@ object LMSEventAppRunner {
 
     withOutFile("LMSEventMapApp.c") {
       System.err.println("MapApp:")
-      new LMSEventMapApp with CFRPDSLApplicationRunner
+      (new LMSEventMapApp with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventFilterApp.c") {
       System.err.println("FilterApp:")
-      new LMSEventFilterApp with CFRPDSLApplicationRunner
+      (new LMSEventFilterApp with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventConstantApp.c") {
       System.err.println("ConstantApp:")
-      new LMSEventConstantApp with CFRPDSLApplicationRunner
+      (new LMSEventConstantApp with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventMerge1App.c") {
       System.err.println("MergeApp1:")
-      new LMSEventMerge1App with CFRPDSLApplicationRunner
+      (new LMSEventMerge1App with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventMerge2App.c") {
       System.err.println("MergeApp2:")
-      new LMSEventMerge2App with CFRPDSLApplicationRunner
+      (new LMSEventMerge2App with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventMerge2bApp.c") {
       System.err.println("MergeApp2b:")
-      new LMSEventMerge2bApp with CFRPDSLApplicationRunner
+      (new LMSEventMerge2bApp with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventMerge3App.c") {
       System.err.println("MergeApp3:")
-      new LMSEventMerge3App with CFRPDSLApplicationRunner
+      (new LMSEventMerge3App with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventMerge3bApp.c") {
       System.err.println("MergeApp3b:")
-      new LMSEventMerge3bApp with CFRPDSLApplicationRunner
+      (new LMSEventMerge3bApp with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventMerge4App.c") {
       System.err.println("MergeApp4:")
-      new LMSEventMerge4App with CFRPDSLApplicationRunner
+      (new LMSEventMerge4App with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventMerge5App.c") {
       System.err.println("MergeApp5:")
-      new LMSEventMerge5App with CFRPDSLApplicationRunner
+      (new LMSEventMerge5App with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventMerge6aApp.c") {
       System.err.println("MergeApp6a:")
-      new LMSEventMerge6aApp with CFRPDSLApplicationRunner
+      (new LMSEventMerge6aApp with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventMerge6bApp.c") {
       System.err.println("MergeApp6b:")
-      new LMSEventMerge6bApp with CFRPDSLApplicationRunner
+      (new LMSEventMerge6bApp with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventMerge7App.c") {
       System.err.println("MergeApp7:")
-      new LMSEventMerge7App with CFRPDSLApplicationRunner
+      (new LMSEventMerge7App with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventMerge8App.c") {
       System.err.println("MergeApp8:")
-      new LMSEventMerge8App with CFRPDSLApplicationRunner
+      (new LMSEventMerge8App with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventMerge9aApp.c") {
       System.err.println("MergeApp9a:")
-      new LMSEventMerge9aApp with CFRPDSLApplicationRunner
+      (new LMSEventMerge9aApp with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventMerge9bApp.c") {
       System.err.println("MergeApp9b:")
-      new LMSEventMerge9bApp with CFRPDSLApplicationRunner
+      (new LMSEventMerge9bApp with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventMerge10App.c") {
       System.err.println("MergeApp10:")
-      new LMSEventMerge10App with CFRPDSLApplicationRunner
+      (new LMSEventMerge10App with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSEventDoubleInputApp.c") {
       System.err.println("DoubleInputApp:")
-      new LMSEventDoubleInputApp with CFRPDSLApplicationRunner
+      (new LMSEventDoubleInputApp with CFRPDSLApplicationRunner).run
     }
 
   }

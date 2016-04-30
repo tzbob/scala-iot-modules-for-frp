@@ -7,6 +7,7 @@ trait BehaviorOps extends NodeOps {
     private[FRP_EMBEDDED] val typOut: Typ[A]
     private[FRP_EMBEDDED] def getValue(): Var[A]
     private[FRP_EMBEDDED] def getInitializer(): Rep[Unit]
+    override type Out = A
 
     // map2: Combine 2 behaviors (merge-like). Whenever a behaviors value changes, the output behavior applies
     // the function f to both child behaviors, changing its value to the result of that function

@@ -8,11 +8,18 @@ trait EventOps extends NodeOps {
   trait Event[A] extends Node[A] {
     // Private part
     private[FRP_EMBEDDED] type In
-    private[FRP_EMBEDDED] type Out = A
+    override type Out = A
     private[FRP_EMBEDDED] implicit val typIn: Typ[In]
     private[FRP_EMBEDDED] val typOut: Typ[Out]
+
+    // TODO: get these down the stream to EventImpl and EventOptImpl
+    // EventOpsImpl
     private[FRP_EMBEDDED] def getValue(): Var[A]
     private[FRP_EMBEDDED] def getFired(): Var[Boolean]
+    // EventOpsOptImpl
+    private[FRP_EMBEDDED] def createValue(): Var[_]
+    private[FRP_EMBEDDED] def createFired(): Var[Boolean]
+    private[FRP_EMBEDDED] def renewNode(): Unit
 
     // Public part
     def constant[B:Typ] (c: Rep[B])(implicit n: ModuleName): Event[B]

@@ -1,6 +1,6 @@
 package be.kuleuven.FRP_EMBEDDED
 
-trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
+trait FRPDSLImpl extends FRPDSL_Impl with EventOpsImpl with BehaviorOpsImpl {
 
   def buildFRPGraph(): Unit = {
     getNodeMap.foreach(
@@ -68,7 +68,7 @@ trait FRPDSLImpl extends FRPDSL with EventOpsImpl with BehaviorOpsImpl {
 
   }
 
-  def generateTopFunction[X](input: InputEvent[X], initModule: => Rep[(Unit)=>Unit], m: Module[_]): Unit = {
+  private def generateTopFunction[X](input: InputEvent[X], initModule: => Rep[(Unit)=>Unit], m: Module[_]): Unit = {
 
     System.err.println("top" + input.id)
 
