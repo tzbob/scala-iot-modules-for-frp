@@ -1,6 +1,6 @@
 package be.kuleuven.Applications
 
-import be.kuleuven.FRP_EMBEDDED.SMCFRPDSLApplicationRunner
+import be.kuleuven.FRP_EMBEDDED.{RawSMCFRPDSLApplicationRunner, SMCFRPDSLApplicationRunner}
 import be.kuleuven.FRP_EMBEDDED.OutputGenerator._
 
 object SMCAppsRunner {
@@ -8,7 +8,7 @@ object SMCAppsRunner {
   def main(args: Array[String]): Unit = {
 
     withOutFile("SMCInputApp.c") {
-      new SMCFRPDSLApplicationRunner {
+      new RawSMCFRPDSLApplicationRunner {
 
         override def createApplication: List[Module[_]] = {
           System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")

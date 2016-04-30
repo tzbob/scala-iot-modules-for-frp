@@ -135,12 +135,20 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
   }
 }
 
-trait TupledFunctionsExt extends TupledFunctions with FunctionsExt {
+trait TupledFunctionsExt extends TupledFunctions with FunctionsExt with TupleOpsExt {
 
   def namedfun0[B:Typ](name: String)(f: () => Rep[B]): Rep[Unit=>B] =
     doNamedLambda(name)((t: Rep[Unit]) => f())
   def namedfun2[A1:Typ,A2:Typ,B:Typ](name: String)(f: (Rep[A1], Rep[A2]) => Rep[B]): Rep[((A1,A2))=>B] =
     doNamedLambda(name)((t: Rep[(A1,A2)]) => f(tuple2_get1(t), tuple2_get2(t)))
+  def namedfun3[A1:Typ,A2:Typ,A3:Typ,B:Typ](name: String)(f: (Rep[A1], Rep[A2],Rep[A3]) => Rep[B]): Rep[((A1,A2,A3))=>B] =
+    doNamedLambda(name)((t: Rep[(A1,A2,A3)]) => f(tuple3_get1(t), tuple3_get2(t), tuple3_get3(t)))
+  def namedfun4[A1:Typ,A2:Typ,A3:Typ,A4:Typ,B:Typ](name: String)(f: (Rep[A1], Rep[A2],Rep[A3],Rep[A4]) => Rep[B]): Rep[((A1,A2,A3,A4))=>B] =
+    doNamedLambda(name)((t: Rep[(A1,A2,A3,A4)]) => f(tuple4_get1(t), tuple4_get2(t), tuple4_get3(t), tuple4_get4(t)))
+  def namedfun5[A1:Typ,A2:Typ,A3:Typ,A4:Typ,A5:Typ,B:Typ](name: String)(f: (Rep[A1], Rep[A2],Rep[A3],Rep[A4],Rep[A5]) => Rep[B]): Rep[((A1,A2,A3,A4,A5))=>B] =
+    doNamedLambda(name)((t: Rep[(A1,A2,A3,A4,A5)]) => f(tuple5_get1(t), tuple5_get2(t), tuple5_get3(t), tuple5_get4(t), tuple5_get5(t)))
+  def namedfun6[A1:Typ,A2:Typ,A3:Typ,A4:Typ,A5:Typ,A6:Typ,B:Typ](name: String)(f: (Rep[A1], Rep[A2],Rep[A3],Rep[A4],Rep[A5],Rep[A6]) => Rep[B]): Rep[((A1,A2,A3,A4,A5,A6))=>B] =
+    doNamedLambda(name)((t: Rep[(A1,A2,A3,A4,A5,A6)]) => f(tuple6_get1(t), tuple6_get2(t), tuple6_get3(t), tuple6_get4(t), tuple6_get5(t), tuple6_get6(t)))
 
   def inputfun[A1:Typ,A2:Typ,B:Typ](moduleName: String, funName: String)(f: (Rep[A1], Rep[A2]) => Rep[B]): Rep[((A1,A2))=>B] =
     doLambdaInput(moduleName, funName)(   (t: Rep[(A1,A2)]) => f(tuple2_get1(t), tuple2_get2(t))   )
@@ -149,6 +157,15 @@ trait TupledFunctionsExt extends TupledFunctions with FunctionsExt {
   def entryfun0[B:Typ](moduleName: String, funName: String)(f: () => Rep[B]): Rep[Unit=>B] =
     doLambdaEntry(moduleName, funName)((t: Rep[Unit]) => f())
 
+
+  class LambdaOps6[A1:Typ,A2:Typ,A3:Typ,A4:Typ,A5:Typ,A6:Typ,B:Typ](f: Rep[((A1,A2,A3,A4,A5,A6)) => B]) {
+    def apply(x1: Rep[A1], x2: Rep[A2], x3: Rep[A3], x4: Rep[A4], x5: Rep[A5], x6: Rep[A6]) = doApply(f,(x1, x2, x3, x4, x5,x6))
+    def apply(x: Rep[(A1,A2,A3,A4,A5,A6)]): Rep[B] = doApply(f,x)
+  }
+  //implicit def toLambdaOpsAny[B:Typ](fun: Rep[Any => B]) =
+  //  toLambdaOps(fun)
+  implicit def toLambdaOps6[A1:Typ,A2:Typ,A3:Typ,A4:Typ,A5:Typ,A6:Typ,B:Typ](fun: Rep[((A1,A2,A3,A4,A5,A6)) => B]) =
+    new LambdaOps6(fun)
 }
 
 trait TupledFunctionsExpExt extends TupledFunctionsExp with TupledFunctionsExt with FunctionsExpExt {
@@ -167,9 +184,39 @@ trait TupledFunctionsExpExt extends TupledFunctionsExp with TupledFunctionsExt w
     case e@NamedLambda(n, g,UnboxedTuple(xs),y:Block[b]) => toAtom(NamedLambda(n, f(g),UnboxedTuple(f(xs))(e.mA),f(y))(e.mA,e.mB))(mtype(manifest[A]),implicitly[SourceContext])
     case _ => super.mirror(e,f)
   }).asInstanceOf[Exp[A]]
+
+  private def tupledTyp[T](m: Typ[T]): Boolean = m.erasure.getName startsWith "scala.Tuple"
+  private def tupledTypOf[T](m: Typ[T], arity: Int): Boolean = m.erasure.getName == "scala.Tuple" + arity
+
+  override def unbox[A:Typ](x : Exp[A])(implicit pos: SourceContext) : Exp[A] = {
+    val mA = implicitly[Typ[A]]
+    x match {
+      case _ if tupledTypOf(mA, 6) =>
+        x match { case t : Rep[(a1,a2,a3,a4,a5,a6)] =>
+          UnboxedTuple[A](List(
+            tuple6_get1(t)(mA.typeArguments(0).asInstanceOf[Typ[a1]], pos),
+            tuple6_get2(t)(mA.typeArguments(1).asInstanceOf[Typ[a2]], pos),
+            tuple6_get3(t)(mA.typeArguments(2).asInstanceOf[Typ[a3]], pos),
+            tuple6_get4(t)(mA.typeArguments(3).asInstanceOf[Typ[a4]], pos),
+            tuple6_get5(t)(mA.typeArguments(4).asInstanceOf[Typ[a5]], pos),
+            tuple6_get6(t)(mA.typeArguments(5).asInstanceOf[Typ[a6]], pos)))
+        }
+      case _ => super.unbox(x)
+    }
+  }
 }
 //trait TupledFunctionsExpExt extends TupledFunctionsExp with FunctionsExpExt
 trait TupledFunctionsRecursiveExpExt extends TupledFunctionsRecursiveExp with TupledFunctionsExpExt
+
+trait GenericGenUnboxedTupleAccessExt extends GenericGenUnboxedTupleAccess {
+  val IR: TupledFunctionsExpExt
+  import IR._
+
+  override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
+    case FieldApply(UnboxedTuple(vars), "_6") => emitValDef(sym, quote(vars(5)))
+    case _ => super.emitNode(sym, rhs)
+  }
+}
 
 trait CGenFunctionsExt extends CGenFunctions {
   val IR: FunctionsExpExt
@@ -229,7 +276,7 @@ trait CGenFunctionsExt extends CGenFunctions {
   }
 }
 
-trait CGenTupledFunctionsExt extends CGenFunctionsExt with GenericGenUnboxedTupleAccess {
+trait CGenTupledFunctionsExt extends CGenFunctionsExt with GenericGenUnboxedTupleAccessExt {
   val IR: TupledFunctionsExpExt
   import IR._
 
@@ -335,7 +382,7 @@ trait SMCGenFunctionsExt extends CGenFunctions {
   }
 }
 
-trait SMCGenTupledFunctionsExt extends CGenFunctionsExt with GenericGenUnboxedTupleAccess {
+trait SMCGenTupledFunctionsExt extends CGenFunctionsExt with GenericGenUnboxedTupleAccessExt {
   val IR: TupledFunctionsExpExt
   import IR._
 

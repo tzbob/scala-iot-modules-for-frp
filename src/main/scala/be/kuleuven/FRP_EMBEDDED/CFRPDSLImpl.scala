@@ -35,3 +35,5 @@ trait CFRPDSLApplicationRunner extends FRPDSLApplicationRunner with CFRPDSLImpl 
   System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
   System.err.println("\n\n")
 }
+
+trait RawCFRPDSLApplicationRunner extends FRPDSLApplicationRunner with CFRPDSLImpl

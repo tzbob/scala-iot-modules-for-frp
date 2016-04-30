@@ -1,6 +1,6 @@
 package be.kuleuven.Applications
 
-import be.kuleuven.FRP_EMBEDDED.{SMCFRPDSLApplicationRunner, CFRPDSLApplicationRunner}
+import be.kuleuven.FRP_EMBEDDED.{RawSMCFRPDSLApplicationRunner, SMCFRPDSLApplicationRunner, CFRPDSLApplicationRunner}
 import be.kuleuven.FRP_EMBEDDED.OutputGenerator._
 
 object LMSPointerAppRunner {
@@ -8,7 +8,7 @@ object LMSPointerAppRunner {
   def main(args: Array[String]): Unit = {
 
     withOutFile("LMSPointerApp.c") {
-      new SMCFRPDSLApplicationRunner {
+      new RawSMCFRPDSLApplicationRunner {
 
         override def createApplication: List[Module[_]] = {
           System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
@@ -51,7 +51,7 @@ object LMSPointerAppRunner {
     }
 
     withOutFile("LMSPointerArrayApp.c") {
-      new SMCFRPDSLApplicationRunner {
+      new RawSMCFRPDSLApplicationRunner {
 
         override def createApplication: List[Module[_]] = {
           System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")

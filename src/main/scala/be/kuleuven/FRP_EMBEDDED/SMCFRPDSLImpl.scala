@@ -31,3 +31,5 @@ trait SMCFRPDSLApplicationRunner extends FRPDSLApplicationRunner with SMCFRPDSLI
   System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
   System.err.println("\n\n")
 }
+
+trait RawSMCFRPDSLApplicationRunner extends FRPDSLApplicationRunner with SMCFRPDSLImpl
