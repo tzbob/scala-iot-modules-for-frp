@@ -9,7 +9,7 @@ trait FRPDSLApplication extends FRPDSL {
   def createModule[A] (graphfun: (ModuleName)=>Option[OutputEvent[A]] ): Module[A]
 }
 
-trait FRPDSLApplicationRunner extends FRPDSLApplication with FRPDSLImpl {
+trait FRPDSLApplicationImpl extends FRPDSLApplication {
 
   object ModuleNumber {
     private var id: Int = 0
@@ -35,3 +35,6 @@ trait FRPDSLApplicationRunner extends FRPDSLApplication with FRPDSLImpl {
     module
   }
 }
+
+trait FRPDSLApplicationRunner extends FRPDSLApplicationImpl with FRPDSLImpl
+trait FRPDSLOptApplicationRunner extends FRPDSLApplicationImpl with FRPDSLOptImpl
