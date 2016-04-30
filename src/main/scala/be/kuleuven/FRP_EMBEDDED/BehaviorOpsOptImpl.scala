@@ -99,8 +99,6 @@ trait BehaviorOpsOptImpl extends BehaviorOps with NodeOpsOptImpl with ScalaOpsPk
     lazy val valueInit = var_assign[B](value, init)
     override def getInitializer() = valueInit
 
-    //lazy val parentvalue: Rep[A] = parent.getValue()
-    //lazy val parentfired: Rep[Boolean] = parent.getFired()
     lazy val behaviorfun = {
       namedfun2 (mn.str) { (pv: Rep[A], pf: Rep[Boolean]) =>
         if(pf) {
@@ -110,7 +108,7 @@ trait BehaviorOpsOptImpl extends BehaviorOps with NodeOpsOptImpl with ScalaOpsPk
       }
     }
     override def produceFunction() = behaviorfun
-    override def useNode(/*parentvalue: Var[A], parentfired: Var[Boolean]*/) = {
+    override def useNode() = {
       val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired = getSymMap.getOrElse(parent.id, null)._2
       behaviorfun(parentvalue, parentfired)
@@ -138,10 +136,6 @@ trait BehaviorOpsOptImpl extends BehaviorOps with NodeOpsOptImpl with ScalaOpsPk
     override val level = scala.math.max(parentLeft.level, parentRight.level) + 1
     override val inputNodeIDs: Set[NodeID] = parentLeft.inputNodeIDs ++ parentRight.inputNodeIDs
 
-    //lazy val parentleftvalue = parentLeft.getValue()
-    //lazy val parentleftfired: Rep[Boolean] = parentLeft.getFired()
-    //lazy val parentrightvalue = parentRight.getValue()
-    //lazy val parentrightfired: Rep[Boolean] = parentRight.getFired()
     lazy val value = vardeclmod_new[C](mn.str)
     override def getValue = value
     lazy val valueInit = var_assign[C](value, init)
@@ -164,7 +158,7 @@ trait BehaviorOpsOptImpl extends BehaviorOps with NodeOpsOptImpl with ScalaOpsPk
       }
     }
     override def produceFunction() = behaviorfun
-    override def useNode(/*parentleftvalue: Var[A], parentleftfired: Var[Boolean], parentrightvalue: Var[B], parentrightfired: Var[Boolean]*/) = {
+    override def useNode() = {
       val parentleftvalue = getSymMap.getOrElse(parentLeft.id, (parentLeft.createValue,0))._1.asInstanceOf[Var[A]]
       val parentleftfired = getSymMap.getOrElse(parentLeft.id, (0,var_new[Boolean](false)))._2
       val parentrightvalue = getSymMap.getOrElse(parentRight.id, (parentRight.createValue,0))._1.asInstanceOf[Var[B]]
@@ -196,8 +190,6 @@ trait BehaviorOpsOptImpl extends BehaviorOps with NodeOpsOptImpl with ScalaOpsPk
     lazy val valueInit = var_assign[A](value, init)
     override def getInitializer() = valueInit
 
-    //lazy val parentvalue: Rep[A] = parent.getValue()
-    //lazy val parentfired: Rep[Boolean] = parent.getFired()
     lazy val behaviorfun = {
       namedfun2 (mn.str) { (pv: Rep[A], pf: Rep[Boolean]) =>
         if(pf) {
@@ -207,7 +199,7 @@ trait BehaviorOpsOptImpl extends BehaviorOps with NodeOpsOptImpl with ScalaOpsPk
       }
     }
     override def produceFunction() = behaviorfun
-    override def useNode(/*parentvalue: Var[A], parentfired: Var[Boolean]*/) = {
+    override def useNode() = {
       val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired = getSymMap.getOrElse(parent.id, null)._2
       behaviorfun(parentvalue, parentfired)

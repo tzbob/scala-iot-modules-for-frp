@@ -32,6 +32,19 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
     listbuilder.toList
   }
 
+  def getOptionEvent[X](n: NodeImpl[X]): Option[Event[X]] = {
+    n match {
+      case en @ MergeEvent(_,_) => Some(en)
+      case en @ ConstantEvent(_,_) => Some(en)
+      case en @ FilterEvent(_,_) => Some(en)
+      case en @ MapEvent(_,_) => Some(en)
+      case en @ ChangesEvent(_) => Some(en)
+      case en @ SnapshotEvent(_,_) => Some(en)
+      case en @ InputEvent( ) => Some(en)
+      case _ => None
+    }
+  }
+
   def isInputEvent[T: Typ](e: Event[T]): Boolean = {
     e match {
       case InputEvent( ) => true
@@ -46,16 +59,16 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
     }
   }
 
-  def getOptionEvent[X](n: NodeImpl[X]): Option[Event[X]] = {
-    n match {
-      case en @ MergeEvent(_,_) => Some(en)
-      case en @ ConstantEvent(_,_) => Some(en)
-      case en @ FilterEvent(_,_) => Some(en)
-      case en @ MapEvent(_,_) => Some(en)
-      case en @ ChangesEvent(_) => Some(en)
-      case en @ SnapshotEvent(_,_) => Some(en)
-      case en @ InputEvent( ) => Some(en)
-      case _ => None
+  implicit def eventToEventImpl[X](e: Event[X]): EventImpl[X] = {
+    e match {
+      case en @ MergeEvent(_,_) => en
+      case en @ ConstantEvent(_,_) => en
+      case en @ FilterEvent(_,_) => en
+      case en @ MapEvent(_,_) => en
+      case en @ ChangesEvent(_) => en
+      case en @ SnapshotEvent(_,_) => en
+      case en @ InputEvent( ) => en
+      case _ => throw new Exception("Event without Implementation")
     }
   }
   //end generic functions
@@ -328,9 +341,9 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
     override val moduleName = mn
 
     lazy val fired = vardeclmod_new[Boolean](moduleName.str)
-    override private[FRP_EMBEDDED] def getFired() = fired
+    override def getFired() = fired
     lazy val value = vardeclmod_new[B](moduleName.str)
-    override private[FRP_EMBEDDED] def getValue() = value
+    override def getValue() = value
 
     override def generateNode(): Unit = {
       if (isInputEvent(this)) {
@@ -352,13 +365,13 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
 
     override def getInitializer(): Rep[Unit] = unitToRepUnit( () )
 
-    override def createValue(): Var[_] = throw new Exception("Fix me")
-    override def createFired(): Var[Boolean] = throw new Exception("Fix me")
-    override def renewNode(): Unit = throw new Exception("Fix me")
-
   }
 
   trait EventImpl[A] extends Event[A] {
+
+    def getValue(): Var[A]
+    def getFired(): Var[Boolean]
+
     override def constant[B:Typ](c: Rep[B])(implicit n: ModuleName): Event[B] = ConstantEvent[A,B](this, c)
     override def map[B:Typ](f: Rep[A] => Rep[B])(implicit n: ModuleName): Event[B] = MapEvent[A,B](this, f)
     override def filter(f: Rep[A] => Rep[Boolean])(implicit n: ModuleName): Event[A] = FilterEvent[A](this, f)(typOut,n)
