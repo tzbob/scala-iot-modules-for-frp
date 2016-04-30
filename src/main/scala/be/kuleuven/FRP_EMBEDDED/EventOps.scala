@@ -362,29 +362,21 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt  {
     lazy val value = vardeclmod_new[B](moduleName.str)
     override private[FRP_EMBEDDED] def getValue() = value
 
-    override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
-          if (isInputEvent(this)) {
-            () => {
-              f()
-              fired
-              value
-              getInputEvent(this) match {
-                case Some(i) => i.eventfun
-                case None => throw new Exception("Not cool. You should check using isInputEvent!")
-              }
-              unitToRepUnit(())
-            }
-          }
-          else {
-              () => {
-                f()
-                fired
-                value
-                implicit val tOut = this.typOut
-                this.getFunction()
-                unitToRepUnit( () )
-              }
-          }
+    override def generateNode(): Unit = {
+      if (isInputEvent(this)) {
+        fired
+        value
+        getInputEvent(this) match {
+          case Some(i) => i.eventfun
+          case None => throw new Exception("Not cool. You should check using isInputEvent!")
+        }
+      }
+      else {
+        fired
+        value
+        implicit val tOut = this.typOut
+        this.getFunction()
+      }
 
     }
 

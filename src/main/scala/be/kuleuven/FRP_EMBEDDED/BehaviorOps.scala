@@ -54,12 +54,8 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     override def getValue = value
     lazy val valueInit = var_assign[A](value, init)
     override def getInitializer() = valueInit
-    override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
-      () => {
-        f()
-        value
-        unitToRepUnit( () )
-      }
+    override def generateNode(): Unit = {
+      value
     }
     override def getFunction() =
       throw new IllegalStateException("Not defined on ConstantBehavior") //TODO: implement
@@ -97,13 +93,9 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
       parentRight.buildGraphTopDown()
     }
 
-    override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
-      () => {
-        f()
-        value
-        behaviorfun
-        unitToRepUnit( () )
-      }
+    override def generateNode(): Unit = {
+      value
+      behaviorfun
     }
 
     System.err.println("Create Map2Behavior(ID:" + id + "): " + inputNodeIDs)
@@ -135,13 +127,9 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
       parent.buildGraphTopDown()
     }
 
-    override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
-      () => {
-        f()
-        value
-        behaviorfun
-        unitToRepUnit( () )
-      }
+    override def generateNode(): Unit = {
+      value
+      behaviorfun
     }
 
     System.err.println("Create FoldpBehavior(ID:" + id + "): " + inputNodeIDs)
@@ -190,13 +178,9 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
       parentRight.buildGraphTopDown()
     }
 
-    override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
-      () => {
-        f()
-        value
-        behaviorfun
-        unitToRepUnit( () )
-      }
+    override def generateNode(): Unit = {
+      value
+      behaviorfun
     }
 
     System.err.println("Create Foldp2Behavior(ID:" + id + "): " + inputNodeIDs)
@@ -228,13 +212,9 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
       parent.buildGraphTopDown()
     }
 
-    override def generateNode(f: () => Rep[Unit]): () => Rep[Unit] = {
-      () => {
-        f()
-        value
-        behaviorfun
-        unitToRepUnit( () )
-      }
+    override def generateNode(): Unit = {
+      value
+      behaviorfun
     }
 
     System.err.println("Create StartsWithBehavior(ID:" + id + "): " + inputNodeIDs)

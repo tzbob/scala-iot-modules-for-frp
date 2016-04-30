@@ -95,7 +95,7 @@ trait NodeOpsImpl extends NodeOps {
   }
 
   trait NodeImpl[A] extends Node[A] {
-    def generateNode(f: () => Rep[Unit]): () => Rep[Unit]
+    def generateNode(): Unit
     //def getFunction(): Rep[(Unit)=>Unit]
     def getInitializer(): Rep[Unit]
 
