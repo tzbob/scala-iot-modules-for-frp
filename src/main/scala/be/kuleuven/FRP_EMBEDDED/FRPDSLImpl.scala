@@ -2,7 +2,7 @@ package be.kuleuven.FRP_EMBEDDED
 
 trait FRPDSLImpl extends FRPDSL_Impl with EventOpsImpl with BehaviorOpsImpl {
 
-  def buildFRPGraph(): Unit = {
+  override def buildFRPGraph(): Unit = {
     getNodeMap.foreach(
       x => x match {
         case (_, n) => n.buildGraphTopDown()
@@ -17,14 +17,6 @@ trait FRPDSLImpl extends FRPDSL_Impl with EventOpsImpl with BehaviorOpsImpl {
     val leafNodes = getOutputNodes.values.toList
     System.err.println("LeafNodes:")
     leafNodes.foreach(System.err.println )
-  }
-
-  def buildProgram(modList: List[Module[_]]): () => Rep[Unit] = {
-    () => {
-      for (module <- modList) {
-        generateModule(module)
-      }
-    }
   }
 
   override def generateModule(module: Module[_]): Unit = {

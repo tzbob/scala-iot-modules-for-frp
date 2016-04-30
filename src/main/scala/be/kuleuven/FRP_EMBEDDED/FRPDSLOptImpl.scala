@@ -19,14 +19,6 @@ trait FRPDSLOptImpl extends FRPDSL_Impl with EventOpsOptImpl with BehaviorOpsOpt
     leafNodes.foreach(System.err.println )
   }
 
-  override def buildProgram(modList: List[Module[_]]): () => Rep[Unit] = {
-    () => {
-      for (module <- modList) {
-        generateModule(module)
-      }
-    }
-  }
-
   override def generateModule(module: Module[_]): Unit = {
 
     // generate per level
@@ -66,12 +58,7 @@ trait FRPDSLOptImpl extends FRPDSL_Impl with EventOpsOptImpl with BehaviorOpsOpt
     System.err.println("End of generateModule")
   }
 
-  def printSymbolMap(nodeID: NodeID): Unit = {
-    System.err.println("ID's in symMap for " + nodeID + ":")
-    for ( (id,v) <- getSymMap) {
-      System.err.println(id)
-    }
-  }
+
 
   private def generateTopFunction[X](input: InputEvent[X], initModule: => Rep[(Unit)=>Unit], m: Module[_]): Unit = {
 
@@ -101,7 +88,6 @@ trait FRPDSLOptImpl extends FRPDSL_Impl with EventOpsOptImpl with BehaviorOpsOpt
       resetSymMap()
       input.useInputNode(data, len)
 
-
       eventsTO.foreach( x => { x.useNode() } ) // apply the functions in this context
 
       m.output match {
@@ -109,8 +95,6 @@ trait FRPDSLOptImpl extends FRPDSL_Impl with EventOpsOptImpl with BehaviorOpsOpt
           if (coe.inputNodeIDs.contains(input.id) ) coe.useNode()
         case _ => // we didn't had an output, it was None
       }
-
-      printSymbolMap(input.id)
 
       unitToRepUnit( () )
     }

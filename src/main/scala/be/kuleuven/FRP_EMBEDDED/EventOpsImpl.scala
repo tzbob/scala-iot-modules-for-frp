@@ -7,7 +7,6 @@ import scala.collection.immutable.HashSet
 trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
   behaviorImpl: BehaviorOpsImpl =>
 
-
   //TODO: move generic functions to upper implementation class, problem at the moment are the case classes
   // begin generic functions
   def getInputEventNodes: List[InputEvent[_]] = {
@@ -125,13 +124,14 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
         var_assign(value, rep_asinstanceof(readVar(input), typ[Int], typ[A]))
       }
     }
+
     override def getFunction() =
-      throw new IllegalStateException("Input node should not be used anymore for eventfun. Handled in top level function")
+      throw new IllegalStateException("Should be handled in top level function.")
     override def buildGraphTopDown() = {
       // has no parents, nothing to do!
     }
 
-    val level = 0
+    override val level = 0
     override val typIn: Typ[In] = typ[Unit]
     override val typOut: Typ[Out] = tA
     override val inputNodeIDs: Set[NodeID] = HashSet(this.id)
@@ -155,14 +155,14 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
         }
       }
     }
+
     override def getFunction() = eventfun
     override def buildGraphTopDown() = {
       parent.addChild(id)
       parent.buildGraphTopDown()
     }
 
-    val level = parent.level + 1
-
+    override val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
     System.err.println("Create ConstantEvent(ID:" + id + "): " + inputNodeIDs)
@@ -190,7 +190,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
       parent.buildGraphTopDown()
     }
 
-    val level = parent.level + 1
+    override val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
     System.err.println("Create MapEvent(ID:" + id + "): " + inputNodeIDs)
@@ -223,7 +223,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
       parent.buildGraphTopDown()
     }
 
-    val level = parent.level + 1
+    override val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
     System.err.println("Create FilterEvent(ID:" + id + "): " + inputNodeIDs)
@@ -234,7 +234,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
     //val parentEvents: List[Event[In]] = parents._1::parents._2::Nil
     val parentLeft: Event[In] = parents._1
     val parentRight: Event[In] = parents._2
-    val level = scala.math.max(parentLeft.level, parentRight.level) + 1
+    override val level = scala.math.max(parentLeft.level, parentRight.level) + 1
     override val typIn: Typ[In] = parentLeft.typOut //TODO: fix if different typed Events can be merged
     override val typOut: Typ[Out] = typIn
     val inputIDsLeft: Set[NodeID] = parentLeft.inputNodeIDs
@@ -292,7 +292,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
       parent.buildGraphTopDown()
     }
 
-    val level = parent.level + 1
+    override val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
     System.err.println("Create ChangesEvent(ID:" + id + "): " + inputNodeIDs)
@@ -324,7 +324,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
 
     // Important! This nodes is only tied to the chain of the event parent
     // This is made explicit in buildGraphTopDown function
-    val level = parentEvent.level + 1
+    override val level = parentEvent.level + 1
     override val inputNodeIDs: Set[NodeID] = parentEvent.inputNodeIDs
 
     System.err.println("Create SnapshotEvent(ID:" + id + "): " + inputNodeIDs)

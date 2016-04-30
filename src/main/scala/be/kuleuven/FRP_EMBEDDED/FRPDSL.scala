@@ -12,5 +12,11 @@ trait FRPDSL extends EventOps with BehaviorOps {
 
 trait FRPDSL_Impl extends FRPDSL {
   def buildFRPGraph(): Unit
-  def buildProgram(modList: List[Module[_]]): () => Rep[Unit]
+  def buildProgram(modList: List[Module[_]]): () => Rep[Unit] = {
+    () => {
+      for (module <- modList) {
+        generateModule(module)
+      }
+    }
+  }
 }
