@@ -1,6 +1,6 @@
 package be.kuleuven.Applications
 
-import be.kuleuven.FRP_EMBEDDED.{SMCFRPDSLApplicationRunner, CFRPDSLApplicationRunner, OutputGenerator, FRPDSLApplication}
+import be.kuleuven.FRP_EMBEDDED._
 
 
 trait Counter1App extends FRPDSLApplication {
@@ -58,6 +58,11 @@ object CounterAppRunner {
     withOutFile("Counter1App.c") {
       System.err.println("Counter1App:")
       (new Counter1App with CFRPDSLApplicationRunner).run
+    }
+
+    withOutFile("Counter1OptApp.c") {
+      System.err.println("Counter1OptApp:")
+      (new Counter1App with CFRPDSLOptApplicationRunner).run
     }
 
     withOutFile("Counter2App.c") {
