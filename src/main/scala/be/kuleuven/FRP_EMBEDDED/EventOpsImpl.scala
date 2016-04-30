@@ -31,7 +31,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
     listbuilder.toList
   }
 
-  def getOptionEvent[X](n: NodeImpl[X]): Option[Event[X]] = {
+  def getOptionEvent[X](n: Node[X]): Option[Event[X]] = {
     n match {
       case en @ MergeEvent(_,_) => Some(en)
       case en @ ConstantEvent(_,_) => Some(en)
@@ -125,7 +125,9 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
       }
     }
 
-    override def getFunction() =
+    override def produceFunction =
+      throw new IllegalStateException("Should be handled in top level function.")
+    override def useFunction =
       throw new IllegalStateException("Should be handled in top level function.")
     override def buildGraphTopDown() = {
       // has no parents, nothing to do!
@@ -156,7 +158,8 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
       }
     }
 
-    override def getFunction() = eventfun
+    override def produceFunction = eventfun
+    override def useFunction = eventfun()
     override def buildGraphTopDown() = {
       parent.addChild(id)
       parent.buildGraphTopDown()
@@ -184,7 +187,8 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
         }
       }
     }
-    override def getFunction() = eventfun
+    override def produceFunction = eventfun
+    override def useFunction = eventfun()
     override def buildGraphTopDown() = {
       parent.addChild(id)
       parent.buildGraphTopDown()
@@ -217,7 +221,8 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
         }
       }
     }
-    override def getFunction() = eventfun
+    override def produceFunction = eventfun
+    override def useFunction = eventfun()
     override def buildGraphTopDown() = {
       parent.addChild(id)
       parent.buildGraphTopDown()
@@ -264,7 +269,8 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
         }
       }
     }
-    override def getFunction() = eventfun
+    override def produceFunction = eventfun
+    override def useFunction = eventfun()
     override def buildGraphTopDown() = {
       parentLeft.addChild(id)
       parentLeft.buildGraphTopDown()
@@ -286,7 +292,8 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
         var_assign[Out](value, parentvalue)
       }
     }
-    override def getFunction() = eventfun
+    override def produceFunction = eventfun
+    override def useFunction = eventfun()
     override def buildGraphTopDown() = {
       parent.addChild(id)
       parent.buildGraphTopDown()
@@ -315,7 +322,8 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
         }
       }
     }
-    override def getFunction() = eventfun
+    override def produceFunction = eventfun
+    override def useFunction = eventfun()
     override def buildGraphTopDown() = {
       parentEvent.addChild(id)
       parentEvent.buildGraphTopDown()
@@ -358,7 +366,7 @@ trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
         fired
         value
         implicit val tOut = this.typOut
-        this.getFunction()
+        this.produceFunction
       }
 
     }

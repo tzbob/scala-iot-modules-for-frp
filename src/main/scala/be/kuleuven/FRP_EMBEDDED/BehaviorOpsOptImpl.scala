@@ -7,7 +7,7 @@ import scala.collection.immutable.HashSet
 trait BehaviorOpsOptImpl extends BehaviorOps with NodeOpsOptImpl with ScalaOpsPkgExpExt {
   eventImpl: EventOpsOptImpl =>
 
-  def getBehaviorNodes: Map[NodeID,NodeOptImpl[_]] = {
+  def getBehaviorNodes: Map[NodeID,Node[_]] = {
     getNodeMap.filter(
       x => x match {
         case (id, _) => getBehaviorIDs().contains(id)
@@ -15,7 +15,7 @@ trait BehaviorOpsOptImpl extends BehaviorOps with NodeOpsOptImpl with ScalaOpsPk
     )
   }
 
-  def getOptionBehavior[X](n: NodeOptImpl[X]): Option[Behavior[X]] = {
+  def getOptionBehavior[X](n: Node[X]): Option[Behavior[X]] = {
     n match {
       case bn @ ConstantBehavior(_) => Some(bn)
       case bn @ Map2Behavior(_,_) => Some(bn)
@@ -39,9 +39,9 @@ trait BehaviorOpsOptImpl extends BehaviorOps with NodeOpsOptImpl with ScalaOpsPk
     override def generateNode() = {
       value
     }
-    override def produceFunction() =
+    override def produceFunction =
       throw new IllegalStateException("Not defined on ConstantBehavior") //TODO: implement
-    override def useNode() = {
+    override def useFunction = {
       throw new IllegalStateException("Not defined on ConstantBehavior") //TODO: implement
     }
     override def buildGraphTopDown() =
@@ -70,8 +70,8 @@ trait BehaviorOpsOptImpl extends BehaviorOps with NodeOpsOptImpl with ScalaOpsPk
         unitToRepUnit( () )
       }
     }
-    override def produceFunction() = behaviorfun
-    override def useNode() = {
+    override def produceFunction = behaviorfun
+    override def useFunction = {
       behaviorfun( () )
     }
     override def buildGraphTopDown() = {
@@ -107,8 +107,8 @@ trait BehaviorOpsOptImpl extends BehaviorOps with NodeOpsOptImpl with ScalaOpsPk
         unitToRepUnit( () )
       }
     }
-    override def produceFunction() = behaviorfun
-    override def useNode() = {
+    override def produceFunction = behaviorfun
+    override def useFunction = {
       val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired = getSymMap.getOrElse(parent.id, null)._2
       behaviorfun(parentvalue, parentfired)
@@ -157,8 +157,8 @@ trait BehaviorOpsOptImpl extends BehaviorOps with NodeOpsOptImpl with ScalaOpsPk
         unitToRepUnit( () )
       }
     }
-    override def produceFunction() = behaviorfun
-    override def useNode() = {
+    override def produceFunction = behaviorfun
+    override def useFunction = {
       val parentleftvalue = getSymMap.getOrElse(parentLeft.id, (parentLeft.createValue,0))._1.asInstanceOf[Var[A]]
       val parentleftfired = getSymMap.getOrElse(parentLeft.id, (0,var_new[Boolean](false)))._2
       val parentrightvalue = getSymMap.getOrElse(parentRight.id, (parentRight.createValue,0))._1.asInstanceOf[Var[B]]
@@ -198,8 +198,8 @@ trait BehaviorOpsOptImpl extends BehaviorOps with NodeOpsOptImpl with ScalaOpsPk
         unitToRepUnit( () )
       }
     }
-    override def produceFunction() = behaviorfun
-    override def useNode() = {
+    override def produceFunction = behaviorfun
+    override def useFunction = {
       val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired = getSymMap.getOrElse(parent.id, null)._2
       behaviorfun(parentvalue, parentfired)

@@ -69,7 +69,7 @@ trait EventOpsOptImpl extends EventOps with NodeOpsOptImpl with ScalaOpsPkgExpEx
       }
 
     }
-    def useNode() = {
+    def useFunction = {
       val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired = getSymMap.getOrElse(parent.id, null)._2
       eventfun(readVar(parentvalue), readVar(parentfired))
@@ -100,10 +100,10 @@ trait EventOpsOptImpl extends EventOps with NodeOpsOptImpl with ScalaOpsPkgExpEx
         ptr_assignToVal(v, rep_asinstanceof(readVar(input), typ[Int], typ[A]))
       }
     }
-    override def produceFunction() =
+    override def produceFunction =
       throw new IllegalStateException("Input node should not be used anymore for eventfun. Handled in top level function")
 
-    override def useNode() = {
+    override def useFunction = {
       throw new IllegalStateException("UseNode should not be used in Input")
     }
 
@@ -140,8 +140,8 @@ trait EventOpsOptImpl extends EventOps with NodeOpsOptImpl with ScalaOpsPkgExpEx
         }
       }
     }
-    override def produceFunction() = eventfun
-    override def useNode() = {
+    override def produceFunction = eventfun
+    override def useFunction = {
       renewNode()
       val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired = getSymMap.getOrElse(parent.id, null)._2
@@ -175,8 +175,8 @@ trait EventOpsOptImpl extends EventOps with NodeOpsOptImpl with ScalaOpsPkgExpEx
         }
       }
     }
-    override def produceFunction() = eventfun
-    override def useNode() = {
+    override def produceFunction = eventfun
+    override def useFunction = {
       renewNode()
       val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired = getSymMap.getOrElse(parent.id, null)._2
@@ -214,8 +214,8 @@ trait EventOpsOptImpl extends EventOps with NodeOpsOptImpl with ScalaOpsPkgExpEx
         }
       }
     }
-    override def produceFunction() = eventfun
-    override def useNode() = {
+    override def produceFunction = eventfun
+    override def useFunction = {
       renewNode()
       val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired = getSymMap.getOrElse(parent.id, null)._2
@@ -264,8 +264,8 @@ trait EventOpsOptImpl extends EventOps with NodeOpsOptImpl with ScalaOpsPkgExpEx
         }
       }
     }
-    override def produceFunction() = eventfun
-    override def useNode() = {
+    override def produceFunction = eventfun
+    override def useFunction = {
       renewNode()
       val parentleftvalue = getSymMap.getOrElse(parentLeft.id, (parentLeft.createValue,0))._1.asInstanceOf[Var[A]]
       val parentleftfired = getSymMap.getOrElse(parentLeft.id, (0,var_new[Boolean](false)))._2
@@ -296,8 +296,8 @@ trait EventOpsOptImpl extends EventOps with NodeOpsOptImpl with ScalaOpsPkgExpEx
         ptr_assignToVal(v, parentvalue)
       }
     }
-    override def produceFunction() = eventfun
-    override def useNode() = {
+    override def produceFunction = eventfun
+    override def useFunction = {
       renewNode()
       val value = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[A]]
       val fired = getSymMap.getOrElse(id, null)._2
@@ -333,8 +333,8 @@ trait EventOpsOptImpl extends EventOps with NodeOpsOptImpl with ScalaOpsPkgExpEx
         }
       }
     }
-    override def produceFunction() = eventfun
-    override def useNode() = {
+    override def produceFunction = eventfun
+    override def useFunction = {
       renewNode()
       val parentEventFired = getSymMap.getOrElse(parentEvent.id, null)._2
       val value = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[A]]
@@ -374,7 +374,7 @@ trait EventOpsOptImpl extends EventOps with NodeOpsOptImpl with ScalaOpsPkgExpEx
       }
       else {
         implicit val tOut = this.typOut
-        this.produceFunction()
+        this.produceFunction
       }
     }
 

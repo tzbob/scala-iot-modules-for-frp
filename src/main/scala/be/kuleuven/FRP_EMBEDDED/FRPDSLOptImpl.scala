@@ -68,7 +68,7 @@ trait FRPDSLOptImpl extends FRPDSL_Impl with EventOpsOptImpl with BehaviorOpsOpt
     val descendantNodes = getNodesWithIDs(descendantIDs)
 
     // get topological ordering
-    val listbuilder = scala.collection.mutable.ListBuffer.empty[NodeOptImpl[_]]
+    val listbuilder = scala.collection.mutable.ListBuffer.empty[Node[_]]
     for( i <- 0 to getMaxLevel)
       listbuilder ++= getNodesOnLevel(descendantNodes.values.toList,i)
     val eventsTO = listbuilder.toList
@@ -88,11 +88,11 @@ trait FRPDSLOptImpl extends FRPDSL_Impl with EventOpsOptImpl with BehaviorOpsOpt
       resetSymMap()
       input.useInputNode(data, len)
 
-      eventsTO.foreach( x => { x.useNode() } ) // apply the functions in this context
+      eventsTO.foreach( x => { x.useFunction() } ) // apply the functions in this context
 
       m.output match {
         case coe @ ConcreteOutputEvent(_) =>
-          if (coe.inputNodeIDs.contains(input.id) ) coe.useNode()
+          if (coe.inputNodeIDs.contains(input.id) ) coe.useFunction
         case _ => // we didn't had an output, it was None
       }
 

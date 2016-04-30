@@ -7,7 +7,7 @@ import scala.collection.immutable.HashSet
 trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
   eventImpl: EventOpsImpl =>
 
-  def getBehaviorNodes: Map[NodeID,NodeImpl[_]] = {
+  def getBehaviorNodes: Map[NodeID,Node[_]] = {
     getNodeMap.filter(
       x => x match {
         case (id, _) => getBehaviorIDs().contains(id)
@@ -28,7 +28,9 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
     override def generateNode(): Unit = {
       value
     }
-    override def getFunction() =
+    override def produceFunction =
+      throw new IllegalStateException("Not defined on ConstantBehavior") //TODO: implement
+    override def useFunction =
       throw new IllegalStateException("Not defined on ConstantBehavior") //TODO: implement
     override def buildGraphTopDown() =
       throw new IllegalStateException("Not defined on ConstantBehavior") //TODO: implement
@@ -56,7 +58,8 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
         unitToRepUnit( () )
       }
     }
-    override def getFunction() = behaviorfun
+    override def produceFunction = behaviorfun
+    override def useFunction = behaviorfun()
     override def buildGraphTopDown() = {
       parentLeft.addChild(id)
       parentLeft.buildGraphTopDown()
@@ -92,7 +95,8 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
         unitToRepUnit( () )
       }
     }
-    override def getFunction() = behaviorfun
+    override def produceFunction = behaviorfun
+    override def useFunction = behaviorfun()
     override def buildGraphTopDown() = {
       parent.addChild(id)
       parent.buildGraphTopDown()
@@ -141,7 +145,8 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
         unitToRepUnit( () )
       }
     }
-    override def getFunction() = behaviorfun
+    override def produceFunction = behaviorfun
+    override def useFunction = behaviorfun()
     override def buildGraphTopDown() = {
       parentLeft.addChild(id)
       parentLeft.buildGraphTopDown()
@@ -177,7 +182,8 @@ trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
         unitToRepUnit( () )
       }
     }
-    override def getFunction() = behaviorfun
+    override def produceFunction = behaviorfun
+    override def useFunction = behaviorfun()
     override def buildGraphTopDown() = {
       parent.addChild(id)
       parent.buildGraphTopDown()

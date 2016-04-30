@@ -68,11 +68,11 @@ trait FRPDSLImpl extends FRPDSL_Impl with EventOpsImpl with BehaviorOpsImpl {
     val descendantNodes = getNodesWithIDs(descendantIDs)
 
     // get topological ordering
-    val listbuilder = scala.collection.mutable.ListBuffer.empty[NodeImpl[_]]
+    val listbuilder = scala.collection.mutable.ListBuffer.empty[Node[_]]
     for( i <- 0 to getMaxLevel)
       listbuilder ++= getNodesOnLevel(descendantNodes.values.toList,i)
-    val eventsTO = listbuilder.toList
-    eventsTO.foreach(x => System.err.println(x.id))
+    val nodesTO = listbuilder.toList
+    nodesTO.foreach(x => System.err.println(x.id))
 
     //TODO: maybe get rid of concrete output
     m.output match {
@@ -84,7 +84,7 @@ trait FRPDSLImpl extends FRPDSL_Impl with EventOpsImpl with BehaviorOpsImpl {
     val top = inputfun(input.moduleName.str, "top"+input.id) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
       if(behaviorsInModule.size > 0) initModule()
       input.eventfun(data,len)
-      eventsTO.foreach( x => {(x.getFunction())( () ) } ) // apply the functions in this context
+      nodesTO.foreach( x => x.useFunction() ) // apply the functions in this context
 
       m.output match {
         case coe @ ConcreteOutputEvent(_) => coe.eventfun( () )
