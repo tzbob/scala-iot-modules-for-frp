@@ -7,21 +7,21 @@
 #include "Counter1OptApp.c"
 int main() {
 	uint8_t data = 3;
-	printf("Counter: %d\n", x133);
+	printf("Counter: %d\n", x134);
 
 	printf("plus %d\n", data);
 	top1(&data, sizeof(data));
-	printf("Counter: %d\n", x133);
+	printf("Counter: %d\n", x134);
 
 	data = 1;
 	printf("minus %d\n", data);
 	top2(&data, sizeof(data));
-	printf("Counter: %d\n", x133);
+	printf("Counter: %d\n", x134);
 	
 	data = 30;
 	printf("plus %d\n", data);
 	top1(&data, sizeof(data));
-	printf("Counter: %d\n", x133);
+	printf("Counter: %d\n", x134);
 
 }
 

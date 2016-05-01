@@ -40,7 +40,7 @@ trait SMCFRPDSLApplicationRunner_Impl extends SMCFRPDSL_Impl with FRPDSLApplicat
 // SMC + FRPDSL
 trait SMCFRPDSLApplicationRunner extends SMCFRPDSLApplicationRunner_Impl
   with FRPDSLApplicationRunner with SMCFRPDSLImpl
-// SMC + FrpDSL OPT
+// SMC + FRPDSL OPT
 trait SMCFRPDSLOptApplicationRunner extends SMCFRPDSLApplicationRunner_Impl
   with FRPDSLOptApplicationRunner with SMCFRPDSLOptImpl
 

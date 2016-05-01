@@ -30,11 +30,20 @@ trait EventOps extends NodeOps {
   def TimerEvent(i: Rep[Int])(implicit n: ModuleName)/*(implicit tI:Typ[Int])*/: Event[Int]
   def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit n: ModuleName): Event[A] // oe possibly null (!)
 
-  abstract class OutputEvent[A:Typ]
+  abstract class OutputEvent[A:Typ](val mn: ModuleName, val outName: String)
   def out[A:Typ](name: String, e: Event[A])(implicit n: ModuleName): OutputEvent[A]
 }
 
 trait EventOps_Impl extends EventOps {
   behavior: BehaviorOps =>
 
+  private val outInList = scala.collection.mutable.ListBuffer.empty[(String, String, String, String)]
+
+  def getOutInList: List[(String,String,String,String)] = {
+    outInList.toList
+  }
+
+  def addToOutInList(oe: OutputEvent[_], inputModName: String, inputID: NodeID): Unit = {
+    outInList += ((oe.mn.str, oe.outName, inputModName, "top"+inputID))
+  }
 }

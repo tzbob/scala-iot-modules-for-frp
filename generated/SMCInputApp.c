@@ -1,11 +1,7 @@
 /*****************************************
   Emitting C Generated Code                  
 *******************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <stdbool.h>
+
 int x0 = 5;
 SM_DATA(module2) int x1;
 SM_INPUT(module2,top1,x2,x3) {

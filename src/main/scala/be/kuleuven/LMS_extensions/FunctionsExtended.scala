@@ -345,8 +345,8 @@ trait SMCGenFunctionsExt extends CGenFunctions {
       emitBlock(y)
       stream.println("}")
     case NamedLambdaOutput(name,funname, fun, x, y) => //TODO: remove, output with 1 arg should not exist
-      //stream.println("SM_INPUT("+ name + "," + quote(sym) + "," + quote(x) +") {")
-      stream.println("SM_OUTPUT("+ name + "," + quote(sym) + ");")
+      //stream.println("SM_OUTPUT("+ name + "," + quote(sym) + ");")
+      stream.println("SM_OUTPUT("+ name + "," + funname + ");")
     case NamedLambdaEntry(name, funname, fun, x, y) =>
       val retType = remap(getBlockResult(y).tp)
       //stream.println("SM_ENTRY("+ name + ") " + retType + " " + quote(sym) + "(" + remap(x.tp) + " " + quote(x) + ") {")
@@ -377,7 +377,8 @@ trait SMCGenFunctionsExt extends CGenFunctions {
     case ApplyDecl(fun) =>
     //do nothing - only for effect - used for main fun or top level functions
     case ApplyOut(funName, fun, arg) =>
-      stream.println(quote(fun) + "((const uint8_t*)&" + quote(arg) + ", sizeof(" + quote(arg) + "));")
+      //stream.println(quote(fun) + "((const uint8_t*)&" + quote(arg) + ", sizeof(" + quote(arg) + "));")
+      stream.println(funName + "((const uint8_t*)&" + quote(arg) + ", sizeof(" + quote(arg) + "));")
     case _ => super.emitNode(sym, rhs)
   }
 }
@@ -393,8 +394,8 @@ trait SMCGenTupledFunctionsExt extends CGenFunctionsExt with GenericGenUnboxedTu
       emitBlock(y)
       stream.println("}")
     case NamedLambdaOutput(name, funname, fun, UnboxedTuple(xs), y) =>
-      //stream.println("SM_INPUT("+ name + "," + quote(sym) + "," +xs.map(s=>quote(s)).mkString(",")+") {")
-      stream.println("SM_OUTPUT("+ name + "," + quote(sym) + ");")
+      //stream.println("SM_OUTPUT("+ name + "," + quote(sym) + ");")
+      stream.println("SM_OUTPUT("+ name + "," + funname + ");")
     case NamedLambdaEntry(name, funname, fun, UnboxedTuple(xs), y) =>
       val retType = remap(getBlockResult(y).tp)
       //stream.println("SM_ENTRY("+ name + ") " + retType + " " + quote(sym) + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")

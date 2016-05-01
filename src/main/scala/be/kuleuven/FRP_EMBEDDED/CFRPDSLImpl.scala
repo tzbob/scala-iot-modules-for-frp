@@ -42,7 +42,7 @@ trait CFRPDSLApplicationRunner_Impl extends CFRPDSL_Impl with FRPDSLApplication 
 // C + FRPDSL
 trait CFRPDSLApplicationRunner extends CFRPDSLApplicationRunner_Impl
   with FRPDSLApplicationRunner with CFRPDSLImpl
-// C + FrpDSL OPT
+// C + FRPDSL OPT
 trait CFRPDSLOptApplicationRunner extends CFRPDSLApplicationRunner_Impl
   with FRPDSLOptApplicationRunner with CFRPDSLOptImpl
 

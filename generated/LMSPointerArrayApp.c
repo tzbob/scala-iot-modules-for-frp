@@ -1,11 +1,7 @@
 /*****************************************
   Emitting C Generated Code                  
 *******************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <stdbool.h>
+
 void x9 (int* x0) {
 x0[2] = 20;
 int x2[5];

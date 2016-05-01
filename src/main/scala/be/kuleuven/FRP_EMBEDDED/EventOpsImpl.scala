@@ -73,15 +73,15 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
   //end generic functions
 
   override def out[A:Typ](name: String, e: Event[A])(implicit n: ModuleName): OutputEvent[A] = {
-    new ConcreteOutputEvent(e)
+    new ConcreteOutputEvent(name, e)
   }
 
-  case class ConcreteOutputEvent[A:Typ](parent: Event[A])(implicit mn: ModuleName) extends OutputEvent[A] {
+  case class ConcreteOutputEvent[A:Typ](name: String, parent: Event[A])(implicit val n: ModuleName) extends OutputEvent[A](n, name) {
     //implicit val parentOut = parent.typOut
     lazy val parentvalue: Rep[A] = readVar(parent.getValue())
     lazy val parentfired: Rep[Boolean] = readVar(parent.getFired())
     lazy val outfun: Rep[((Ptr[Byte], Int))=>Unit] = {
-      outputfun (mn.str, "dummy") { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
+      outputfun (mn.str, name) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
         // TODO: this is only to show printing! make it generic maybe
         // only generated with the C code generator
         println(ptr_readVal(data))
@@ -93,7 +93,7 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
         if(parentfired){
-          doApplyOut("dummy", outfun, parentvalue)
+          doApplyOut(name, outfun, parentvalue)
         }
         unitToRepUnit( () )
       }
@@ -103,7 +103,11 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
   }
 
   override def TimerEvent(i: Rep[Int])(implicit n: ModuleName) = InputEvent[Int]( )  // only conceptual
-  override def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit n: ModuleName) = InputEvent[A]( ) // oe possibly null (!)
+  override def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit mn: ModuleName) = {
+    val externalInputID = Node.informNextId
+    addToOutInList(oe, mn.str, externalInputID)
+    InputEvent[A]( ) // oe possibly null (!)
+  }
 
   case class InputEvent[A]()(implicit tA:Typ[A], mn: ModuleName) extends EventNode[Unit,A] {
     //val inputFun: () => Rep[Out] = () => i

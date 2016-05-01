@@ -48,7 +48,7 @@ trait FRPDSLImpl extends FRPDSL_Impl with EventOpsImpl with BehaviorOpsImpl {
 
     //TODO: maybe get rid of concrete output
     m.output match {
-      case coe @ ConcreteOutputEvent(_) => System.err.println("Output for: " + coe.parent.id)
+      case coe @ ConcreteOutputEvent(_,_) => System.err.println("Output for: " + coe.parent.id)
       case _ => System.err.println("No outputs for this module")
     }
     val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName == input.moduleName)
@@ -59,7 +59,7 @@ trait FRPDSLImpl extends FRPDSL_Impl with EventOpsImpl with BehaviorOpsImpl {
       nodesTO.foreach( x => x.useFunction() ) // apply the functions in this context
 
       m.output match {
-        case coe @ ConcreteOutputEvent(_) => coe.eventfun( () )
+        case coe @ ConcreteOutputEvent(_,_) => coe.eventfun( () )
         case _ => // we didn't had an output, it was None
       }
 

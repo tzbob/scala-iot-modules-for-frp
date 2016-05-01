@@ -93,6 +93,9 @@ private[FRP_EMBEDDED] trait NodeOps extends ScalaOpsPkgExt {
   object Node {
     private var id: Int = 0
     private def nextid = {id += 1;id}
+    def informNextId: NodeID = {
+      id + 1
+    }
   }
 
 }

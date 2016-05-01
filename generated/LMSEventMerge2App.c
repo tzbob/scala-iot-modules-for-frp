@@ -1,112 +1,115 @@
 /*****************************************
   Emitting C Generated Code                  
 *******************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <math.h>
 #include <stdbool.h>
-bool x0;
-int x1;
-bool x29;
-int x30;
-bool x41;
-int x42;
-bool x53;
-int x54;
-bool x79;
-int x80;
-int x92;
-void x28(uint8_t* x2,int x3) {
-int x6 = 0;
+
+bool x1;
+int x2;
+bool x30;
+int x31;
+bool x42;
+int x43;
+bool x54;
+int x55;
+bool x80;
+int x81;
+int x93;
+void x29(uint8_t* x3,int x4) {
 int x7 = 0;
-int x5 = x3;
-uint8_t* x4 = x2;
+int x8 = 0;
+int x6 = x4;
+uint8_t* x5 = x3;
 for (;;) {
-int x8 = x7;
-bool x9 = x8 < x5;
-if (!x9) break;
-int x11 = x7;
-uint8_t x12 = x4[x11];
-int x16 = x6;
-int x13 = (int ) x12;
-int x14 = x11 * 8;
-int x15 = x13 << x14;
-int x17 = x16 + x15;
-x6 = x17;
-int x19 = x11 + 1;
-x7 = x19;
+int x9 = x8;
+bool x10 = x9 < x6;
+if (!x10) break;
+int x12 = x8;
+uint8_t x13 = x5[x12];
+int x17 = x7;
+int x14 = (int ) x13;
+int x15 = x12 * 8;
+int x16 = x14 << x15;
+int x18 = x17 + x16;
+x7 = x18;
+int x20 = x12 + 1;
+x8 = x20;
 }
-x0 = true;
-int x24 = x6;
-int x25 = (int ) x24;
-x1 = x25;
+x1 = true;
+int x25 = x7;
+int x26 = (int ) x25;
+x2 = x26;
 };
-void x40() {
-bool x31 = x0;
-if (x31) {
-x29 = true;
-int x33 = x1;
-x30 = 1;
+void x41() {
+bool x32 = x1;
+if (x32) {
+x30 = true;
+int x34 = x2;
+x31 = 1;
 } else {
-x29 = false;
-}
-};
-void x52() {
-bool x43 = x0;
-if (x43) {
-x41 = true;
-int x45 = x1;
-x42 = 2;
-} else {
-x41 = false;
+x30 = false;
 }
 };
-void x78() {
-bool x55 = x29;
-bool x56 = x41;
-bool x57 = x55 && x56;
-if (x57) {
-x53 = true;
-int x59 = x30;
-int x60 = x42;
-int x61 = x59 + x60;
-x54 = x61;
+void x53() {
+bool x44 = x1;
+if (x44) {
+x42 = true;
+int x46 = x2;
+x43 = 2;
 } else {
-if (x55) {
-x53 = true;
-int x59 = x30;
-x54 = x59;
+x42 = false;
+}
+};
+void x79() {
+bool x56 = x30;
+bool x57 = x42;
+bool x58 = x56 && x57;
+if (x58) {
+x54 = true;
+int x60 = x31;
+int x61 = x43;
+int x62 = x60 + x61;
+x55 = x62;
 } else {
 if (x56) {
-x53 = true;
-int x60 = x42;
-x54 = x60;
+x54 = true;
+int x60 = x31;
+x55 = x60;
 } else {
-x53 = false;
+if (x57) {
+x54 = true;
+int x61 = x43;
+x55 = x61;
+} else {
+x54 = false;
 }
 }
 }
 };
-void x91() {
-bool x81 = x53;
-if (x81) {
-x79 = true;
-int x83 = x54;
-int x84 = x83 * 2;
-x80 = x84;
+void x92() {
+bool x82 = x54;
+if (x82) {
+x80 = true;
+int x84 = x55;
+int x85 = x84 * 2;
+x81 = x85;
 } else {
-x79 = false;
+x80 = false;
 }
 };
-void top1(uint8_t* x105,int x106) {
-uint8_t* x107 = x105;
-int x108 = x106;
-x28(x107,x108);
-x40();
-x52();
-x78();
-x91();
+void top1(uint8_t* x106,int x107) {
+uint8_t* x108 = x106;
+int x109 = x107;
+x29(x108,x109);
+x41();
+x53();
+x79();
+x92();
 };
 /*****************************************
   End of C Generated Code                  

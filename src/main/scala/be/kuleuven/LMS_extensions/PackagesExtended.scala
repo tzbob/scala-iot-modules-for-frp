@@ -15,6 +15,7 @@ trait ScalaOpsPkgExt extends Base
   with SeqOps with MathOpsExt with CastingOps with SetOps with ObjectOps with ArrayBufferOps with StructOps
   with TupledFunctionsExt with UncheckedOps
   with LiftPrimitives with LiftString with LiftVariables with LiftBoolean
+  with Modules
 
 trait ScalaOpsPkgExpExt extends ScalaOpsPkg with ScalaOpsPkgExt
   with ImplicitOpsExp with NumericOpsExp with FractionalOpsExp with OrderingOpsExp with StringOpsExp
@@ -23,6 +24,7 @@ trait ScalaOpsPkgExpExt extends ScalaOpsPkg with ScalaOpsPkgExt
   with EqualExp with IfThenElseExp with VariablesExpExt with PointersExp with WhileExp with TupleOpsExpExt with ListOpsExp
   with SeqOpsExp with DSLOpsExp with MathOpsExpExt with CastingOpsExp with SetOpsExp with ObjectOpsExp with ArrayBufferOpsExp
   with StructExp with UncheckedOpsExp
+  with ModulesExp
 
 /**
  * Code gen: each target must define a code generator package.
@@ -51,6 +53,7 @@ trait CCodeGenPkgExt extends CGenImplicitOps with CGenNumericOps with CGenFracti
   with CGenSeqOps with CGenDSLOps with CGenMathOps with CGenCastingOps with CGenSetOps
   with CGenObjectOps with CGenArrayBufferOps with CGenStruct
   with CGenUncheckedOps
+  with CGenModules
   { val IR: ScalaOpsPkgExpExt  }
 
 trait CCodeGenPkgExtended extends CCodeGenPkgExt with GenericCodeGenExt { val IR: ScalaOpsPkgExpExt }
@@ -65,6 +68,7 @@ trait SMCCodeGenPkgExt extends CGenImplicitOps with CGenNumericOps with CGenFrac
   with CGenSeqOps with CGenDSLOps with CGenMathOpsExt with CGenCastingOps with CGenSetOps
   with CGenObjectOps with CGenArrayBufferOps with CGenStruct
   with CGenUncheckedOps
+  with SMCGenModules
 { val IR: ScalaOpsPkgExpExt  }
 
 trait SMCCodeGenPkgExtended extends SMCCodeGenPkgExt with GenericCodeGenExt { val IR: ScalaOpsPkgExpExt }

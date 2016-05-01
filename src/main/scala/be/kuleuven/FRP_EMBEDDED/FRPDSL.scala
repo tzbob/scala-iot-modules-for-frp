@@ -25,9 +25,11 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
 
   def buildProgram(modList: List[Module[_]]): () => Rep[Unit] = {
     () => {
+      headers()
       for (module <- modList) {
         generateModule(module)
       }
+      generateExtras(modList)
     }
   }
 
@@ -61,5 +63,19 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
     }
 
     generateTopFunctions(module, initModule)
+  }
+
+  def generateExtras(modlist: List[Module[_]]): Unit = {
+    //unchecked[Unit]("(lets couple the modules)")
+
+    for( mod <- modlist) {
+      declare_module(mod.name.str)
+    }
+    //globalInitFun()
+
+    //val modNames = modlist.map{ m => m.name.toString()}
+    //deployFun(modNames, getOutInList)
+
+    //mainFun()
   }
 }

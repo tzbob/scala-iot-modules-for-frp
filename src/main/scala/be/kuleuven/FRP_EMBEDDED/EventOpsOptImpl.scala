@@ -46,12 +46,12 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsOptImpl with ScalaOpsPkg
   }
 
   override def out[A:Typ](name: String, e: Event[A])(implicit n: ModuleName): OutputEvent[A] = {
-    new ConcreteOutputEvent(e)
+    new ConcreteOutputEvent(name, e)
   }
 
-  case class ConcreteOutputEvent[A:Typ](parent: Event[A])(implicit mn: ModuleName) extends OutputEvent[A] {
+  case class ConcreteOutputEvent[A:Typ](name: String, parent: Event[A])(implicit mn: ModuleName) extends OutputEvent[A](mn,name) {
     lazy val outfun: Rep[((Ptr[Byte], Int))=>Unit] = {
-      outputfun (mn.str, "dummy") { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
+      outputfun (mn.str, name) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
         // TODO: this is only to show printing! make it generic maybe
         // only generated with the C code generator
         println(ptr_readVal(data))
@@ -63,7 +63,7 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsOptImpl with ScalaOpsPkg
     lazy val eventfun = {
       namedfun2 (mn.str) { (pv: Rep[A], pf: Rep[Boolean]) =>
         if(pf){
-          doApplyOut("dummy", outfun, pv)
+          doApplyOut(name, outfun, pv)
         }
         unitToRepUnit( () )
       }
@@ -79,7 +79,11 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsOptImpl with ScalaOpsPkg
   }
 
   override def TimerEvent(i: Rep[Int])(implicit n: ModuleName) = InputEvent[Int]( )  // only conceptual
-  override def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit n: ModuleName) = InputEvent[A]( ) // oe possibly null (!)
+  override def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit mn: ModuleName) = {
+    val externalInputID = Node.informNextId
+    addToOutInList(oe, mn.str, externalInputID)
+    InputEvent[A]( ) // oe possibly null (!)
+  }
 
   case class InputEvent[A]()(implicit tA:Typ[A], mn: ModuleName) extends EventNode[Unit,A] {
     //val inputFun: () => Rep[Out] = () => i

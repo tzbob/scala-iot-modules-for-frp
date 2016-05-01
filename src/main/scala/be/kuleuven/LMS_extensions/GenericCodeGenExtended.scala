@@ -24,12 +24,7 @@ trait GenericCodeGenExt extends GenericCodegen {
     withStream(out) {
       stream.println("/*****************************************\n"+
         "  Emitting C Generated Code                  \n"+
-        "*******************************************/\n" +
-        "#include <stdio.h>\n" +
-        "#include <stdlib.h>\n" +
-        "#include <string.h>\n" +
-        "#include <math.h>\n" +
-        "#include <stdbool.h>"
+        "*******************************************/\n"
       )
 
       emitBlock(body)

@@ -12,6 +12,6 @@
 int main() {
 	uint8_t data = 0;
 	top1(&data, sizeof(data));
-	printf("map11: %d\n",x189);
-	printf("map12: %d\n",x203);
+	printf("map11: %d\n",x190);
+	printf("map12: %d\n",x204);
 }
