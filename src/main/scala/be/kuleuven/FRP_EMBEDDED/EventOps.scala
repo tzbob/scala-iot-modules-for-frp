@@ -49,8 +49,36 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
     outInList += ((oe.mn.str, oe.outName, inputModName, "top"+inputID))
   }
 
+  def getInputEventNodes: List[InputEvent[_]] = {
+    val listbuilder = scala.collection.mutable.ListBuffer.empty[InputEvent[_]]
+    getNodeMap.foreach(
+      x => x match {
+        case (_, i@ InputEvent(_)) => listbuilder += i
+        case _ => //do not add it
+      }
+    )
+    listbuilder.toList
+  }
+
+  def isInputEvent[T: Typ](e: Event[T]): Boolean = {
+    e match {
+      case InputEvent(_) => true
+      case _ => false
+    }
+  }
+
+  def getInputEvent[T:Typ](e:Event[T]): Option[InputEvent[T]] = {
+    e match {
+      case i @ InputEvent(_) => Some(i)
+      case _ => None
+    }
+  }
+
+  object InputEvent {
+    def unapply[A](ie: InputEvent[A]) = Some(ie)
+  }
   abstract class InputEvent[A](implicit tA:Typ[A], mn: ModuleName) extends Event[A] {
-    //val inputFun: () => Rep[Out] = () => i
+
     override val moduleName = mn
     override def produceFunction =
       throw new IllegalStateException("Should be handled in top level function.")

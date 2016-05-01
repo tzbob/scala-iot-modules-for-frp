@@ -7,31 +7,6 @@ import scala.collection.immutable.HashSet
 trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt {
   behaviorImpl: BehaviorOpsOptImpl =>
 
-  def getInputEventNodes: List[InputEvent[_]] = {
-    val listbuilder = scala.collection.mutable.ListBuffer.empty[InputEvent[_]]
-    getNodeMap.foreach(
-      x => x match {
-        case (_, i@ ConcreteInputEvent( )) => listbuilder += i
-        case _ => //do not add it
-      }
-    )
-    listbuilder.toList
-  }
-
-  def isInputEvent[T: Typ](e: Event[T]): Boolean = {
-    e match {
-      case ConcreteInputEvent( ) => true
-      case _ => false
-    }
-  }
-
-  def getInputEvent[T:Typ](e:Event[T]): Option[InputEvent[T]] = {
-    e match {
-      case i @ ConcreteInputEvent( ) => Some(i)
-      case _ => None
-    }
-  }
-
   implicit def eventToEventImpl[X](e: Event[X]): EventOptImpl[X] = {
     e match {
       case en @ ConcreteMergeEvent(_,_) => en

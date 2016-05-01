@@ -7,19 +7,6 @@ import scala.collection.immutable.HashSet
 trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt {
   behaviorImpl: BehaviorOpsImpl =>
 
-  //TODO: move generic functions to upper implementation class, problem at the moment are the case classes
-  // begin generic functions
-  def getInputEventNodes: List[InputEvent[_]] = {
-    val listbuilder = scala.collection.mutable.ListBuffer.empty[InputEvent[_]]
-    getNodeMap.foreach(
-      x => x match {
-        case (_, i@ ConcreteInputEvent( )) => listbuilder += i
-        case _ => //do not add it
-      }
-    )
-    listbuilder.toList
-  }
-
   def getEventNodes: List[Event[_]] = {
     val listbuilder = scala.collection.mutable.ListBuffer.empty[Event[_]]
     getNodeMap.values.foreach( n =>
@@ -40,20 +27,6 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
       case en @ ConcreteChangesEvent(_) => Some(en)
       case en @ ConcreteSnapshotEvent(_,_) => Some(en)
       case en @ ConcreteInputEvent( ) => Some(en)
-      case _ => None
-    }
-  }
-
-  def isInputEvent[T: Typ](e: Event[T]): Boolean = {
-    e match {
-      case ConcreteInputEvent( ) => true
-      case _ => false
-    }
-  }
-
-  def getInputEvent[T:Typ](e:Event[T]): Option[InputEvent[T]] = {
-    e match {
-      case i @ ConcreteInputEvent( ) => Some(i)
       case _ => None
     }
   }
