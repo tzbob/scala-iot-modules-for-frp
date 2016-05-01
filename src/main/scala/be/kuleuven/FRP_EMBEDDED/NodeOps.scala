@@ -29,7 +29,8 @@ private[FRP_EMBEDDED] trait NodeOps extends ScalaOpsPkgExt {
   trait Node[A] {
 
     // all private
-    /*private[FRP_EMBEDDED]*/ val id: NodeID = Node.nextid //TODO: not packet private because of unit tests
+    //TODO: not packet private because of unit tests
+    /*private[FRP_EMBEDDED]*/ val id: NodeID = Node.nextid
     /*private[FRP_EMBEDDED]*/ val level: Int // for topological order
     /*private[FRP_EMBEDDED]*/ val childNodeIDs: scala.collection.mutable.Set[NodeID]
     /*private[FRP_EMBEDDED]*/ def buildGraphTopDown(): Unit

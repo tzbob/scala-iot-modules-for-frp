@@ -32,13 +32,7 @@ trait EventOps extends NodeOps {
   def TimerEvent(i: Rep[Int])(implicit n: ModuleName)/*(implicit tI:Typ[Int])*/: Event[Int]
   def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit n: ModuleName): Event[A] // oe possibly null (!)
 
-  object OutputEvent{
-    def unapply[A](oe: OutputEvent[A]) = Some(oe)
-  }
-  abstract class OutputEvent[A:Typ](val mn: ModuleName, val outName: String) {
-    def useOutput(): Unit
-    val inputNodeIDs: Set[NodeID]
-  }
+  abstract class OutputEvent[A:Typ](val mn: ModuleName, val outName: String)
   def out[A:Typ](name: String, e: Event[A])(implicit n: ModuleName): OutputEvent[A]
 }
 
@@ -77,6 +71,24 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
     e match {
       case i @ InputEvent(_) => Some(i)
       case _ => None
+    }
+  }
+
+  object AOutputEvent{
+    def unapply[A](oe: AOutputEvent[A]) = Some(oe)
+  }
+  abstract class AOutputEvent[A:Typ](name: String, val parent: Event[A])(implicit val n: ModuleName) extends OutputEvent[A](n,name) {
+    val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
+    def useOutput(): Unit
+
+    lazy val outfun: Rep[((Ptr[Byte], Int))=>Unit] = {
+      outputfun (mn.str, name) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
+        // TODO: this is only to show printing! make it generic maybe
+        // only generated with the C code generator
+        println(ptr_readVal(data))
+
+        unitToRepUnit( () )
+      }
     }
   }
 

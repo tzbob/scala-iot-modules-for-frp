@@ -49,19 +49,11 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
     new ConcreteOutputEvent(name, e)
   }
 
-  case class ConcreteOutputEvent[A:Typ](name: String, parent: Event[A])(implicit val n: ModuleName) extends OutputEvent[A](n, name) {
+  case class ConcreteOutputEvent[A:Typ](name: String, p: Event[A])(implicit n: ModuleName) extends AOutputEvent[A](name,p) {
     //implicit val parentOut = parent.typOut
     lazy val parentvalue: Rep[A] = readVar(parent.getValue())
     lazy val parentfired: Rep[Boolean] = readVar(parent.getFired())
-    lazy val outfun: Rep[((Ptr[Byte], Int))=>Unit] = {
-      outputfun (mn.str, name) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
-        // TODO: this is only to show printing! make it generic maybe
-        // only generated with the C code generator
-        println(ptr_readVal(data))
 
-        unitToRepUnit( () )
-      }
-    }
 
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
@@ -77,7 +69,6 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
       eventfun( () )
     }
 
-    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
   }
 
   override def TimerEvent(i: Rep[Int])(implicit n: ModuleName) = ConcreteInputEvent[Int]( )  // only conceptual

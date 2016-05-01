@@ -34,9 +34,48 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
   }
 
   def generateGlobalFRPInits(module: Module[_]): Unit
-  def generateTopFunction[X](input: InputEvent[X], initModule: => Rep[(Unit)=>Unit], m: Module[_]): Unit
+  def generateTopFunction[X](input: InputEvent[X], initModule: => Rep[(Unit)=>Unit], m: Module[_]): Unit = {
+    System.err.println("top" + input.id)
+
+    val descendantIDs = getDecendantNodeIDs(input).filter(id => id != input.id)
+    val descendantNodes = getNodesWithIDs(descendantIDs)
+
+    // get topological ordering
+    val listbuilder = scala.collection.mutable.ListBuffer.empty[Node[_]]
+    for( i <- 0 to getMaxLevel)
+      listbuilder ++= getNodesOnLevel(descendantNodes.values.toList,i)
+    val nodesTO = listbuilder.toList
+    nodesTO.foreach(x => System.err.println(x.id))
+
+    m.output match {
+      case coe @ AOutputEvent(_) => System.err.println("Output for: " + coe.parent.id)
+      case _ => System.err.println("No outputs for this module")
+    }
+    val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName == input.moduleName)
+
+    val top = inputfun(input.moduleName.str, "top"+input.id) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
+      if(behaviorsInModule.size > 0) initModule()
+
+      resetSymMap()
+      input.useInput(data, len)
+
+      nodesTO.foreach( x => { x.useFunction() } ) // apply the functions in this context
+
+      m.output match {
+        case coe @ AOutputEvent(_) =>
+          if (coe.inputNodeIDs.contains(input.id) ) coe.useOutput()
+        case _ => // we didn't had an output, it was None
+      }
+
+      unitToRepUnit( () )
+    }
+    doApplyDecl(top)
+  }
+
+
 
   def generateTopFunctions(module: Module[_], initModule: Rep[(Unit) => Unit]): Unit = {
+
     //get all input events
     val inputs = getInputEventNodes
     val modinputs = inputs.filter(n => n.moduleName == module.name)
@@ -79,11 +118,11 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
   }
 
   def generateExtras(modlist: List[Module[_]]): Unit = {
-    //unchecked[Unit]("(lets couple the modules)")
 
     for( mod <- modlist) {
       declare_module(mod.name.str)
     }
+
     //globalInitFun()
 
     //val modNames = modlist.map{ m => m.name.toString()}
