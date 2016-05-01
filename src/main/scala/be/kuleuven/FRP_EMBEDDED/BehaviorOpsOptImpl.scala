@@ -9,21 +9,20 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
 
   def getOptionBehavior[X](n: Node[X]): Option[Behavior[X]] = {
     n match {
-      case bn @ ConstantBehavior(_) => Some(bn)
-      case bn @ Map2Behavior(_,_) => Some(bn)
-      case bn @ FoldpBehavior(_,_,_) => Some(bn)
-      case bn @ Foldp2Behavior(_,_,_,_,_,_) => Some(bn)
-      case bn @ StartsWithBehavior(_,_) => Some(bn)
+      case bn @ ConcreteConstantBehavior(_) => Some(bn)
+      case bn @ ConcreteMap2Behavior(_,_) => Some(bn)
+      case bn @ ConcreteFoldpBehavior(_,_,_) => Some(bn)
+      case bn @ ConcreteFoldp2Behavior(_,_,_,_,_,_) => Some(bn)
+      case bn @ ConcreteStartsWithBehavior(_,_) => Some(bn)
       case _ => None
     }
   }
 
-  override def constantB[A:Typ](c: Rep[A])(implicit n: ModuleName): Behavior[A] = new ConstantBehavior[A](c)
+  override def constantB[A:Typ](c: Rep[A])(implicit n: ModuleName): Behavior[A] = new ConcreteConstantBehavior[A](c)
 
-  case class ConstantBehavior[A](init: Rep[A])(implicit val tA: Typ[A], mn: ModuleName) extends BehaviorNode[A] {
-    override val typOut = tA
-    val level = 0
-    override val inputNodeIDs: Set[NodeID] = HashSet(this.id)
+  case class ConcreteConstantBehavior[A](init: Rep[A])(implicit tA: Typ[A], mn: ModuleName)
+    extends ConstantBehavior[A](init) with BehaviorOptImpl[A] {
+
     lazy val value = vardeclmod_new[A](mn.str)
     override def getValue = value
     lazy val valueInit = var_assign[A](value, init)
@@ -36,19 +35,11 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
     override def useFunction = {
       throw new IllegalStateException("Not defined on ConstantBehavior") //TODO: implement
     }
-    override def buildGraphTopDown() =
-      throw new IllegalStateException("Not defined on ConstantBehavior") //TODO: implement
 
-    System.err.println("Create ConstantBehavior(ID:" + id + "): " + inputNodeIDs)
   }
 
-  case class Map2Behavior[A:Typ,B:Typ,C](parents: (Behavior[A],Behavior[B]), f: (Rep[A],Rep[B])=>Rep[C])(implicit val tC: Typ[C], mn: ModuleName) extends BehaviorNode[C]{
-    override val typOut = tC
-    val parentLeft: Behavior[A] = parents._1
-    val parentRight: Behavior[B] = parents._2
-    val level = scala.math.max(parentLeft.level, parentRight.level) + 1
-
-    override val inputNodeIDs: Set[NodeID] = parentLeft.inputNodeIDs ++ parentRight.inputNodeIDs
+  case class ConcreteMap2Behavior[A:Typ,B:Typ,C](parents: (Behavior[A],Behavior[B]), f: (Rep[A],Rep[B])=>Rep[C])(implicit tC: Typ[C], mn: ModuleName)
+    extends Map2Behavior[A,B,C](parents, f) with BehaviorOptImpl[C]{
 
     lazy val parentleftvalue = parentLeft.getValue()
     lazy val parentrightvalue = parentRight.getValue()
@@ -66,25 +57,16 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
     override def useFunction = {
       behaviorfun( () )
     }
-    override def buildGraphTopDown() = {
-      parentLeft.addChild(id)
-      parentLeft.buildGraphTopDown()
-      parentRight.addChild(id)
-      parentRight.buildGraphTopDown()
-    }
 
     override def generateNode() = {
       value
       behaviorfun
     }
 
-    System.err.println("Create Map2Behavior(ID:" + id + "): " + inputNodeIDs)
   }
 
-  case class FoldpBehavior[A,B](parent: Event[A], f: (Rep[A],Rep[B])=>Rep[B], init: Rep[B])(implicit val tA: Typ[A], val tB: Typ[B], mn: ModuleName) extends BehaviorNode[B] {
-    override val typOut = tB
-    override val level = parent.level + 1
-    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
+  case class ConcreteFoldpBehavior[A,B](parent: Event[A], f: (Rep[A],Rep[B])=>Rep[B], init: Rep[B])(implicit tA: Typ[A], tB: Typ[B], mn: ModuleName)
+    extends FoldpBehavior[A,B](parent,f,init) with BehaviorOptImpl[B] {
 
     lazy val value = vardeclmod_new[B](mn.str)
     override def getValue = value
@@ -99,15 +81,12 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
         unitToRepUnit( () )
       }
     }
+
     override def produceFunction = behaviorfun
     override def useFunction = {
       val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired = getSymMap.getOrElse(parent.id, null)._2
       behaviorfun(parentvalue, parentfired)
-    }
-    override def buildGraphTopDown() = {
-      parent.addChild(id)
-      parent.buildGraphTopDown()
     }
 
     override def generateNode() = {
@@ -115,18 +94,14 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
       behaviorfun
     }
 
-    System.err.println("Create FoldpBehavior(ID:" + id + "): " + inputNodeIDs)
   }
 
-  case class Foldp2Behavior[A,B,C]
+  case class ConcreteFoldp2Behavior[A,B,C]
   (parentLeft: Event[A], parentRight: Event[B],
    f1:((Rep[A],Rep[C]) => Rep[C]),f2:((Rep[B],Rep[C]) => Rep[C]), f3:((Rep[A],Rep[B],Rep[C]) => Rep[C]),
    init: Rep[C]
-  )(implicit val tA: Typ[A], val tB: Typ[B], val tC: Typ[C], mn: ModuleName) extends BehaviorNode[C] {
-
-    override val typOut = tC
-    override val level = scala.math.max(parentLeft.level, parentRight.level) + 1
-    override val inputNodeIDs: Set[NodeID] = parentLeft.inputNodeIDs ++ parentRight.inputNodeIDs
+  )(implicit tA: Typ[A], tB: Typ[B], tC: Typ[C], mn: ModuleName)
+    extends Foldp2Behavior[A,B,C](parentLeft,parentRight, f1,f2,f3, init) with BehaviorOptImpl[C] {
 
     lazy val value = vardeclmod_new[C](mn.str)
     override def getValue = value
@@ -157,25 +132,16 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
       val parentrightfired = getSymMap.getOrElse(parentRight.id, (0,var_new[Boolean](false)))._2
       behaviorfun(parentleftvalue, parentleftfired, parentrightvalue, parentrightfired)
     }
-    override def buildGraphTopDown() = {
-      parentLeft.addChild(id)
-      parentLeft.buildGraphTopDown()
-      parentRight.addChild(id)
-      parentRight.buildGraphTopDown()
-    }
 
     override def generateNode() = {
       value
       behaviorfun
     }
 
-    System.err.println("Create Foldp2Behavior(ID:" + id + "): " + inputNodeIDs)
   }
 
-  case class StartsWithBehavior[A](parent: Event[A], init: Rep[A])(implicit val tA: Typ[A], mn: ModuleName) extends BehaviorNode[A] {
-    override val typOut = tA
-    override val level = parent.level + 1
-    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
+  case class ConcreteStartsWithBehavior[A](parent: Event[A], init: Rep[A])(implicit tA: Typ[A], mn: ModuleName)
+    extends StartsWithBehavior[A](parent,init) with BehaviorOptImpl[A] {
 
     lazy val value = vardeclmod_new[A](mn.str)
     override def getValue = value
@@ -190,15 +156,12 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
         unitToRepUnit( () )
       }
     }
+
     override def produceFunction = behaviorfun
     override def useFunction = {
       val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired = getSymMap.getOrElse(parent.id, null)._2
       behaviorfun(parentvalue, parentfired)
-    }
-    override def buildGraphTopDown() = {
-      parent.addChild(id)
-      parent.buildGraphTopDown()
     }
 
     override def generateNode() = {
@@ -207,23 +170,9 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
       unitToRepUnit( () )
     }
 
-    System.err.println("Create StartsWithBehavior(ID:" + id + "): " + inputNodeIDs)
   }
 
-  abstract class BehaviorNode[A](implicit mn: ModuleName) extends BehaviorOptImpl[A] with NodeImpl[A] {
-    addNodeToNodemap(id,this)
-    addBehaviorID(id)
-
-    override val moduleName = mn
-
-    override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()
-    override def addChild(id: NodeID): Unit = {
-      childNodeIDs.add(id)
-    }
-
-  }
-
-  trait BehaviorOptImpl[A] extends Behavior[A] {
+  trait BehaviorOptImpl[A] extends Behavior[A] with NodeImpl[A] {
 
     override def snapshot[B:Typ](e: Event[B])(implicit n: ModuleName): Event[A] = {
       implicit val tOut = typOut
@@ -232,8 +181,17 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
     override def changes()(implicit n: ModuleName): Event[A] = ConcreteChangesEvent(this)(typOut,n)
     override def map2[B:Typ, C:Typ](b: Behavior[B], f: (Rep[A], Rep[B]) => Rep[C])(implicit n: ModuleName): Behavior[C] = {
       implicit val tOut: Typ[A] = typOut
-      Map2Behavior((this, b), f)
+      ConcreteMap2Behavior((this, b), f)
     }
     override def genSnapshot[B](e: Event[(A) => B])(implicit n: ModuleName): Event[B] = ???
+
+    // INTERNALS
+    addNodeToNodemap(id,this)
+    addBehaviorID(id)
+
+    override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()
+    override def addChild(id: NodeID): Unit = {
+      childNodeIDs.add(id)
+    }
   }
 }
