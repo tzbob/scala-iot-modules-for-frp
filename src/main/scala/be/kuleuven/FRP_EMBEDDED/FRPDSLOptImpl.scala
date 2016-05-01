@@ -57,7 +57,7 @@ trait FRPDSLOptImpl extends FRPDSL_Impl with EventOpsOptImpl with BehaviorOpsOpt
       if(behaviorsInModule.size > 0) initModule()
 
       resetSymMap()
-      input.useInputNode(data, len)
+      input.useInput(data, len)
 
       nodesTO.foreach( x => { x.useFunction() } ) // apply the functions in this context
 

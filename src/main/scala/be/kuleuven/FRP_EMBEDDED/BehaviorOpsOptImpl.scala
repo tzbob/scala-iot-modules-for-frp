@@ -227,9 +227,9 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
 
     override def snapshot[B:Typ](e: Event[B])(implicit n: ModuleName): Event[A] = {
       implicit val tOut = typOut
-      SnapshotEvent(this, e)
+      ConcreteSnapshotEvent(this, e)
     }
-    override def changes()(implicit n: ModuleName): Event[A] = ChangesEvent(this)(typOut,n)
+    override def changes()(implicit n: ModuleName): Event[A] = ConcreteChangesEvent(this)(typOut,n)
     override def map2[B:Typ, C:Typ](b: Behavior[B], f: (Rep[A], Rep[B]) => Rep[C])(implicit n: ModuleName): Behavior[C] = {
       implicit val tOut: Typ[A] = typOut
       Map2Behavior((this, b), f)

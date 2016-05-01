@@ -110,8 +110,8 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
   }
 
   case class ConcreteInputEvent[A]()(implicit tA:Typ[A], mn: ModuleName) extends InputEvent[A] with EventImpl[A] {
-    override val impl = new ImplWrapper()(mn,tA)
-    //val inputFun: () => Rep[Out] = () => i
+    override val impl = new ImplWrapper
+
     implicit val ptrbytetyp = ptrTyp[Byte]
     lazy val eventfun: Rep[((Ptr[Byte], Int)) => Unit] = {
       namedfun2 (mn.str) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
@@ -275,12 +275,8 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
 
   trait EventImpl[A] extends Event[A] with NodeImpl[A] {
 
-    // no need to ever use it outside T
-    protected case class ImplWrapper(implicit val mn: ModuleName, val typA: Typ[A])
-    // normally defined by caller as val implWrap = ClassNameW
+    protected case class ImplWrapper(implicit val typA: Typ[A])
     protected val impl: ImplWrapper
-    // will have to repeat this when you extend T and need access to the implicit
-    import impl.mn
     import impl.typA
 
     override def constant[B](c: Rep[B])(implicit tB: Typ[B], n: ModuleName): Event[B] = ConcreteConstantEvent[A,B](this, c)(tB,n)
