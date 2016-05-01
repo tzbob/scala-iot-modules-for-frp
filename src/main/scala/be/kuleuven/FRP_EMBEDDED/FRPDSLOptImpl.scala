@@ -18,7 +18,7 @@ trait FRPDSLOptImpl extends FRPDSL_Impl with EventOpsOptImpl with BehaviorOpsOpt
     // nothing to do since not global anymore
   }
 
-  override def generateModuleSpecifics(module: Module[_], initModule: Rep[(Unit) => Unit]): Unit = {
+  override def generateTopFunctions(module: Module[_], initModule: Rep[(Unit) => Unit]): Unit = {
 
     //get all input events
     val inputs = getInputEventNodes

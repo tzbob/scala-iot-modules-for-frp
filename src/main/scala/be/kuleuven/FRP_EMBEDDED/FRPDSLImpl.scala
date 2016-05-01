@@ -19,7 +19,7 @@ trait FRPDSLImpl extends FRPDSL_Impl with EventOpsImpl with BehaviorOpsImpl {
       .foreach(e => var_assign(e.getFired(), false))
   }
 
-  override def generateModuleSpecifics(module: Module[_], initModule: Rep[(Unit) => Unit]): Unit = {
+  override def generateTopFunctions(module: Module[_], initModule: Rep[(Unit) => Unit]): Unit = {
 
     //get all input events
     val inputs = getInputEventNodes

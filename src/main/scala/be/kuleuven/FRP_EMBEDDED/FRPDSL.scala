@@ -22,6 +22,7 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
 
     printGraph
   }
+
   def buildProgram(modList: List[Module[_]]): () => Rep[Unit] = {
     () => {
       for (module <- modList) {
@@ -31,7 +32,7 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
   }
 
   def generateGlobalFRPInits(module: Module[_]): Unit
-  def generateModuleSpecifics(module: Module[_], initModule: Rep[(Unit) => Unit]): Unit
+  def generateTopFunctions(module: Module[_], initModule: Rep[(Unit) => Unit]): Unit
 
   override def generateModule(module: Module[_]): Unit = {
     // generate per level
@@ -59,6 +60,6 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
       unitToRepUnit(())
     }
 
-    generateModuleSpecifics(module, initModule)
+    generateTopFunctions(module, initModule)
   }
 }
