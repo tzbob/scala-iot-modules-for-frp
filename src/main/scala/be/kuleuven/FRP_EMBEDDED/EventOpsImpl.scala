@@ -2,8 +2,6 @@ package be.kuleuven.FRP_EMBEDDED
 
 import be.kuleuven.LMS_extensions.ScalaOpsPkgExpExt
 
-import scala.collection.immutable.HashSet
-
 trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt {
   behaviorImpl: BehaviorOpsImpl =>
 
@@ -43,17 +41,15 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
       case _ => throw new Exception("Event without Implementation")
     }
   }
-  //end generic functions
 
   override def out[A:Typ](name: String, e: Event[A])(implicit n: ModuleName): OutputEvent[A] = {
     new ConcreteOutputEvent(name, e)
   }
 
   case class ConcreteOutputEvent[A:Typ](name: String, p: Event[A])(implicit n: ModuleName) extends AOutputEvent[A](name,p) {
-    //implicit val parentOut = parent.typOut
-    lazy val parentvalue: Rep[A] = readVar(parent.getValue())
-    lazy val parentfired: Rep[Boolean] = readVar(parent.getFired())
 
+    lazy val parentvalue: Rep[A] = readVar(parent.getValue)
+    lazy val parentfired: Rep[Boolean] = readVar(parent.getFired)
 
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
@@ -65,9 +61,7 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
 
     }
 
-    override def useOutput(): Unit = {
-      eventfun( () )
-    }
+    override def useOutput(): Unit = eventfun( () )
 
   }
 
@@ -100,17 +94,15 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
     }
 
     override def produceInput(): Unit = eventfun
-    override def useInput(data: Rep[Ptr[Byte]], len: Rep[Int]): Unit = {
-      eventfun(data,len)
-    }
+    override def useInput(data: Rep[Ptr[Byte]], len: Rep[Int]): Unit = eventfun(data,len)
   }
 
   case class ConcreteConstantEvent[A,B](parent: EventImpl[A], c : Rep[B])(implicit tB:Typ[B], mn: ModuleName)
     extends ConstantEvent[A,B](parent,c) with EventImpl[B] {
 
     override val impl = new ImplWrapper()
-    lazy val parentvalue: Rep[In] = readVar(parent.getValue())
-    lazy val parentfired: Rep[Boolean] = readVar(parent.getFired())
+    lazy val parentvalue: Rep[In] = readVar(parent.getValue)
+    lazy val parentfired: Rep[Boolean] = readVar(parent.getFired)
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
         if(parentfired) {
@@ -122,8 +114,8 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
       }
     }
 
-    override def produceFunction = eventfun
-    override def useFunction = eventfun()
+    override def produceFunction() = eventfun
+    override def useFunction() = eventfun( () )
 
   }
 
@@ -131,8 +123,8 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
     extends MapEvent[A,B](parent, f) with EventImpl[B] {
 
     override val impl = new ImplWrapper()
-    lazy val parentvalue: Rep[In] = readVar(parent.getValue())
-    lazy val parentfired: Rep[Boolean] = readVar(parent.getFired())
+    lazy val parentvalue: Rep[In] = readVar(parent.getValue)
+    lazy val parentfired: Rep[Boolean] = readVar(parent.getFired)
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
         if(parentfired) {
@@ -143,16 +135,16 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
         }
       }
     }
-    override def produceFunction = eventfun
-    override def useFunction = eventfun()
+    override def produceFunction() = eventfun
+    override def useFunction() = eventfun( () )
   }
 
   case class ConcreteFilterEvent[A](parent: EventImpl[A], f: Rep[A] => Rep[Boolean])(implicit tA: Typ[A], mn: ModuleName)
     extends FilterEvent[A](parent, f) with EventImpl[A] {
 
     override val impl = new ImplWrapper()
-    lazy val parentvalue: Rep[In] = readVar(parent.getValue())
-    lazy val parentfired: Rep[Boolean] = readVar(parent.getFired())
+    lazy val parentvalue: Rep[In] = readVar(parent.getValue)
+    lazy val parentfired: Rep[Boolean] = readVar(parent.getFired)
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
         if(parentfired) {
@@ -168,8 +160,8 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
         }
       }
     }
-    override def produceFunction = eventfun
-    override def useFunction = eventfun()
+    override def produceFunction() = eventfun
+    override def useFunction() = eventfun( () )
 
   }
 
@@ -177,10 +169,10 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
     extends MergeEvent[A](parents,f) with EventImpl[A] {
 
     override val impl = new ImplWrapper()
-    lazy val parentleftvalue: Rep[In] = readVar(parentLeft.getValue())
-    lazy val parentleftfired: Rep[Boolean] = readVar(parentLeft.getFired())
-    lazy val parentrightvalue: Rep[In] = readVar(parentRight.getValue())
-    lazy val parentrightfired: Rep[Boolean] = readVar(parentRight.getFired())
+    lazy val parentleftvalue: Rep[In] = readVar(parentLeft.getValue)
+    lazy val parentleftfired: Rep[Boolean] = readVar(parentLeft.getFired)
+    lazy val parentrightvalue: Rep[In] = readVar(parentRight.getValue)
+    lazy val parentrightfired: Rep[Boolean] = readVar(parentRight.getFired)
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
         if(parentleftfired && parentrightfired ) {
@@ -200,8 +192,8 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
         }
       }
     }
-    override def produceFunction = eventfun
-    override def useFunction = eventfun()
+    override def produceFunction() = eventfun
+    override def useFunction() = eventfun( () )
 
   }
 
@@ -209,15 +201,15 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
     extends ChangesEvent[A](parent) with EventImpl[A] {
 
     override val impl = new ImplWrapper()
-    lazy val parentvalue: Rep[In] = readVar(parent.getValue())
+    lazy val parentvalue: Rep[In] = readVar(parent.getValue)
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
         var_assign(fired, unit(true))
         var_assign[Out](value, parentvalue)
       }
     }
-    override def produceFunction = eventfun
-    override def useFunction = eventfun()
+    override def produceFunction() = eventfun
+    override def useFunction() = eventfun( () )
 
   }
 
@@ -225,8 +217,8 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
     extends SnapshotEvent[A,B](parentBeh, parentEvent) with EventImpl[A] {
 
     override val impl = new ImplWrapper()
-    lazy val parentvalue: Rep[Out] = readVar(parentBeh.getValue())
-    lazy val parentEventFired: Rep[Boolean] = readVar(parentEvent.getFired())
+    lazy val parentvalue: Rep[Out] = readVar(parentBeh.getValue)
+    lazy val parentEventFired: Rep[Boolean] = readVar(parentEvent.getFired)
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
         if(parentEventFired) {
@@ -237,8 +229,8 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
         }
       }
     }
-    override def produceFunction = eventfun
-    override def useFunction = eventfun()
+    override def produceFunction() = eventfun
+    override def useFunction() = eventfun( () )
 
   }
 
@@ -266,19 +258,16 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
 
       implicit val tOut = typOut
       ConcreteFoldp2Behavior[A,B,C](this, e, f1,f2,f3, init)(typOut, tB, tC, n)
-
     }
 
     addNodeToNodemap(id,this)
     override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()
-    override def addChild(id: NodeID): Unit = {
-      childNodeIDs.add(id)
-    }
+    override def addChild(id: NodeID): Unit = childNodeIDs.add(id)
 
     lazy val fired = vardeclmod_new[Boolean](moduleName.str)
-    def getFired() = fired
+    def getFired = fired
     lazy val value = vardeclmod_new[A](moduleName.str)
-    def getValue() = value
+    def getValue = value
 
     override def generateNode(): Unit = {
       if (isInputEvent(this)) {
@@ -293,7 +282,7 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
         fired
         value
         implicit val tOut = this.typOut
-        this.produceFunction
+        this.produceFunction()
       }
 
     }

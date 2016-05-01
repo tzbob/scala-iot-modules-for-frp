@@ -13,37 +13,21 @@ trait NodeOpsImpl extends NodeOps {
     }
   }
 
-  override def addSymToSymMap(id: NodeID, v: Var[_], f: Var[Boolean]) {
-    symMap += ((id, (v, f) ))
-  }
+  override def addSymToSymMap(id: NodeID, v: Var[_], f: Var[Boolean]) { symMap += ((id, (v, f) )) }
+  override def resetSymMap(): Unit = symMap.clear
+  override def getSymMap: Map[NodeID,(Var[_],Var[Boolean])] = symMap.toMap
 
-  override def resetSymMap(): Unit = {
-    symMap.clear
-  }
-
-  override def getSymMap(): Map[NodeID,(Var[_],Var[Boolean])] = {
-    symMap.toMap
-  }
-
-  override def addNodeToNodemap(id: NodeID, node: Node[_]): Unit = {
-    nodeMap += ((id, node))
-  }
-
-  override def getNodeMap: Map[NodeID,Node[_]] = {
-    nodeMap.toMap
-  }
+  override def addNodeToNodemap(id: NodeID, node: Node[_]): Unit = { nodeMap += ((id, node)) }
+  override def getNodeMap: Map[NodeID,Node[_]] = nodeMap.toMap
 
   override def addBehaviorID(id: NodeID): Unit = { behaviorIDs += id }
   override def getBehaviorIDs(): Set[NodeID] = behaviorIDs.toSet
 
-  override def getOutputNodes: Map[NodeID,Node[_]] = {
-    getNodeMap.filter(
-      x => x match {
+  override def getOutputNodes: Map[NodeID,Node[_]] =
+    getNodeMap.filter{
         case (_, n) => if(n.childNodeIDs.size == 0) true else false
         case _ => throw new IllegalStateException("Unsupported Node type")
-      }
-    )
-  }
+    }
 
   override def getMaxLevel: Int = {
     var maxlevel: Int = 0
@@ -56,13 +40,8 @@ trait NodeOpsImpl extends NodeOps {
     maxlevel
   }
 
-  override def getNodesOnLevel(nodes: List[Node[_]], level: Int): List[Node[_]] = {
-    nodes.filter(
-      x => x match {
-        case node => if(node.level == level) true else false
-      }
-    )
-  }
+  override def getNodesOnLevel(nodes: List[Node[_]], level: Int): List[Node[_]] =
+    nodes.filter{ case node => if(node.level == level) true else false }
 
   override def getDecendantNodeIDs(node: Node[_]): List[NodeID] = {
     val listbuilder = scala.collection.mutable.ListBuffer.empty[NodeID]
@@ -77,11 +56,8 @@ trait NodeOpsImpl extends NodeOps {
     listbuilder.toList
   }
 
-  override def getNodesWithIDs(ids: List[NodeID]): Map[NodeID, Node[_]] = {
-    getNodeMap.filter( x => x match {
-      case (id, e) => ids.contains(id)
-    })
-  }
+  override def getNodesWithIDs(ids: List[NodeID]): Map[NodeID, Node[_]] =
+    getNodeMap.filter{ case (id, e) => ids.contains(id) }
 
 
   trait NodeImpl[A] extends Node[A] {

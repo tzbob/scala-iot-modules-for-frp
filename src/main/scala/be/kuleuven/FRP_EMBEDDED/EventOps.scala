@@ -10,7 +10,7 @@ trait EventOps extends NodeOps {
   trait Event[A] extends Node[A] {
     // Private part
     private[FRP_EMBEDDED] type In
-    override type Out = A
+    private[FRP_EMBEDDED] override type Out = A
     private[FRP_EMBEDDED] implicit val typIn: Typ[In]
     private[FRP_EMBEDDED] val typOut: Typ[Out]
 
@@ -41,22 +41,17 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
 
   private val outInList = scala.collection.mutable.ListBuffer.empty[(String, String, String, String)]
 
-  def getOutInList: List[(String,String,String,String)] = {
-    outInList.toList
-  }
-
+  def getOutInList: List[(String,String,String,String)] = outInList.toList
   def addToOutInList(oe: OutputEvent[_], inputModName: String, inputID: NodeID): Unit = {
     outInList += ((oe.mn.str, oe.outName, inputModName, "top"+inputID))
   }
 
   def getInputEventNodes: List[InputEvent[_]] = {
     val listbuilder = scala.collection.mutable.ListBuffer.empty[InputEvent[_]]
-    getNodeMap.foreach(
-      x => x match {
-        case (_, i@ InputEvent(_)) => listbuilder += i
-        case _ => //do not add it
-      }
-    )
+    getNodeMap.foreach{
+      case (_, i@ InputEvent(_)) => listbuilder += i
+      case _ => //do not add it
+    }
     listbuilder.toList
   }
 
@@ -138,19 +133,18 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
 
   abstract class MapEvent[A,B](parent: Event[A], f: Rep[A] => Rep[B])(implicit tB:Typ[B], mn: ModuleName) extends Event[B] {
 
-    override val moduleName = mn
-    override def buildGraphTopDown() = {
-      parent.addChild(id)
-      parent.buildGraphTopDown()
-    }
-
     override val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
-
+    override val moduleName = mn
     override type In = A
     override implicit val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = tB
     val mapFun: Rep[In]=>Rep[Out] = f
+
+    override def buildGraphTopDown() = {
+      parent.addChild(id)
+      parent.buildGraphTopDown()
+    }
 
     System.err.println("Create MapEvent(ID:" + id + "): " + inputNodeIDs)
   }
@@ -162,14 +156,13 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
     override val typIn: Typ[In] = parent.typOut //tA?
     override val typOut: Typ[Out] = typIn //tA?
     val filterFun: Rep[In]=>Rep[Boolean] = f
+    override val level = parent.level + 1
+    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
     override def buildGraphTopDown() = {
       parent.addChild(id)
       parent.buildGraphTopDown()
     }
-
-    override val level = parent.level + 1
-    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
     System.err.println("Create FilterEvent(ID:" + id + "): " + inputNodeIDs)
   }
@@ -179,11 +172,8 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
     override val moduleName = mn
     override type In = A
     val mergeFun: (Rep[In],Rep[In])=>Rep[Out] = f
-
-    //val parentEvents: List[Event[In]] = parents._1::parents._2::Nil
     val parentLeft: Event[In] = parents._1
     val parentRight: Event[In] = parents._2
-
     override val level = scala.math.max(parentLeft.level, parentRight.level) + 1
     override val typIn: Typ[In] = parentLeft.typOut //TODO: fix if different typed Events can be merged
     override val typOut: Typ[Out] = typIn
@@ -208,14 +198,13 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
     override type In = A
     override val typIn: Typ[In] = parent.typOut
     override val typOut: Typ[Out] = typIn
+    override val level = parent.level + 1
+    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
     override def buildGraphTopDown() = {
       parent.addChild(id)
       parent.buildGraphTopDown()
     }
-
-    override val level = parent.level + 1
-    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
 
     System.err.println("Create ChangesEvent(ID:" + id + "): " + inputNodeIDs)
   }
@@ -227,16 +216,16 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
     override val typIn: Typ[In] = parentEvent.typOut
     override val typOut: Typ[Out] = parentBeh.typOut
 
+    // Important! This nodes is only tied to the chain of the event parent
+    // This is made explicit in buildGraphTopDown function
+    override val level = parentEvent.level + 1
+    override val inputNodeIDs: Set[NodeID] = parentEvent.inputNodeIDs
+
     override def buildGraphTopDown() = {
       parentEvent.addChild(id)
       parentEvent.buildGraphTopDown()
       //Behaviorparent is left out!
     }
-
-    // Important! This nodes is only tied to the chain of the event parent
-    // This is made explicit in buildGraphTopDown function
-    override val level = parentEvent.level + 1
-    override val inputNodeIDs: Set[NodeID] = parentEvent.inputNodeIDs
 
     System.err.println("Create SnapshotEvent(ID:" + id + "): " + inputNodeIDs)
   }

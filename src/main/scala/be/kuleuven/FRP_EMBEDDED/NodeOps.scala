@@ -6,13 +6,13 @@ private[FRP_EMBEDDED] trait NodeOps extends ScalaOpsPkgExt {
 
   private[FRP_EMBEDDED] type NodeID = Int
   class ModuleName private[FRP_EMBEDDED] (val str: String) { // packet private constructor
-    override def toString(): String = str
+    override def toString: String = str
   }
 
   def printSymbolMap(nodeID: NodeID): Unit
   def addSymToSymMap(id: NodeID, v: Var[_], f: Var[Boolean])
   def resetSymMap(): Unit
-  def getSymMap(): Map[NodeID,(Var[_],Var[Boolean])]
+  def getSymMap: Map[NodeID,(Var[_],Var[Boolean])]
 
   def addNodeToNodemap(id: NodeID, node: Node[_]): Unit
   def getNodeMap: Map[NodeID,Node[_]]
@@ -34,7 +34,7 @@ private[FRP_EMBEDDED] trait NodeOps extends ScalaOpsPkgExt {
     /*private[FRP_EMBEDDED]*/ val level: Int // for topological order
     /*private[FRP_EMBEDDED]*/ val childNodeIDs: scala.collection.mutable.Set[NodeID]
     /*private[FRP_EMBEDDED]*/ def buildGraphTopDown(): Unit
-    /*private[FRP_EMBEDDED]*/ type Out
+    private[FRP_EMBEDDED] type Out
 
     private[FRP_EMBEDDED] val inputNodeIDs: Set[NodeID]
     private[FRP_EMBEDDED] val moduleName: ModuleName

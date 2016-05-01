@@ -9,9 +9,9 @@ trait BehaviorOps extends NodeOps {
 
   trait Behavior[A] extends Node[A] {
     private[FRP_EMBEDDED] val typOut: Typ[A]
-    private[FRP_EMBEDDED] def getValue(): Var[A]
+    private[FRP_EMBEDDED] def getValue: Var[A]
     private[FRP_EMBEDDED] def getInitializer(): Rep[Unit]
-    override type Out = A
+    private[FRP_EMBEDDED] override type Out = A
 
     // map2: Combine 2 behaviors (merge-like). Whenever a behaviors value changes, the output behavior applies
     // the function f to both child behaviors, changing its value to the result of that function
@@ -37,19 +37,13 @@ trait BehaviorOps extends NodeOps {
 trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {
   event: EventOps =>
 
-  def getBehaviorNodes: Map[NodeID,Node[_]] = {
-    getNodeMap.filter(
-      x => x match {
-        case (id, _) => getBehaviorIDs().contains(id)
-      }
-    )
-  }
+  def getBehaviorNodes: Map[NodeID,Node[_]] =
+    getNodeMap.filter{ case (id, _) => getBehaviorIDs().contains(id) }
 
 
   abstract class ConstantBehavior[A](init: Rep[A])(implicit val tA: Typ[A], mn: ModuleName) extends Behavior[A] {
 
     override val moduleName = mn
-
     override val typOut = tA
     val level = 0
     override val inputNodeIDs: Set[NodeID] = HashSet(this.id)
@@ -65,7 +59,6 @@ trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {
     extends Behavior[C] {
 
     override val moduleName = mn
-
     override val typOut = tC
     val parentLeft: Behavior[A] = parents._1
     val parentRight: Behavior[B] = parents._2
@@ -88,7 +81,6 @@ trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {
     extends Behavior[B] {
 
     override val moduleName = mn
-
     override val typOut = tB
     override val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
@@ -108,7 +100,6 @@ trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {
     )(implicit val tA: Typ[A], val tB: Typ[B], val tC: Typ[C], mn: ModuleName) extends Behavior[C] {
 
     override val moduleName = mn
-
     override val typOut = tC
     override val level = scala.math.max(parentLeft.level, parentRight.level) + 1
     override val inputNodeIDs: Set[NodeID] = parentLeft.inputNodeIDs ++ parentRight.inputNodeIDs
@@ -126,7 +117,6 @@ trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {
   abstract class StartsWithBehavior[A](parent: Event[A], init: Rep[A])(implicit val tA: Typ[A], mn: ModuleName) extends Behavior[A] {
 
     override val moduleName = mn
-
     override val typOut = tA
     override val level = parent.level + 1
     override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
@@ -135,8 +125,6 @@ trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {
       parent.addChild(id)
       parent.buildGraphTopDown()
     }
-
-
 
     System.err.println("Create StartsWithBehavior(ID:" + id + "): " + inputNodeIDs)
   }

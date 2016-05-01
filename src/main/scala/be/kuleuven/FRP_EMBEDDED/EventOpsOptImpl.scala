@@ -55,7 +55,6 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     extends InputEvent[A] with EventOptImpl[A] {
 
     override val impl = new ImplWrapper
-
     implicit val ptrbytetyp = ptrTyp[Byte]
     lazy val eventfun = {
       namedfun4 (mn.str) { (data: Rep[Ptr[Byte]], len: Rep[Int], v: Rep[Ptr[A]], f: Rep[Ptr[Boolean]]) =>
@@ -73,10 +72,11 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
         ptr_assignToVal(v, rep_asinstanceof(readVar(input), typ[Int], typ[A]))
       }
     }
-    override def produceFunction =
+
+    override def produceFunction() =
       throw new IllegalStateException("Input node should not be used anymore for eventfun. Handled in top level function")
 
-    override def useFunction = {
+    override def useFunction() = {
       throw new IllegalStateException("UseNode should not be used in Input")
     }
 
@@ -93,7 +93,6 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     extends ConstantEvent[A,B](parent,c) with EventOptImpl[B] {
 
     override val impl = new ImplWrapper
-
     lazy val eventfun = {
       namedfun4 (mn.str) { (pv: Rep[A], pf: Rep[Boolean], v: Rep[Ptr[B]], f: Rep[Ptr[Boolean]]) =>
         if(pf) {
@@ -104,8 +103,9 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
         }
       }
     }
-    override def produceFunction = eventfun
-    override def useFunction = {
+
+    override def produceFunction() = eventfun
+    override def useFunction() = {
       renewNode()
       val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired = getSymMap.getOrElse(parent.id, null)._2
@@ -119,7 +119,6 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     extends MapEvent[A,B](parent,f) with EventOptImpl[B] {
 
     override val impl = new ImplWrapper
-
     lazy val eventfun = {
       namedfun4 (mn.str) { (pv: Rep[A], pf: Rep[Boolean], v: Rep[Ptr[B]], f: Rep[Ptr[Boolean]]) =>
         if(pf) {
@@ -130,8 +129,9 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
         }
       }
     }
-    override def produceFunction = eventfun
-    override def useFunction = {
+
+    override def produceFunction() = eventfun
+    override def useFunction() = {
       renewNode()
       val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired = getSymMap.getOrElse(parent.id, null)._2
@@ -145,7 +145,6 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     extends FilterEvent[A](parent,f) with EventOptImpl[A] {
 
     override val impl = new ImplWrapper
-
     lazy val eventfun = {
       namedfun4 (mn.str) { (pv: Rep[A], pf: Rep[Boolean], v: Rep[Ptr[A]], f: Rep[Ptr[Boolean]]) =>
         if(pf) {
@@ -161,8 +160,9 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
         }
       }
     }
-    override def produceFunction = eventfun
-    override def useFunction = {
+
+    override def produceFunction() = eventfun
+    override def useFunction() = {
       renewNode()
       val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired = getSymMap.getOrElse(parent.id, null)._2
@@ -176,7 +176,6 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     extends MergeEvent[A](parents,f) with EventOptImpl[A] {
 
     override val impl = new ImplWrapper
-
     lazy val eventfun = {
       namedfun6 (mn.str) { (plv: Rep[A], plf: Rep[Boolean], prv: Rep[A], prf: Rep[Boolean], v: Rep[Ptr[A]], f: Rep[Ptr[Boolean]]) =>
         if(plf && prf ) {
@@ -196,8 +195,9 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
         }
       }
     }
-    override def produceFunction = eventfun
-    override def useFunction = {
+
+    override def produceFunction() = eventfun
+    override def useFunction() = {
       renewNode()
       val parentleftvalue = getSymMap.getOrElse(parentLeft.id, (parentLeft.createValue,0))._1.asInstanceOf[Var[A]]
       val parentleftfired = getSymMap.getOrElse(parentLeft.id, (0,var_new[Boolean](false)))._2
@@ -213,16 +213,16 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     extends ChangesEvent[A](parent) with EventOptImpl[A] {
 
     override val impl = new ImplWrapper
-
-    lazy val parentvalue: Rep[In] = readVar(parent.getValue())
+    lazy val parentvalue: Rep[In] = readVar(parent.getValue)
     lazy val eventfun = {
       namedfun2 (mn.str) { (v: Rep[Ptr[A]], f: Rep[Ptr[Boolean]]) =>
         ptr_assignToVal(f, true)
         ptr_assignToVal(v, parentvalue)
       }
     }
-    override def produceFunction = eventfun
-    override def useFunction = {
+
+    override def produceFunction() = eventfun
+    override def useFunction() = {
       renewNode()
       val value = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[A]]
       val fired = getSymMap.getOrElse(id, null)._2
@@ -235,8 +235,7 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     extends SnapshotEvent[A,B](parentBeh, parentEvent) with EventOptImpl[A] {
 
     override val impl = new ImplWrapper
-
-    lazy val parentvalue: Rep[Out] = readVar(parentBeh.getValue())
+    lazy val parentvalue: Rep[Out] = readVar(parentBeh.getValue)
     lazy val eventfun = {
       namedfun3 (mn.str) { (pef: Rep[Boolean], v: Rep[Ptr[A]], f: Rep[Ptr[Boolean]]) =>
         if(pef) {
@@ -250,8 +249,9 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
         }
       }
     }
-    override def produceFunction = eventfun
-    override def useFunction = {
+
+    override def produceFunction() = eventfun
+    override def useFunction() = {
       renewNode()
       val parentEventFired = getSymMap.getOrElse(parentEvent.id, null)._2
       val value = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[A]]
@@ -296,22 +296,22 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     override def generateNode() = {
       if (isInputEvent(this)) {
         getInputEvent(this) match {
-          case Some(i) => i.produceInput
+          case Some(i) => i.produceInput()
           case None => throw new Exception("Not cool. You should check using isInputEvent!")
         }
       }
       else {
         implicit val tOut = this.typOut
-        this.produceFunction
+        this.produceFunction()
       }
     }
 
-    def createValue() = vardecl_new[A]
-    def createFired() = var_new[Boolean](false)
+    def createValue = vardecl_new[A]
+    def createFired = var_new[Boolean](false)
 
     def renewNode(): Unit = {
-      val f = createFired()
-      val v = createValue()
+      val f = createFired
+      val v = createValue
       addSymToSymMap(id, v, f)
     }
 

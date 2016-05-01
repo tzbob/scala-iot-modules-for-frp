@@ -17,10 +17,9 @@ trait FRPDSLApplication_Impl extends FRPDSLApplication {
   }
 
   override def createModule[A] (graphfun: (ModuleName)=>Option[OutputEvent[A]] ): Module[A] = {
-    val name: String = (new String("mod")).concat(ModuleNumber.nextid.toString)
+    val name: String = new String("mod").concat(ModuleNumber.nextid.toString)
     val mod = new ModuleName(name)
 
-    System.err.println("CREATE")
     val out = graphfun(mod) match {
       case Some(output) =>
         output
@@ -28,12 +27,10 @@ trait FRPDSLApplication_Impl extends FRPDSLApplication {
         null
     }
 
-    val module = new Module[A] {
+    new Module[A] {
       override val name = mod
       override val output = out
     }
-
-    module
   }
 }
 
