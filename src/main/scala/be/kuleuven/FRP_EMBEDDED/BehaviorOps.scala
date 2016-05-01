@@ -1,5 +1,9 @@
 package be.kuleuven.FRP_EMBEDDED
 
+import be.kuleuven.LMS_extensions.ScalaOpsPkgExpExt
+
+import scala.collection.immutable.HashSet
+
 trait BehaviorOps extends NodeOps {
   event: EventOps =>
 
@@ -30,7 +34,7 @@ trait BehaviorOps extends NodeOps {
   def constantB[A:Typ](value: Rep[A])(implicit n: ModuleName): Behavior[A]
 }
 
-trait BehaviorOps_Impl extends BehaviorOps {
+trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {
   event: EventOps =>
 
   def getBehaviorNodes: Map[NodeID,Node[_]] = {
@@ -39,5 +43,98 @@ trait BehaviorOps_Impl extends BehaviorOps {
         case (id, _) => getBehaviorIDs().contains(id)
       }
     )
+  }
+
+
+  abstract class ConstantBehavior[A](init: Rep[A])(implicit val tA: Typ[A], mn: ModuleName) extends Behavior[A] {
+
+    override val moduleName = mn
+
+    override val typOut = tA
+    val level = 0
+    override val inputNodeIDs: Set[NodeID] = HashSet(this.id)
+
+    System.err.println("Create ConstantBehavior(ID:" + id + "): " + inputNodeIDs)
+  }
+
+  abstract class Map2Behavior[A:Typ,B:Typ,C]
+    (parents: (Behavior[A],Behavior[B]), f: (Rep[A],Rep[B])=>Rep[C])(implicit val tC: Typ[C], mn: ModuleName)
+    extends Behavior[C] {
+
+    override val moduleName = mn
+
+    override val typOut = tC
+    val parentLeft: Behavior[A] = parents._1
+    val parentRight: Behavior[B] = parents._2
+    val level = scala.math.max(parentLeft.level, parentRight.level) + 1
+
+    override val inputNodeIDs: Set[NodeID] = parentLeft.inputNodeIDs ++ parentRight.inputNodeIDs
+
+    override def buildGraphTopDown() = {
+      parentLeft.addChild(id)
+      parentLeft.buildGraphTopDown()
+      parentRight.addChild(id)
+      parentRight.buildGraphTopDown()
+    }
+
+    System.err.println("Create Map2Behavior(ID:" + id + "): " + inputNodeIDs)
+  }
+
+  abstract class FoldpBehavior[A,B]
+    (parent: Event[A], f: (Rep[A],Rep[B])=>Rep[B], init: Rep[B])(implicit val tA: Typ[A], val tB: Typ[B], mn: ModuleName)
+    extends Behavior[B] {
+
+    override val moduleName = mn
+
+    override val typOut = tB
+    override val level = parent.level + 1
+    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
+
+    override def buildGraphTopDown() = {
+      parent.addChild(id)
+      parent.buildGraphTopDown()
+    }
+
+    System.err.println("Create FoldpBehavior(ID:" + id + "): " + inputNodeIDs)
+  }
+
+  abstract class Foldp2Behavior[A,B,C]
+  (parentLeft: Event[A], parentRight: Event[B],
+    f1:((Rep[A],Rep[C]) => Rep[C]),f2:((Rep[B],Rep[C]) => Rep[C]), f3:((Rep[A],Rep[B],Rep[C]) => Rep[C]),
+    init: Rep[C]
+    )(implicit val tA: Typ[A], val tB: Typ[B], val tC: Typ[C], mn: ModuleName) extends Behavior[C] {
+
+    override val moduleName = mn
+
+    override val typOut = tC
+    override val level = scala.math.max(parentLeft.level, parentRight.level) + 1
+    override val inputNodeIDs: Set[NodeID] = parentLeft.inputNodeIDs ++ parentRight.inputNodeIDs
+
+    override def buildGraphTopDown() = {
+      parentLeft.addChild(id)
+      parentLeft.buildGraphTopDown()
+      parentRight.addChild(id)
+      parentRight.buildGraphTopDown()
+    }
+
+    System.err.println("Create Foldp2Behavior(ID:" + id + "): " + inputNodeIDs)
+  }
+
+  abstract class StartsWithBehavior[A](parent: Event[A], init: Rep[A])(implicit val tA: Typ[A], mn: ModuleName) extends Behavior[A] {
+
+    override val moduleName = mn
+
+    override val typOut = tA
+    override val level = parent.level + 1
+    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
+
+    override def buildGraphTopDown() = {
+      parent.addChild(id)
+      parent.buildGraphTopDown()
+    }
+
+
+
+    System.err.println("Create StartsWithBehavior(ID:" + id + "): " + inputNodeIDs)
   }
 }

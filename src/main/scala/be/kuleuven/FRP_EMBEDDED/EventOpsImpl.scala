@@ -257,10 +257,10 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
     override def filter(f: Rep[A] => Rep[Boolean])(implicit n: ModuleName): Event[A] = ConcreteFilterEvent[A](this, f)(typOut,n)
     override def merge(e: Event[A], f: (Rep[A],Rep[A])=>Rep[A])(implicit n: ModuleName) = ConcreteMergeEvent[A]( (this, e), f)(typOut, n)
 
-    override def startsWith(i: Rep[A])(implicit n: ModuleName): Behavior[A] = StartsWithBehavior(this, i)(typOut,n)
+    override def startsWith(i: Rep[A])(implicit n: ModuleName): Behavior[A] = ConcreteStartsWithBehavior(this, i)(typOut,n)
     override def foldp[B](f: (Rep[A], Rep[B]) => Rep[B], init: Rep[B])(implicit tB: Typ[B],n: ModuleName): Behavior[B] = {
       implicit val tOut = typOut
-      FoldpBehavior[A,B](this, f, init)(typOut, tB, n)
+      ConcreteFoldpBehavior[A,B](this, f, init)(typOut, tB, n)
     }
     override def foldp2[B,C]
     (e: Event[B],
@@ -269,7 +269,7 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
     )(implicit tB: Typ[B], tC: Typ[C], n: ModuleName): Behavior[C] = {
 
       implicit val tOut = typOut
-      Foldp2Behavior[A,B,C](this, e, f1,f2,f3, init)(typOut, tB, tC, n)
+      ConcreteFoldp2Behavior[A,B,C](this, e, f1,f2,f3, init)(typOut, tB, tC, n)
 
     }
 
