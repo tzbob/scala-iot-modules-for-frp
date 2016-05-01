@@ -4,7 +4,7 @@ import be.kuleuven.LMS_extensions.ScalaOpsPkgExpExt
 
 import scala.collection.immutable.HashSet
 
-trait EventOpsImpl extends EventOps with NodeOpsImpl with ScalaOpsPkgExpExt {
+trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt {
   behaviorImpl: BehaviorOpsImpl =>
 
   //TODO: move generic functions to upper implementation class, problem at the moment are the case classes

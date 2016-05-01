@@ -2,13 +2,7 @@ package be.kuleuven.FRP_EMBEDDED
 
 trait FRPDSLImpl extends FRPDSL_Impl with EventOpsImpl with BehaviorOpsImpl {
 
-  override def buildFRPGraph(): Unit = {
-    getNodeMap.foreach(
-      x => x match {
-        case (_, n) => n.buildGraphTopDown()
-      }
-    )
-
+  override def printGraph: Unit = {
     val inputevents = getInputEventNodes
     System.err.println("InputEvents:")
     inputevents.foreach(System.err.println )
@@ -19,38 +13,17 @@ trait FRPDSLImpl extends FRPDSL_Impl with EventOpsImpl with BehaviorOpsImpl {
     leafNodes.foreach(System.err.println )
   }
 
-  override def generateModule(module: Module[_]): Unit = {
+  override def generateGlobalFRPInits(module: Module[_]): Unit = {
+    getEventNodes
+      .filter(e => e.moduleName == module.name)
+      .foreach(e => var_assign(e.getFired(), false))
+  }
 
-    // generate per level
-    System.err.println("max level : " + getMaxLevel)
-    for (i <- 0 to getMaxLevel) {
-      val nodes = getNodesOnLevel(getNodeMap.values.toList, i)
-      val modnodes = nodes.filter(n => n.moduleName == module.name)
-      modnodes.foreach { node => node.generateNode() }
-    }
+  override def generateModuleSpecifics(module: Module[_], initModule: Rep[(Unit) => Unit]): Unit = {
 
     //get all input events
     val inputs = getInputEventNodes
     val modinputs = inputs.filter(n => n.moduleName == module.name)
-
-    // function to reset all event fired values
-    val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName == module.name)
-
-    val initialised = vardeclmod_new[Int](module.name.toString())
-    val initModule: Rep[(Unit) => Unit] = namedfun0(module.name.toString()) { () =>
-      if (readVar(initialised) == 0) {
-        for (i <- 0 to getMaxLevel) {
-          getNodesOnLevel(behaviorsInModule.toList, i)
-            .foreach(_.getInitializer())
-        }
-        var_assign(initialised, 1)
-      }
-
-      getEventNodes
-        .filter(e => e.moduleName == module.name)
-        .foreach(e => var_assign(e.getFired(), false))
-      unitToRepUnit(())
-    }
 
     // generate top functions
     for( ie <- modinputs) {
@@ -61,7 +34,6 @@ trait FRPDSLImpl extends FRPDSL_Impl with EventOpsImpl with BehaviorOpsImpl {
   }
 
   private def generateTopFunction[X](input: InputEvent[X], initModule: => Rep[(Unit)=>Unit], m: Module[_]): Unit = {
-
     System.err.println("top" + input.id)
 
     val descendantIDs = getDecendantNodeIDs(input).filter(id => id != input.id)

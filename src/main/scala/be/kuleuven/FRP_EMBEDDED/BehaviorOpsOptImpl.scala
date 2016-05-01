@@ -4,16 +4,8 @@ import be.kuleuven.LMS_extensions.ScalaOpsPkgExpExt
 
 import scala.collection.immutable.HashSet
 
-trait BehaviorOpsOptImpl extends BehaviorOps with NodeOpsOptImpl with ScalaOpsPkgExpExt {
+trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsOptImpl with ScalaOpsPkgExpExt {
   eventImpl: EventOpsOptImpl =>
-
-  def getBehaviorNodes: Map[NodeID,Node[_]] = {
-    getNodeMap.filter(
-      x => x match {
-        case (id, _) => getBehaviorIDs().contains(id)
-      }
-    )
-  }
 
   def getOptionBehavior[X](n: Node[X]): Option[Behavior[X]] = {
     n match {

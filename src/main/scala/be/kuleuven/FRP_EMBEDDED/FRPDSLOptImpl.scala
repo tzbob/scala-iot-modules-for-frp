@@ -2,13 +2,8 @@ package be.kuleuven.FRP_EMBEDDED
 
 trait FRPDSLOptImpl extends FRPDSL_Impl with EventOpsOptImpl with BehaviorOpsOptImpl {
 
-  override def buildFRPGraph(): Unit = {
-    getNodeMap.foreach(
-      x => x match {
-        case (_, n) => n.buildGraphTopDown()
-      }
-    )
 
+  override def printGraph: Unit = {
     val inputevents = getInputEventNodes
     System.err.println("InputEvents:")
     inputevents.foreach(System.err.println )
@@ -19,35 +14,15 @@ trait FRPDSLOptImpl extends FRPDSL_Impl with EventOpsOptImpl with BehaviorOpsOpt
     leafNodes.foreach(System.err.println )
   }
 
-  override def generateModule(module: Module[_]): Unit = {
+  override def generateGlobalFRPInits(module: Module[_]): Unit = {
+    // nothing to do since not global anymore
+  }
 
-    // generate per level
-    System.err.println("max level : " + getMaxLevel)
-    for (i <- 0 to getMaxLevel) {
-      val nodes = getNodesOnLevel(getNodeMap.values.toList, i)
-      val modnodes = nodes.filter(n => n.moduleName == module.name)
-      modnodes.foreach { node => node.generateNode() }
-    }
+  override def generateModuleSpecifics(module: Module[_], initModule: Rep[(Unit) => Unit]): Unit = {
 
     //get all input events
     val inputs = getInputEventNodes
     val modinputs = inputs.filter(n => n.moduleName == module.name)
-
-    // function to reset all event fired values
-    val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName == module.name)
-
-    val initialised = vardeclmod_new[Int](module.name.toString())
-    val initModule: Rep[(Unit) => Unit] = namedfun0(module.name.toString()) { () =>
-      if (readVar(initialised) == 0) {
-        for (i <- 0 to getMaxLevel) {
-          getNodesOnLevel(behaviorsInModule.toList, i)
-            .foreach(_.getInitializer())
-        }
-        var_assign(initialised, 1)
-      }
-
-      unitToRepUnit(())
-    }
 
     // generate top functions
     for( ie <- modinputs) {
@@ -58,10 +33,7 @@ trait FRPDSLOptImpl extends FRPDSL_Impl with EventOpsOptImpl with BehaviorOpsOpt
     System.err.println("End of generateModule")
   }
 
-
-
   private def generateTopFunction[X](input: InputEvent[X], initModule: => Rep[(Unit)=>Unit], m: Module[_]): Unit = {
-
     System.err.println("top" + input.id)
 
     val descendantIDs = getDecendantNodeIDs(input).filter(id => id != input.id)
@@ -71,8 +43,8 @@ trait FRPDSLOptImpl extends FRPDSL_Impl with EventOpsOptImpl with BehaviorOpsOpt
     val listbuilder = scala.collection.mutable.ListBuffer.empty[Node[_]]
     for( i <- 0 to getMaxLevel)
       listbuilder ++= getNodesOnLevel(descendantNodes.values.toList,i)
-    val eventsTO = listbuilder.toList
-    eventsTO.foreach(x => System.err.println(x.id))
+    val nodesTO = listbuilder.toList
+    nodesTO.foreach(x => System.err.println(x.id))
 
     //TODO: maybe get rid of concrete output
     m.output match {
@@ -81,14 +53,13 @@ trait FRPDSLOptImpl extends FRPDSL_Impl with EventOpsOptImpl with BehaviorOpsOpt
     }
     val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName == input.moduleName)
 
-
     val top = inputfun(input.moduleName.str, "top"+input.id) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
       if(behaviorsInModule.size > 0) initModule()
 
       resetSymMap()
       input.useInputNode(data, len)
 
-      eventsTO.foreach( x => { x.useFunction() } ) // apply the functions in this context
+      nodesTO.foreach( x => { x.useFunction() } ) // apply the functions in this context
 
       m.output match {
         case coe @ ConcreteOutputEvent(_) =>

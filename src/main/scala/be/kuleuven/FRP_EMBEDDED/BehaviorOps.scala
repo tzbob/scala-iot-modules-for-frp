@@ -29,3 +29,15 @@ trait BehaviorOps extends NodeOps {
 
   def constantB[A:Typ](value: Rep[A])(implicit n: ModuleName): Behavior[A]
 }
+
+trait BehaviorOps_Impl extends BehaviorOps {
+  event: EventOps =>
+
+  def getBehaviorNodes: Map[NodeID,Node[_]] = {
+    getNodeMap.filter(
+      x => x match {
+        case (id, _) => getBehaviorIDs().contains(id)
+      }
+    )
+  }
+}

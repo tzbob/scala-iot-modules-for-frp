@@ -33,3 +33,8 @@ trait EventOps extends NodeOps {
   abstract class OutputEvent[A:Typ]
   def out[A:Typ](name: String, e: Event[A])(implicit n: ModuleName): OutputEvent[A]
 }
+
+trait EventOps_Impl extends EventOps {
+  behavior: BehaviorOps =>
+
+}

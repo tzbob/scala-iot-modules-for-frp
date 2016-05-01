@@ -4,16 +4,8 @@ import be.kuleuven.LMS_extensions.ScalaOpsPkgExpExt
 
 import scala.collection.immutable.HashSet
 
-trait BehaviorOpsImpl extends BehaviorOps with ScalaOpsPkgExpExt {
+trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
   eventImpl: EventOpsImpl =>
-
-  def getBehaviorNodes: Map[NodeID,Node[_]] = {
-    getNodeMap.filter(
-      x => x match {
-        case (id, _) => getBehaviorIDs().contains(id)
-      }
-    )
-  }
 
   override def constantB[A:Typ](c: Rep[A])(implicit n: ModuleName): Behavior[A] = new ConstantBehavior[A](c)
 

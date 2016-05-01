@@ -4,7 +4,7 @@ import be.kuleuven.LMS_extensions.ScalaOpsPkgExpExt
 
 import scala.collection.immutable.HashSet
 
-trait EventOpsOptImpl extends EventOps with NodeOpsOptImpl with ScalaOpsPkgExpExt {
+trait EventOpsOptImpl extends EventOps_Impl with NodeOpsOptImpl with ScalaOpsPkgExpExt {
   behaviorImpl: BehaviorOpsOptImpl =>
 
   def getInputEventNodes: List[InputEvent[_]] = {
