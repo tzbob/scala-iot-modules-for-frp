@@ -34,7 +34,20 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
   }
 
   def generateGlobalFRPInits(module: Module[_]): Unit
-  def generateTopFunctions(module: Module[_], initModule: Rep[(Unit) => Unit]): Unit
+  def generateTopFunction[X](input: InputEvent[X], initModule: => Rep[(Unit)=>Unit], m: Module[_]): Unit
+
+  def generateTopFunctions(module: Module[_], initModule: Rep[(Unit) => Unit]): Unit = {
+    //get all input events
+    val inputs = getInputEventNodes
+    val modinputs = inputs.filter(n => n.moduleName == module.name)
+
+    // generate top functions
+    for( ie <- modinputs) {
+      System.err.println("Generate dependencies of inputnode " + ie.id)
+      generateTopFunction(ie, initModule, module)
+    }
+    System.err.println("End of generateModule")
+  }
 
   override def generateModule(module: Module[_]): Unit = {
     // generate per level

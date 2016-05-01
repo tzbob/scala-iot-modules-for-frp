@@ -18,22 +18,7 @@ trait FRPDSLOptImpl extends FRPDSL_Impl with EventOpsOptImpl with BehaviorOpsOpt
     // nothing to do since not global anymore
   }
 
-  override def generateTopFunctions(module: Module[_], initModule: Rep[(Unit) => Unit]): Unit = {
-
-    //get all input events
-    val inputs = getInputEventNodes
-    val modinputs = inputs.filter(n => n.moduleName == module.name)
-
-    // generate top functions
-    for( ie <- modinputs) {
-      System.err.println("Generate dependencies of inputnode " + ie.id)
-      generateTopFunction(ie, initModule, module)
-    }
-
-    System.err.println("End of generateModule")
-  }
-
-  private def generateTopFunction[X](input: InputEvent[X], initModule: => Rep[(Unit)=>Unit], m: Module[_]): Unit = {
+  override def generateTopFunction[X](input: InputEvent[X], initModule: => Rep[(Unit)=>Unit], m: Module[_]): Unit = {
     System.err.println("top" + input.id)
 
     val descendantIDs = getDecendantNodeIDs(input).filter(id => id != input.id)

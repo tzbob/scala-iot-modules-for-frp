@@ -19,7 +19,7 @@ trait FRPDSLImpl extends FRPDSL_Impl with EventOpsImpl with BehaviorOpsImpl {
       .foreach(e => var_assign(e.getFired(), false))
   }
 
-  override def generateTopFunctions(module: Module[_], initModule: Rep[(Unit) => Unit]): Unit = {
+  /*override def generateTopFunctions(module: Module[_], initModule: Rep[(Unit) => Unit]): Unit = {
 
     //get all input events
     val inputs = getInputEventNodes
@@ -31,9 +31,9 @@ trait FRPDSLImpl extends FRPDSL_Impl with EventOpsImpl with BehaviorOpsImpl {
       generateTopFunction(ie, initModule, module)
     }
 
-  }
+  }*/
 
-  private def generateTopFunction[X](input: InputEvent[X], initModule: => Rep[(Unit)=>Unit], m: Module[_]): Unit = {
+  override def generateTopFunction[X](input: InputEvent[X], initModule: => Rep[(Unit)=>Unit], m: Module[_]): Unit = {
     System.err.println("top" + input.id)
 
     val descendantIDs = getDecendantNodeIDs(input).filter(id => id != input.id)
