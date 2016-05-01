@@ -59,7 +59,7 @@ trait FRPDSLImpl extends FRPDSL_Impl with EventOpsImpl with BehaviorOpsImpl {
       nodesTO.foreach( x => x.useFunction() ) // apply the functions in this context
 
       m.output match {
-        case coe @ ConcreteOutputEvent(_,_) => coe.eventfun( () )
+        case coe @ OutputEvent(_) => coe.useOutput()
         case _ => // we didn't had an output, it was None
       }
 

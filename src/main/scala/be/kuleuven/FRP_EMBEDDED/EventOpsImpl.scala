@@ -72,7 +72,12 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
       }
 
     }
-    val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
+
+    override def useOutput(): Unit = {
+      eventfun( () )
+    }
+
+    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
   }
 
   override def TimerEvent(i: Rep[Int])(implicit n: ModuleName) = ConcreteInputEvent[Int]( )  // only conceptual

@@ -32,7 +32,13 @@ trait EventOps extends NodeOps {
   def TimerEvent(i: Rep[Int])(implicit n: ModuleName)/*(implicit tI:Typ[Int])*/: Event[Int]
   def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit n: ModuleName): Event[A] // oe possibly null (!)
 
-  abstract class OutputEvent[A:Typ](val mn: ModuleName, val outName: String)
+  object OutputEvent{
+    def unapply[A](oe: OutputEvent[A]) = Some(oe)
+  }
+  abstract class OutputEvent[A:Typ](val mn: ModuleName, val outName: String) {
+    def useOutput(): Unit
+    val inputNodeIDs: Set[NodeID]
+  }
   def out[A:Typ](name: String, e: Event[A])(implicit n: ModuleName): OutputEvent[A]
 }
 

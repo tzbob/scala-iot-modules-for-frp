@@ -44,13 +44,14 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
       }
 
     }
-    def useFunction = {
+
+    override def useOutput(): Unit = {
       val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired = getSymMap.getOrElse(parent.id, null)._2
       eventfun(readVar(parentvalue), readVar(parentfired))
     }
 
-    val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
+    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
   }
 
   override def TimerEvent(i: Rep[Int])(implicit n: ModuleName) = ConcreteInputEvent[Int]( )  // only conceptual

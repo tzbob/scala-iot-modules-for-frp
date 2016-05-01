@@ -48,7 +48,7 @@ trait FRPDSLOptImpl extends FRPDSL_Impl with EventOpsOptImpl with BehaviorOpsOpt
 
       m.output match {
         case coe @ ConcreteOutputEvent(_,_) =>
-          if (coe.inputNodeIDs.contains(input.id) ) coe.useFunction
+          if (coe.inputNodeIDs.contains(input.id) ) coe.useOutput()
         case _ => // we didn't had an output, it was None
       }
 
