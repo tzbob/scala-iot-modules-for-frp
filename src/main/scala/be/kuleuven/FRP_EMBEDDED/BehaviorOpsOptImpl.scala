@@ -4,7 +4,7 @@ import be.kuleuven.LMS_extensions.ScalaOpsPkgExpExt
 
 import scala.collection.immutable.HashSet
 
-trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsOptImpl with ScalaOpsPkgExpExt {
+trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt {
   eventImpl: EventOpsOptImpl =>
 
   def getOptionBehavior[X](n: Node[X]): Option[Behavior[X]] = {
@@ -210,7 +210,7 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsOptImpl with Scala
     System.err.println("Create StartsWithBehavior(ID:" + id + "): " + inputNodeIDs)
   }
 
-  abstract class BehaviorNode[A](implicit mn: ModuleName) extends BehaviorOptImpl[A] with NodeOptImpl[A] {
+  abstract class BehaviorNode[A](implicit mn: ModuleName) extends BehaviorOptImpl[A] with NodeImpl[A] {
     addNodeToNodemap(id,this)
     addBehaviorID(id)
 

@@ -4,7 +4,7 @@ import be.kuleuven.LMS_extensions.ScalaOpsPkgExpExt
 
 import scala.collection.immutable.HashSet
 
-trait EventOpsOptImpl extends EventOps_Impl with NodeOpsOptImpl with ScalaOpsPkgExpExt {
+trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt {
   behaviorImpl: BehaviorOpsOptImpl =>
 
   def getInputEventNodes: List[InputEvent[_]] = {
@@ -359,7 +359,7 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsOptImpl with ScalaOpsPkg
     System.err.println("Create SnapshotEvent(ID:" + id + "): " + inputNodeIDs)
   }
 
-  abstract class EventNode[A,B:Typ](implicit mn: ModuleName) extends EventOptImpl[B] with NodeOptImpl[B] {
+  abstract class EventNode[A,B:Typ](implicit mn: ModuleName) extends EventOptImpl[B] with NodeImpl[B] {
     addNodeToNodemap(id,this)
     override type In = A
     override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()
