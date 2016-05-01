@@ -55,7 +55,7 @@ trait FRPDSLImpl extends FRPDSL_Impl with EventOpsImpl with BehaviorOpsImpl {
 
     val top = inputfun(input.moduleName.str, "top"+input.id) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
       if(behaviorsInModule.size > 0) initModule()
-      input.eventfun(data,len)
+      input.useInput(data,len)
       nodesTO.foreach( x => x.useFunction() ) // apply the functions in this context
 
       m.output match {

@@ -9,8 +9,6 @@ private[FRP_EMBEDDED] trait NodeOps extends ScalaOpsPkgExt {
     override def toString(): String = str
   }
 
-
-
   def printSymbolMap(nodeID: NodeID): Unit
   def addSymToSymMap(id: NodeID, v: Var[_], f: Var[Boolean])
   def resetSymMap(): Unit

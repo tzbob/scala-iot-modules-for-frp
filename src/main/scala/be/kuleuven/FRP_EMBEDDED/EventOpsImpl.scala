@@ -13,7 +13,7 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
     val listbuilder = scala.collection.mutable.ListBuffer.empty[InputEvent[_]]
     getNodeMap.foreach(
       x => x match {
-        case (_, i@ InputEvent( )) => listbuilder += i
+        case (_, i@ ConcreteInputEvent( )) => listbuilder += i
         case _ => //do not add it
       }
     )
@@ -33,40 +33,40 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
 
   def getOptionEvent[X](n: Node[X]): Option[Event[X]] = {
     n match {
-      case en @ MergeEvent(_,_) => Some(en)
-      case en @ ConstantEvent(_,_) => Some(en)
-      case en @ FilterEvent(_,_) => Some(en)
-      case en @ MapEvent(_,_) => Some(en)
-      case en @ ChangesEvent(_) => Some(en)
-      case en @ SnapshotEvent(_,_) => Some(en)
-      case en @ InputEvent( ) => Some(en)
+      case en @ ConcreteMergeEvent(_,_) => Some(en)
+      case en @ ConcreteConstantEvent(_,_) => Some(en)
+      case en @ ConcreteFilterEvent(_,_) => Some(en)
+      case en @ ConcreteMapEvent(_,_) => Some(en)
+      case en @ ConcreteChangesEvent(_) => Some(en)
+      case en @ ConcreteSnapshotEvent(_,_) => Some(en)
+      case en @ ConcreteInputEvent( ) => Some(en)
       case _ => None
     }
   }
 
   def isInputEvent[T: Typ](e: Event[T]): Boolean = {
     e match {
-      case InputEvent( ) => true
+      case ConcreteInputEvent( ) => true
       case _ => false
     }
   }
 
   def getInputEvent[T:Typ](e:Event[T]): Option[InputEvent[T]] = {
     e match {
-      case i @ InputEvent( ) => Some(i)
+      case i @ ConcreteInputEvent( ) => Some(i)
       case _ => None
     }
   }
 
   implicit def eventToEventImpl[X](e: Event[X]): EventImpl[X] = {
     e match {
-      case en @ MergeEvent(_,_) => en
-      case en @ ConstantEvent(_,_) => en
-      case en @ FilterEvent(_,_) => en
-      case en @ MapEvent(_,_) => en
-      case en @ ChangesEvent(_) => en
-      case en @ SnapshotEvent(_,_) => en
-      case en @ InputEvent( ) => en
+      case en @ ConcreteMergeEvent(_,_) => en
+      case en @ ConcreteConstantEvent(_,_) => en
+      case en @ ConcreteFilterEvent(_,_) => en
+      case en @ ConcreteMapEvent(_,_) => en
+      case en @ ConcreteChangesEvent(_) => en
+      case en @ ConcreteSnapshotEvent(_,_) => en
+      case en @ ConcreteInputEvent( ) => en
       case _ => throw new Exception("Event without Implementation")
     }
   }
@@ -102,14 +102,15 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
     val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
   }
 
-  override def TimerEvent(i: Rep[Int])(implicit n: ModuleName) = InputEvent[Int]( )  // only conceptual
+  override def TimerEvent(i: Rep[Int])(implicit n: ModuleName) = ConcreteInputEvent[Int]( )  // only conceptual
   override def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit mn: ModuleName) = {
     val externalInputID = Node.informNextId
     addToOutInList(oe, mn.str, externalInputID)
-    InputEvent[A]( ) // oe possibly null (!)
+    ConcreteInputEvent[A]( ) // oe possibly null (!)
   }
 
-  case class InputEvent[A]()(implicit tA:Typ[A], mn: ModuleName) extends EventNode[Unit,A] {
+  case class ConcreteInputEvent[A]()(implicit tA:Typ[A], mn: ModuleName) extends InputEvent[A] with EventImpl[A] {
+    override val impl = new ImplWrapper()(mn,tA)
     //val inputFun: () => Rep[Out] = () => i
     implicit val ptrbytetyp = ptrTyp[Byte]
     lazy val eventfun: Rep[((Ptr[Byte], Int)) => Unit] = {
@@ -129,26 +130,16 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
       }
     }
 
-    override def produceFunction =
-      throw new IllegalStateException("Should be handled in top level function.")
-    override def useFunction =
-      throw new IllegalStateException("Should be handled in top level function.")
-    override def buildGraphTopDown() = {
-      // has no parents, nothing to do!
+    override def produceInput(): Unit = eventfun
+    override def useInput(data: Rep[Ptr[Byte]], len: Rep[Int]): Unit = {
+      eventfun(data,len)
     }
-
-    override val level = 0
-    override val typIn: Typ[In] = typ[Unit]
-    override val typOut: Typ[Out] = tA
-    override val inputNodeIDs: Set[NodeID] = HashSet(this.id)
-
-    System.err.println("Create InputEvent(ID:" + id + "): " + inputNodeIDs)
   }
 
-  case class ConstantEvent[A,B](parent: Event[A], c : Rep[B])(implicit tB:Typ[B], mn: ModuleName) extends EventNode[A,B] {
-    override implicit val typIn: Typ[In] = parent.typOut
-    override val typOut: Typ[Out] = tB
-    val constFun: Rep[In]=>Rep[Out] = _ => c
+  case class ConcreteConstantEvent[A,B](parent: EventImpl[A], c : Rep[B])(implicit tB:Typ[B], mn: ModuleName)
+    extends ConstantEvent[A,B](parent,c) with EventImpl[B] {
+
+    override val impl = new ImplWrapper()
     lazy val parentvalue: Rep[In] = readVar(parent.getValue())
     lazy val parentfired: Rep[Boolean] = readVar(parent.getFired())
     lazy val eventfun: Rep[(Unit)=>Unit] = {
@@ -164,21 +155,13 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
 
     override def produceFunction = eventfun
     override def useFunction = eventfun()
-    override def buildGraphTopDown() = {
-      parent.addChild(id)
-      parent.buildGraphTopDown()
-    }
 
-    override val level = parent.level + 1
-    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
-
-    System.err.println("Create ConstantEvent(ID:" + id + "): " + inputNodeIDs)
   }
 
-  case class MapEvent[A,B](parent: Event[A], f: Rep[A] => Rep[B])(implicit tB:Typ[B], mn: ModuleName) extends EventNode[A,B] {
-    override implicit val typIn: Typ[In] = parent.typOut
-    override val typOut: Typ[Out] = tB
-    val mapFun: Rep[In]=>Rep[Out] = f
+  case class ConcreteMapEvent[A,B](parent: EventImpl[A], f: Rep[A] => Rep[B])(implicit tB:Typ[B], mn: ModuleName)
+    extends MapEvent[A,B](parent, f) with EventImpl[B] {
+
+    override val impl = new ImplWrapper()
     lazy val parentvalue: Rep[In] = readVar(parent.getValue())
     lazy val parentfired: Rep[Boolean] = readVar(parent.getFired())
     lazy val eventfun: Rep[(Unit)=>Unit] = {
@@ -193,21 +176,12 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
     }
     override def produceFunction = eventfun
     override def useFunction = eventfun()
-    override def buildGraphTopDown() = {
-      parent.addChild(id)
-      parent.buildGraphTopDown()
-    }
-
-    override val level = parent.level + 1
-    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
-
-    System.err.println("Create MapEvent(ID:" + id + "): " + inputNodeIDs)
   }
 
-  case class FilterEvent[A](parent: Event[A], f: Rep[A] => Rep[Boolean])(implicit val tA: Typ[A], mn: ModuleName) extends EventNode[A,A] {
-    override val typIn: Typ[In] = parent.typOut //tA?
-    override val typOut: Typ[Out] = typIn //tA?
-    val filterFun: Rep[In]=>Rep[Boolean] = f
+  case class ConcreteFilterEvent[A](parent: EventImpl[A], f: Rep[A] => Rep[Boolean])(implicit tA: Typ[A], mn: ModuleName)
+    extends FilterEvent[A](parent, f) with EventImpl[A] {
+
+    override val impl = new ImplWrapper()
     lazy val parentvalue: Rep[In] = readVar(parent.getValue())
     lazy val parentfired: Rep[Boolean] = readVar(parent.getFired())
     lazy val eventfun: Rep[(Unit)=>Unit] = {
@@ -227,29 +201,13 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
     }
     override def produceFunction = eventfun
     override def useFunction = eventfun()
-    override def buildGraphTopDown() = {
-      parent.addChild(id)
-      parent.buildGraphTopDown()
-    }
 
-    override val level = parent.level + 1
-    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
-
-    System.err.println("Create FilterEvent(ID:" + id + "): " + inputNodeIDs)
   }
 
-  case class MergeEvent[A](parents: (Event[A],Event[A]), f: (Rep[A],Rep[A])=>Rep[A] )(implicit tA:Typ[A], mn: ModuleName) extends EventNode[A,A] {
-    val mergeFun: (Rep[In],Rep[In])=>Rep[Out] = f
-    //val parentEvents: List[Event[In]] = parents._1::parents._2::Nil
-    val parentLeft: Event[In] = parents._1
-    val parentRight: Event[In] = parents._2
-    override val level = scala.math.max(parentLeft.level, parentRight.level) + 1
-    override val typIn: Typ[In] = parentLeft.typOut //TODO: fix if different typed Events can be merged
-    override val typOut: Typ[Out] = typIn
-    val inputIDsLeft: Set[NodeID] = parentLeft.inputNodeIDs
-    val inputIDsRight: Set[NodeID] = parentRight.inputNodeIDs
-    override val inputNodeIDs: Set[NodeID] = inputIDsLeft ++ inputIDsRight
+  case class ConcreteMergeEvent[A](parents: (EventImpl[A],EventImpl[A]), f: (Rep[A],Rep[A])=>Rep[A] )(implicit tA:Typ[A], mn: ModuleName)
+    extends MergeEvent[A](parents,f) with EventImpl[A] {
 
+    override val impl = new ImplWrapper()
     lazy val parentleftvalue: Rep[In] = readVar(parentLeft.getValue())
     lazy val parentleftfired: Rep[Boolean] = readVar(parentLeft.getFired())
     lazy val parentrightvalue: Rep[In] = readVar(parentRight.getValue())
@@ -275,20 +233,13 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
     }
     override def produceFunction = eventfun
     override def useFunction = eventfun()
-    override def buildGraphTopDown() = {
-      parentLeft.addChild(id)
-      parentLeft.buildGraphTopDown()
-      parentRight.addChild(id)
-      parentRight.buildGraphTopDown()
-    }
 
-    System.err.println("Create MergeEvent(ID:" + id + "): " + inputNodeIDs + ". Left: " + inputIDsLeft + ", Right: " + inputIDsRight)
   }
 
-  case class ChangesEvent[A](parent: Behavior[A])(implicit val tA: Typ[A], mn: ModuleName) extends EventNode[A,A] {
-    override val typIn: Typ[In] = parent.typOut
-    override val typOut: Typ[Out] = typIn
+  case class ConcreteChangesEvent[A](parent: Behavior[A])(implicit tA: Typ[A], mn: ModuleName)
+    extends ChangesEvent[A](parent) with EventImpl[A] {
 
+    override val impl = new ImplWrapper()
     lazy val parentvalue: Rep[In] = readVar(parent.getValue())
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
@@ -298,22 +249,13 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
     }
     override def produceFunction = eventfun
     override def useFunction = eventfun()
-    override def buildGraphTopDown() = {
-      parent.addChild(id)
-      parent.buildGraphTopDown()
-    }
-
-    override val level = parent.level + 1
-    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
-
-    System.err.println("Create ChangesEvent(ID:" + id + "): " + inputNodeIDs)
 
   }
 
-  case class SnapshotEvent[A:Typ,B:Typ](parentBeh: Behavior[A], parentEvent: Event[B])(implicit mn: ModuleName) extends EventNode[B,A] {
-    override val typIn: Typ[In] = parentEvent.typOut
-    override val typOut: Typ[Out] = parentBeh.typOut
+  case class ConcreteSnapshotEvent[A:Typ,B:Typ](parentBeh: Behavior[A], parentEvent: Event[B])(implicit mn: ModuleName)
+    extends SnapshotEvent[A,B](parentBeh, parentEvent) with EventImpl[A] {
 
+    override val impl = new ImplWrapper()
     lazy val parentvalue: Rep[Out] = readVar(parentBeh.getValue())
     lazy val parentEventFired: Rep[Boolean] = readVar(parentEvent.getFired())
     lazy val eventfun: Rep[(Unit)=>Unit] = {
@@ -328,66 +270,23 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
     }
     override def produceFunction = eventfun
     override def useFunction = eventfun()
-    override def buildGraphTopDown() = {
-      parentEvent.addChild(id)
-      parentEvent.buildGraphTopDown()
-      //Behaviorparent is left out!
-    }
-
-    // Important! This nodes is only tied to the chain of the event parent
-    // This is made explicit in buildGraphTopDown function
-    override val level = parentEvent.level + 1
-    override val inputNodeIDs: Set[NodeID] = parentEvent.inputNodeIDs
-
-    System.err.println("Create SnapshotEvent(ID:" + id + "): " + inputNodeIDs)
-  }
-
-  abstract class EventNode[A,B:Typ](implicit mn: ModuleName) extends EventImpl[B] with NodeImpl[B] {
-    addNodeToNodemap(id,this)
-    override type In = A
-    override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()
-    override def addChild(id: NodeID): Unit = {
-      childNodeIDs.add(id)
-    }
-
-    override val moduleName = mn
-
-    lazy val fired = vardeclmod_new[Boolean](moduleName.str)
-    override def getFired() = fired
-    lazy val value = vardeclmod_new[B](moduleName.str)
-    override def getValue() = value
-
-    override def generateNode(): Unit = {
-      if (isInputEvent(this)) {
-        fired
-        value
-        getInputEvent(this) match {
-          case Some(i) => i.eventfun
-          case None => throw new Exception("Not cool. You should check using isInputEvent!")
-        }
-      }
-      else {
-        fired
-        value
-        implicit val tOut = this.typOut
-        this.produceFunction
-      }
-
-    }
-
-    override def getInitializer(): Rep[Unit] = unitToRepUnit( () )
 
   }
 
-  trait EventImpl[A] extends Event[A] {
+  trait EventImpl[A] extends Event[A] with NodeImpl[A] {
 
-    def getValue(): Var[A]
-    def getFired(): Var[Boolean]
+    // no need to ever use it outside T
+    protected case class ImplWrapper(implicit val mn: ModuleName, val typA: Typ[A])
+    // normally defined by caller as val implWrap = ClassNameW
+    protected val impl: ImplWrapper
+    // will have to repeat this when you extend T and need access to the implicit
+    import impl.mn
+    import impl.typA
 
-    override def constant[B:Typ](c: Rep[B])(implicit n: ModuleName): Event[B] = ConstantEvent[A,B](this, c)
-    override def map[B:Typ](f: Rep[A] => Rep[B])(implicit n: ModuleName): Event[B] = MapEvent[A,B](this, f)
-    override def filter(f: Rep[A] => Rep[Boolean])(implicit n: ModuleName): Event[A] = FilterEvent[A](this, f)(typOut,n)
-    override def merge(e: Event[A], f: (Rep[A],Rep[A])=>Rep[A])(implicit n: ModuleName) = MergeEvent[A]( (this, e), f)(typOut, n)
+    override def constant[B](c: Rep[B])(implicit tB: Typ[B], n: ModuleName): Event[B] = ConcreteConstantEvent[A,B](this, c)(tB,n)
+    override def map[B](f: Rep[A] => Rep[B])(implicit tB:Typ[B], n: ModuleName): Event[B] = ConcreteMapEvent[A,B](this, f)(tB,n)
+    override def filter(f: Rep[A] => Rep[Boolean])(implicit n: ModuleName): Event[A] = ConcreteFilterEvent[A](this, f)(typOut,n)
+    override def merge(e: Event[A], f: (Rep[A],Rep[A])=>Rep[A])(implicit n: ModuleName) = ConcreteMergeEvent[A]( (this, e), f)(typOut, n)
 
     override def startsWith(i: Rep[A])(implicit n: ModuleName): Behavior[A] = StartsWithBehavior(this, i)(typOut,n)
     override def foldp[B](f: (Rep[A], Rep[B]) => Rep[B], init: Rep[B])(implicit tB: Typ[B],n: ModuleName): Behavior[B] = {
@@ -404,5 +303,37 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
       Foldp2Behavior[A,B,C](this, e, f1,f2,f3, init)(typOut, tB, tC, n)
 
     }
+
+    addNodeToNodemap(id,this)
+    override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()
+    override def addChild(id: NodeID): Unit = {
+      childNodeIDs.add(id)
+    }
+
+    lazy val fired = vardeclmod_new[Boolean](moduleName.str)
+    def getFired() = fired
+    lazy val value = vardeclmod_new[A](moduleName.str)
+    def getValue() = value
+
+    override def generateNode(): Unit = {
+      if (isInputEvent(this)) {
+        fired
+        value
+        getInputEvent(this) match {
+          case Some(i) => i.produceInput
+          case None => throw new Exception("Not cool. You should check using isInputEvent!")
+        }
+      }
+      else {
+        fired
+        value
+        implicit val tOut = this.typOut
+        this.produceFunction
+      }
+
+    }
+
+    override def getInitializer(): Rep[Unit] = unitToRepUnit( () )
   }
+
 }
