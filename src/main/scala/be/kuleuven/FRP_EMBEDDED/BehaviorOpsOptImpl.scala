@@ -42,8 +42,8 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
   case class ConcreteMap2Behavior[A:Typ,B:Typ,C](parents: (Behavior[A],Behavior[B]), f: (Rep[A],Rep[B])=>Rep[C])(implicit tC: Typ[C], mn: ModuleName)
     extends Map2Behavior[A,B,C](parents, f) with BehaviorOptImpl[C]{
 
-    lazy val parentleftvalue = parentLeft.getValue
-    lazy val parentrightvalue = parentRight.getValue
+    lazy val parentleftvalue: Var[A] = parentLeft.getValue
+    lazy val parentrightvalue: Var[B] = parentRight.getValue
     lazy val value = vardeclmod_new[C](mn.str)
     override def getValue = value
     lazy val valueInit = var_assign[C](value, f(parentleftvalue, parentrightvalue))

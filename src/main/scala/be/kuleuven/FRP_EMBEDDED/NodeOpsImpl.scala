@@ -21,22 +21,20 @@ trait NodeOpsImpl extends NodeOps {
   override def getNodeMap: Map[NodeID,Node[_]] = nodeMap.toMap
 
   override def addBehaviorID(id: NodeID): Unit = { behaviorIDs += id }
-  override def getBehaviorIDs(): Set[NodeID] = behaviorIDs.toSet
+  override def getBehaviorIDs: Set[NodeID] = behaviorIDs.toSet
 
   override def getOutputNodes: Map[NodeID,Node[_]] =
     getNodeMap.filter{
-        case (_, n) => if(n.childNodeIDs.size == 0) true else false
+        case (_, n) => if(n.childNodeIDs.isEmpty) true else false
         case _ => throw new IllegalStateException("Unsupported Node type")
     }
 
   override def getMaxLevel: Int = {
     var maxlevel: Int = 0
-    getNodeMap.foreach(
-      x => x match {
+    getNodeMap.foreach{
         case (_, e) => maxlevel = scala.math.max(maxlevel, e.level)
         case _ => throw new IllegalStateException("Unsupported Node type")
-      }
-    )
+    }
     maxlevel
   }
 

@@ -38,7 +38,7 @@ trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {
   event: EventOps =>
 
   def getBehaviorNodes: Map[NodeID,Node[_]] =
-    getNodeMap.filter{ case (id, _) => getBehaviorIDs().contains(id) }
+    getNodeMap.filter{ case (id, _) => getBehaviorIDs.contains(id) }
 
 
   abstract class ConstantBehavior[A](init: Rep[A])(implicit val tA: Typ[A], mn: ModuleName) extends Behavior[A] {

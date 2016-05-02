@@ -18,7 +18,7 @@ private[FRP_EMBEDDED] trait NodeOps extends ScalaOpsPkgExt {
   def getNodeMap: Map[NodeID,Node[_]]
 
   def addBehaviorID(id: NodeID): Unit
-  def getBehaviorIDs(): Set[NodeID]
+  def getBehaviorIDs: Set[NodeID]
 
   def getOutputNodes: Map[NodeID,Node[_]]
   def getMaxLevel: Int

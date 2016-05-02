@@ -2,9 +2,7 @@ package be.kuleuven.FRP_EMBEDDED
 
 import java.io.PrintWriter
 
-import be.kuleuven.LMS_extensions._
-
-import scala.lms.common._
+import be.kuleuven.LMS_extensions.{CCodeGenPkgExtended, ScalaOpsPkgExpExt}
 
 /*
  * Implementation of the FRP DSL to generate C code
@@ -27,7 +25,7 @@ trait CFRPDSLApplicationRunner_Impl extends CFRPDSL_Impl with FRPDSLApplication 
   def run(): Unit = {
     System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
     System.err.println("Creating flow graph...")
-    val modList = createApplication
+    val modList = createApplication()
     System.err.println("\n")
     buildFRPGraph()
     System.err.println("\n")

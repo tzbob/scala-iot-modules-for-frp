@@ -2,8 +2,6 @@ package be.kuleuven.FRP_EMBEDDED
 
 import be.kuleuven.LMS_extensions.ScalaOpsPkgExpExt
 
-import scala.collection.immutable.HashSet
-
 trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt {
   behaviorImpl: BehaviorOpsOptImpl =>
 
@@ -83,8 +81,8 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     override def produceInput(): Unit = eventfun
     override def useInput(data: Rep[Ptr[Byte]], len: Rep[Int]): Unit = {
       renewNode()
-      val value = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[A]]
-      val fired = getSymMap.getOrElse(id, null)._2
+      val value: Var[A] = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[A]]
+      val fired: Var[Boolean] = getSymMap.getOrElse(id, null)._2
       eventfun(data, len, ptr_new(value), ptr_new(fired))
     }
   }
@@ -107,8 +105,8 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     override def produceFunction() = eventfun
     override def useFunction() = {
       renewNode()
-      val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
-      val parentfired = getSymMap.getOrElse(parent.id, null)._2
+      val parentvalue: Var[A] = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
+      val parentfired: Var[Boolean] = getSymMap.getOrElse(parent.id, null)._2
       val value = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[B]]
       val fired = getSymMap.getOrElse(id, null)._2
       eventfun(parentvalue, parentfired, ptr_new(value), ptr_new(fired))
@@ -133,8 +131,8 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     override def produceFunction() = eventfun
     override def useFunction() = {
       renewNode()
-      val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
-      val parentfired = getSymMap.getOrElse(parent.id, null)._2
+      val parentvalue: Var[A] = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
+      val parentfired: Var[Boolean] = getSymMap.getOrElse(parent.id, null)._2
       val value = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[B]]
       val fired = getSymMap.getOrElse(id, null)._2
       eventfun(parentvalue, parentfired, ptr_new(value), ptr_new(fired))
@@ -164,8 +162,8 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     override def produceFunction() = eventfun
     override def useFunction() = {
       renewNode()
-      val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
-      val parentfired = getSymMap.getOrElse(parent.id, null)._2
+      val parentvalue: Var[A] = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
+      val parentfired: Var[Boolean] = getSymMap.getOrElse(parent.id, null)._2
       val value = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[A]]
       val fired = getSymMap.getOrElse(id, null)._2
       eventfun(parentvalue, parentfired, ptr_new(value), ptr_new(fired))
@@ -199,10 +197,10 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     override def produceFunction() = eventfun
     override def useFunction() = {
       renewNode()
-      val parentleftvalue = getSymMap.getOrElse(parentLeft.id, (parentLeft.createValue,0))._1.asInstanceOf[Var[A]]
-      val parentleftfired = getSymMap.getOrElse(parentLeft.id, (0,var_new[Boolean](false)))._2
-      val parentrightvalue = getSymMap.getOrElse(parentRight.id, (parentRight.createValue,0))._1.asInstanceOf[Var[A]]
-      val parentrightfired = getSymMap.getOrElse(parentRight.id, (0,var_new[Boolean](false)))._2
+      val parentleftvalue: Var[A] = getSymMap.getOrElse(parentLeft.id, (parentLeft.createValue,0))._1.asInstanceOf[Var[A]]
+      val parentleftfired: Var[Boolean] = getSymMap.getOrElse(parentLeft.id, (0,var_new[Boolean](false)))._2
+      val parentrightvalue: Var[A] = getSymMap.getOrElse(parentRight.id, (parentRight.createValue,0))._1.asInstanceOf[Var[A]]
+      val parentrightfired: Var[Boolean] = getSymMap.getOrElse(parentRight.id, (0,var_new[Boolean](false)))._2
       val value = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[A]]
       val fired = getSymMap.getOrElse(id, null)._2
       eventfun(parentleftvalue, parentleftfired, parentrightvalue, parentrightfired, ptr_new(value), ptr_new(fired))
@@ -224,8 +222,8 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     override def produceFunction() = eventfun
     override def useFunction() = {
       renewNode()
-      val value = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[A]]
-      val fired = getSymMap.getOrElse(id, null)._2
+      val value: Var[A] = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[A]]
+      val fired: Var[Boolean] = getSymMap.getOrElse(id, null)._2
       eventfun(ptr_new(value), ptr_new(fired))
     }
 
@@ -253,9 +251,9 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     override def produceFunction() = eventfun
     override def useFunction() = {
       renewNode()
-      val parentEventFired = getSymMap.getOrElse(parentEvent.id, null)._2
-      val value = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[A]]
-      val fired = getSymMap.getOrElse(id, null)._2
+      val parentEventFired: Var[Boolean] = getSymMap.getOrElse(parentEvent.id, null)._2
+      val value: Var[A] = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[A]]
+      val fired: Var[Boolean] = getSymMap.getOrElse(id, null)._2
       eventfun(parentEventFired, ptr_new(value), ptr_new(fired))
     }
   }

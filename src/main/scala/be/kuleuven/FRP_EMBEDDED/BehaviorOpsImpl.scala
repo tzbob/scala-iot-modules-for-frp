@@ -2,8 +2,6 @@ package be.kuleuven.FRP_EMBEDDED
 
 import be.kuleuven.LMS_extensions.ScalaOpsPkgExpExt
 
-import scala.collection.immutable.HashSet
-
 trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
   eventImpl: EventOpsImpl =>
 
@@ -29,8 +27,8 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
   case class ConcreteMap2Behavior[A:Typ,B:Typ,C](parents: (Behavior[A],Behavior[B]), f: (Rep[A],Rep[B])=>Rep[C])(implicit tC: Typ[C], mn: ModuleName)
     extends Map2Behavior[A,B,C](parents, f) with BehaviorImpl[C] {
 
-    lazy val parentleftvalue = parentLeft.getValue
-    lazy val parentrightvalue = parentRight.getValue
+    lazy val parentleftvalue: Var[A] = parentLeft.getValue
+    lazy val parentrightvalue: Var[B] = parentRight.getValue
     lazy val value = vardeclmod_new[C](mn.str)
     override def getValue = value
     lazy val valueInit = var_assign[C](value, f(parentleftvalue, parentrightvalue))
@@ -57,8 +55,8 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
     override def getValue = value
     lazy val valueInit = var_assign[B](value, init)
     override def getInitializer() = valueInit
-    lazy val parentvalue: Rep[A] = parent.getValue
-    lazy val parentfired: Rep[Boolean] = parent.getFired
+    lazy val parentvalue: Rep[A] = readVar(parent.getValue)
+    lazy val parentfired: Rep[Boolean] = readVar(parent.getFired)
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
         if(parentfired) {
@@ -82,10 +80,10 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
    init: Rep[C] ) (implicit tA: Typ[A], tB: Typ[B], tC: Typ[C], mn: ModuleName)
     extends Foldp2Behavior[A,B,C](parentLeft, parentRight, f1,f2,f3,init) with BehaviorImpl[C] {
 
-    lazy val parentleftvalue = parentLeft.getValue
-    lazy val parentleftfired: Rep[Boolean] = parentLeft.getFired
-    lazy val parentrightvalue = parentRight.getValue
-    lazy val parentrightfired: Rep[Boolean] = parentRight.getFired
+    lazy val parentleftvalue: Var[A] = parentLeft.getValue
+    lazy val parentleftfired: Rep[Boolean] = readVar(parentLeft.getFired)
+    lazy val parentrightvalue: Var[B] = parentRight.getValue
+    lazy val parentrightfired: Rep[Boolean] = readVar(parentRight.getFired)
     lazy val value = vardeclmod_new[C](mn.str)
     override def getValue = value
     lazy val valueInit = var_assign[C](value, init)
@@ -124,8 +122,8 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
     override def getValue = value
     lazy val valueInit = var_assign[A](value, init)
     override def getInitializer() = valueInit
-    lazy val parentvalue: Rep[A] = parent.getValue
-    lazy val parentfired: Rep[Boolean] = parent.getFired
+    lazy val parentvalue: Rep[A] = readVar(parent.getValue)
+    lazy val parentfired: Rep[Boolean] = readVar(parent.getFired)
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
         if(parentfired) {
