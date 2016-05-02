@@ -103,7 +103,8 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
     val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName == input.moduleName)
 
     val top = inputfun(input.moduleName.str, "top"+input.id) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
-      if(behaviorsInModule.size > 0) initModule()
+      //if(behaviorsInModule.size > 0) initModule()
+      initModule()
 
       resetSymMap()
       input.useInput(data, len)
