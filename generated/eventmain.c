@@ -9,16 +9,16 @@
 #include "LMSEventMapApp.c"
 int main() {
 	uint8_t data = 4;
-	top1(&data, sizeof(data));
+	top1(&data, sizeof(data)); // out: 1
 	data = 5;
-	top1(&data, sizeof(data));
+	top1(&data, sizeof(data)); // out: 0
 }*/
 
 /*
 #include "LMSEventFilterApp.c"
 int main() {
 	uint8_t data = 4;
-	top1(&data, sizeof(data));
+	top1(&data, sizeof(data)); // out: 5
 	data = 5;
 	top1(&data, sizeof(data));
 }*/
@@ -27,33 +27,33 @@ int main() {
 #include "LMSEventConstantApp.c"
 int main() {
 	uint8_t data = 5;
-	top1(&data, sizeof(data));
+	top1(&data, sizeof(data)); // out: 20
 }*/
 
 /*
 #include "LMSEventMerge1App.c"
 int main() {
 	uint8_t data = 5;
-	top1(&data, sizeof(data));
-	top3(&data, sizeof(data));
-	top3(&data, sizeof(data));
-	top1(&data, sizeof(data));
+	top1(&data, sizeof(data)); // out: 2
+	top3(&data, sizeof(data)); // out: 4
+	top3(&data, sizeof(data)); // out: 4
+	top1(&data, sizeof(data)); // out: 2
 }*/
 
 /*
 #include "LMSEventMerge2App.c"
 int main() {
 	uint8_t data = 5;
-	top1(&data, sizeof(data));
+	top1(&data, sizeof(data)); // out: 6
 }*/
 
 /*
 #include "LMSEventMerge2bApp.c"
 int main() {
 	uint8_t data = 5;
-	top1(&data, sizeof(data));
+	top1(&data, sizeof(data)); // out: 2
 	data = 4;
-	top1(&data, sizeof(data));
+	top1(&data, sizeof(data)); // out: 3
 }*/
 
 /*
