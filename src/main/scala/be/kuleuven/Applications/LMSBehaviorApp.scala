@@ -10,7 +10,7 @@ trait LMSBehaviorStartsWith1App extends FRPDSLApplication {
       val m = t1.map[Int]( (i) => 5 )
 
       val b = m.startsWith(1)
-      None
+      Some(out("out", b.changes()))
     }::Nil
   }
 }
@@ -23,7 +23,7 @@ trait LMSBehaviorFoldp1App extends FRPDSLApplication {
       val m = t1.map[Int]((i) => 5)
 
       val b = m.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 1)
-      None
+      Some(out("out", b.changes()))
     }::Nil
   }
 }
@@ -42,7 +42,7 @@ trait LMSBehaviorMap2App extends FRPDSLApplication {
       val b2 = m2.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 1)
 
       val map2 = b1.map2(b2, (x: Rep[Int], y: Rep[Int]) => x + y)
-      None
+      Some(out("out", map2.changes()))
     }::Nil
   }
 }

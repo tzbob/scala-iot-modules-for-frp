@@ -20,6 +20,19 @@ int x55;
 bool x80;
 int x81;
 int x93;
+void x105() {
+int x94 = x93;
+bool x95 = x94 == 0;
+if (x95) {
+x93 = 1;
+} else {
+}
+x80 = false;
+x1 = false;
+x30 = false;
+x42 = false;
+x54 = false;
+};
 void x29(uint8_t* x3,int x4) {
 int x7 = 0;
 int x8 = 0;
@@ -102,7 +115,21 @@ x81 = x85;
 x80 = false;
 }
 };
+void x125(uint8_t* x118,int x119) {
+uint8_t* x120 = x118;
+uint8_t x122 = *x120;
+printf("%u\n",x122);
+};
+void x131() {
+bool x117 = x80;
+if (x117) {
+int x126 = x81;
+x125((uint8_t*)&x126, sizeof(x126));
+} else {
+}
+};
 void top1(uint8_t* x106,int x107) {
+x105();
 uint8_t* x108 = x106;
 int x109 = x107;
 x29(x108,x109);
@@ -110,6 +137,7 @@ x41();
 x53();
 x79();
 x92();
+x131();
 };
 /*****************************************
   End of C Generated Code                  

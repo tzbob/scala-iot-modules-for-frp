@@ -19,9 +19,20 @@ bool x60;
 int x61;
 bool x72;
 int x73;
-bool x98;
-int x99;
-int x111;
+int x98;
+void x110() {
+int x99 = x98;
+bool x100 = x99 == 0;
+if (x100) {
+x98 = 1;
+} else {
+}
+x72 = false;
+x1 = false;
+x30 = false;
+x60 = false;
+x48 = false;
+};
 void x29(uint8_t* x3,int x4) {
 int x7 = 0;
 int x8 = 0;
@@ -109,26 +120,29 @@ x72 = false;
 }
 }
 };
-void x110() {
-bool x100 = x72;
-if (x100) {
-x98 = true;
-int x102 = x73;
-int x103 = x102 * 2;
-x99 = x103;
+void x130(uint8_t* x123,int x124) {
+uint8_t* x125 = x123;
+uint8_t x127 = *x125;
+printf("%u\n",x127);
+};
+void x136() {
+bool x122 = x72;
+if (x122) {
+int x131 = x73;
+x130((uint8_t*)&x131, sizeof(x131));
 } else {
-x98 = false;
 }
 };
-void top1(uint8_t* x125,int x126) {
-uint8_t* x127 = x125;
-int x128 = x126;
-x29(x127,x128);
+void top1(uint8_t* x111,int x112) {
+x110();
+uint8_t* x113 = x111;
+int x114 = x112;
+x29(x113,x114);
 x47();
 x59();
 x71();
 x97();
-x110();
+x136();
 };
 /*****************************************
   End of C Generated Code                  

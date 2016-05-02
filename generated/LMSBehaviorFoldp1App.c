@@ -14,16 +14,19 @@ int x2;
 bool x30;
 int x31;
 int x42;
-int x52;
-void x62() {
-int x53 = x52;
-bool x54 = x53 == 0;
-if (x54) {
+bool x52;
+int x53;
+int x59;
+void x70() {
+int x60 = x59;
+bool x61 = x60 == 0;
+if (x61) {
 x42 = 1;
-x52 = 1;
+x59 = 1;
 } else {
 }
 x30 = false;
+x52 = false;
 x1 = false;
 };
 void x29(uint8_t* x3,int x4) {
@@ -71,13 +74,33 @@ x42 = x46;
 } else {
 }
 };
-void top1(uint8_t* x63,int x64) {
-x62();
-uint8_t* x65 = x63;
-int x66 = x64;
-x29(x65,x66);
+void x58() {
+x52 = true;
+int x55 = x42;
+x53 = x55;
+};
+void x89(uint8_t* x82,int x83) {
+uint8_t* x84 = x82;
+uint8_t x86 = *x84;
+printf("%u\n",x86);
+};
+void x95() {
+bool x81 = x52;
+if (x81) {
+int x90 = x53;
+x89((uint8_t*)&x90, sizeof(x90));
+} else {
+}
+};
+void top1(uint8_t* x71,int x72) {
+x70();
+uint8_t* x73 = x71;
+int x74 = x72;
+x29(x73,x74);
 x41();
 x51();
+x58();
+x95();
 };
 /*****************************************
   End of C Generated Code                  

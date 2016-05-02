@@ -34,6 +34,26 @@ int x190;
 bool x203;
 int x204;
 int x217;
+void x236() {
+int x218 = x217;
+bool x219 = x218 == 0;
+if (x219) {
+x217 = 1;
+} else {
+}
+x58 = false;
+x162 = false;
+x1 = false;
+x94 = false;
+x30 = false;
+x44 = false;
+x189 = false;
+x121 = false;
+x76 = false;
+x203 = false;
+x148 = false;
+x108 = false;
+};
 void x29(uint8_t* x3,int x4) {
 int x7 = 0;
 int x8 = 0;
@@ -228,7 +248,21 @@ x204 = x209;
 x203 = false;
 }
 };
+void x263(uint8_t* x256,int x257) {
+uint8_t* x258 = x256;
+uint8_t x260 = *x258;
+printf("%u\n",x260);
+};
+void x269() {
+bool x255 = x189;
+if (x255) {
+int x264 = x190;
+x263((uint8_t*)&x264, sizeof(x264));
+} else {
+}
+};
 void top1(uint8_t* x237,int x238) {
+x236();
 uint8_t* x239 = x237;
 int x240 = x238;
 x29(x239,x240);
@@ -243,6 +277,7 @@ x161();
 x188();
 x202();
 x216();
+x269();
 };
 /*****************************************
   End of C Generated Code                  

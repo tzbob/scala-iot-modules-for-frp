@@ -32,6 +32,25 @@ int x143;
 bool x168;
 int x169;
 int x181;
+void x199() {
+int x182 = x181;
+bool x183 = x182 == 0;
+if (x183) {
+x181 = 1;
+} else {
+}
+x80 = false;
+x142 = false;
+x1 = false;
+x116 = false;
+x129 = false;
+x30 = false;
+x56 = false;
+x43 = false;
+x168 = false;
+x98 = false;
+x68 = false;
+};
 void x29(uint8_t* x3,int x4) {
 int x7 = 0;
 int x8 = 0;
@@ -190,7 +209,21 @@ x169 = x173;
 x168 = false;
 }
 };
+void x225(uint8_t* x218,int x219) {
+uint8_t* x220 = x218;
+uint8_t x222 = *x220;
+printf("%u\n",x222);
+};
+void x231() {
+bool x217 = x168;
+if (x217) {
+int x226 = x169;
+x225((uint8_t*)&x226, sizeof(x226));
+} else {
+}
+};
 void top1(uint8_t* x200,int x201) {
+x199();
 uint8_t* x202 = x200;
 int x203 = x201;
 x29(x202,x203);
@@ -204,6 +237,7 @@ x128();
 x141();
 x167();
 x180();
+x231();
 };
 /*****************************************
   End of C Generated Code                  
