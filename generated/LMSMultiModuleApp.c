@@ -111,12 +111,12 @@ x57 = true;
 int x60 = x47;
 x58 = x60;
 }
-SM_OUTPUT(mod1,out1);
+SM_OUTPUT(mod1,x96);
 SM_FUNC(mod1) void x102 () {
 bool x88 = x57;
 if (x88) {
 int x97 = x58;
-out1((const uint8_t*)&x97, sizeof(x97));
+x96((const uint8_t*)&x97, sizeof(x97));
 } else {
 }
 }
@@ -208,12 +208,12 @@ x163 = true;
 int x166 = x153;
 x164 = x166;
 }
-SM_OUTPUT(mod2,out2);
+SM_OUTPUT(mod2,x202);
 SM_FUNC(mod2) void x208 () {
 bool x194 = x163;
 if (x194) {
 int x203 = x164;
-out2((const uint8_t*)&x203, sizeof(x203));
+x202((const uint8_t*)&x203, sizeof(x203));
 } else {
 }
 }
@@ -230,6 +230,28 @@ x208();
 }
 DECLARE_SM(mod1, 0x1234);
 DECLARE_SM(mod2, 0x1234);
+static void x217 () {
+  //INIT FUNCTION
+  WDTCTL = WDTHOLD | WDTPW;
+  uart_init();
+  pmodcls_init();
+  pmodcls_set_wrap_mode(PmodClsWrapAt16);
+  buttons_init();
+  asm("eint");
+}
+static void x222 () {
+  //DEPLOY FUNCTION
+  sancus_enable(&mod1);
+  sm_register_existing(&mod1);  sancus_enable(&mod2);
+  sm_register_existing(&mod2);
+  REACTIVE_CONNECT(mod1, x96, mod2, x211);
+}
+int main() {
+x217();
+puts("main started");
+x222();
+return 0;
+};
 /*****************************************
   End of C Generated Code                  
 *******************************************/

@@ -49,7 +49,7 @@ trait EventOps extends NodeOps {
 trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
   behavior: BehaviorOps =>
 
-  private val outInList = scala.collection.mutable.ListBuffer.empty[(String, String, String, String)]
+  private val outInList = scala.collection.mutable.ListBuffer.empty[(OutputEvent[_], InputEvent[_])]
   private val buttonsRegister: scala.collection.mutable.Map[Int,Set[InputEvent[_]]] = scala.collection.mutable.HashMap()
 
   def getButtonsRegister: Map[Int, Set[InputEvent[_]]] = buttonsRegister.toMap
@@ -57,14 +57,17 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
   def registerButton(b: Button, inputEvent: InputEvent[_]): Unit = {
     val button:Option[Set[InputEvent[_]]] = buttonsRegister.get(b.id)
     button match {
-      case Some(set) => buttonsRegister.update(b.id, set + inputEvent )
+      case Some(set) => {
+        throw new Exception("Button is already registered.")
+        //buttonsRegister.update(b.id, set + inputEvent )
+      }
       case None => buttonsRegister += ((b.id, HashSet(inputEvent)))
     }
   }
 
-  def getOutInList: List[(String,String,String,String)] = outInList.toList
-  def addToOutInList(oe: OutputEvent[_], inputModName: String, inputID: NodeID): Unit = {
-    outInList += ((oe.mn.str, oe.outName, inputModName, "top"+inputID))
+  def getOutInList: List[(OutputEvent[_], InputEvent[_])] = outInList.toList
+  def addToOutInList(oe: OutputEvent[_], ie: InputEvent[_]): Unit = {
+    outInList += ((oe, ie))
   }
 
   def getInputEventNodes: List[InputEvent[_]] = {

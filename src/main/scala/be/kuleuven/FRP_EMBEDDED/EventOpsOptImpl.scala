@@ -51,9 +51,9 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
 
   override def TimerEvent(i: Rep[Int])(implicit n: ModuleName) = ConcreteInputEvent[Int]( )  // only conceptual
   override def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit mn: ModuleName) = {
-    val externalInputID = Node.informNextId
-    addToOutInList(oe, mn.str, externalInputID)
-    ConcreteInputEvent[A]( ) // oe possibly null (!)
+    val input = ConcreteInputEvent[A]( ) // oe possibly null (!)
+    addToOutInList(oe, input)
+    input
   }
 
   case class ConcreteInputEvent[A]()(implicit tA:Typ[A], mn: ModuleName)

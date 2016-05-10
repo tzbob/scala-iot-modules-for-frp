@@ -135,20 +135,56 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
       declare_module(mod.name.str)
     }
 
-    generateButtonFunctions(inputToToplevel)
+    val buttonList = generateButtonFunctions(inputToToplevel)
 
-    //globalInitFun()
+    val init: Rep[(Unit)=>Unit] = staticfun0 { () =>
+      systemInits()
+      unitToRepUnit( () )
+    }
+    doApplyDecl(init)
 
-    //val modNames = modlist.map{ m => m.name.toString()}
+    val modNames = modlist.map{ m => m.name.toString()}
     //deployFun(modNames, getOutInList)
+    val deploy: Rep[(Unit) => Unit] = staticfun0 { () =>
+      moduleDeploy(modNames)
+      for( (oe,ie) <- getOutInList) {
+        (oe,ie) match {
+          case (out @ AOutputEvent(_), in @ InputEvent(_)) => {
+            val resultInput = inputToToplevel.filter{ case (inputID, _) => inputID == in.id }
+            assert(resultInput.length == 1)
+            connectionDeploy(oe.mn.str, out.outfun , ie.moduleName.str, resultInput(0)._2)
+          }
+          case _  => throw new Exception("Output Input problem in deploy function")
+        }
+      }
 
-    //mainFun()
+      unitToRepUnit( () )
+    }
+    doApplyDecl(deploy)
+
+    val main = mainfun { () =>
+      init( () )
+      unchecked[Unit]("puts(\"main started\")")
+      deploy( () )
+
+      for( (id,_) <- getButtonsRegister) {
+        val resultButton = buttonList.filter{ case (bID, _) => bID == id }
+        assert(resultButton.length == 1)
+        registerButton(id, resultButton(0)._2)
+      }
+      if(getButtonsRegister.keys.toList.length > 0) {
+        eventLoop()
+      }
+
+      unit(0)
+    }
+    doApplyDecl(main)
   }
 
-  def generateButtonFunctions(inputToToplevel: List[(NodeID, Rep[((Ptr[Byte], Int)) => Unit])]): Unit = {
-    for( (bId,inputset) <- getButtonsRegister) {
+  def generateButtonFunctions(inputToToplevel: List[(NodeID, Rep[((Ptr[Byte], Int)) => Unit])]): List[(Int,Rep[(Int)=>Unit])] = {
+    val buttonFunctions = for( (bId,inputset) <- getButtonsRegister) yield {
 
-      val f: Rep[(Int) => Unit] = fun { (pressed: Rep[Int]) =>
+      val f = staticfun { (pressed: Rep[Int]) =>
         if(rep_asinstanceof(pressed, typ[Int], typ[Boolean])) {
           for(input <- inputset) {
             val buttonId: Rep[Int] = var_new(bId)
@@ -162,9 +198,10 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
         }
         unitToRepUnit( () )
       }
-
-      doApplyDecl(f)
+      (bId,f)
     }
+
+    buttonFunctions.toList
   }
 }
 

@@ -145,12 +145,12 @@ x126 = true;
 int x129 = x116;
 x127 = x129;
 }
-SM_OUTPUT(mod1,counterOut);
+SM_OUTPUT(mod1,x167);
 SM_FUNC(mod1) void x173 () {
 bool x159 = x126;
 if (x159) {
 int x168 = x127;
-counterOut((const uint8_t*)&x168, sizeof(x168));
+x167((const uint8_t*)&x168, sizeof(x168));
 } else {
 }
 }
@@ -214,7 +214,21 @@ x132();
 x173();
 }
 DECLARE_SM(mod1, 0x1234);
-void x206 (int x195) {
+static void x221 () {
+  //INIT FUNCTION
+  WDTCTL = WDTHOLD | WDTPW;
+  uart_init();
+  pmodcls_init();
+  pmodcls_set_wrap_mode(PmodClsWrapAt16);
+  buttons_init();
+  asm("eint");
+}
+static void x225 () {
+  //DEPLOY FUNCTION
+  sancus_enable(&mod1);
+  sm_register_existing(&mod1);
+}
+static void x206 (int x195) {
 bool x196 = (bool ) x195;
 if (x196) {
 int x197 = 2;
@@ -225,17 +239,27 @@ x192(x200,1);
 } else {
 }
 }
-void x219 (int x208) {
-bool x209 = (bool ) x208;
-if (x209) {
-int x210 = 1;
-int x211 = x210;
-uint8_t x212 = (uint8_t ) x211;
-uint8_t* x213 = &x212;
-x176(x213,1);
+static void x218 (int x207) {
+bool x208 = (bool ) x207;
+if (x208) {
+int x209 = 1;
+int x210 = x209;
+uint8_t x211 = (uint8_t ) x210;
+uint8_t* x212 = &x211;
+x176(x212,1);
 } else {
 }
 }
+int main() {
+x221();
+puts("main started");
+x225();
+buttons_register_callback(Button2,x206);
+buttons_register_callback(Button1,x218);
+while(1)
+  buttons_handle_events();
+return 0;
+};
 /*****************************************
   End of C Generated Code                  
 *******************************************/
