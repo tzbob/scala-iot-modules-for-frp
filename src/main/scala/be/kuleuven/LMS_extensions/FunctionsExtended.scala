@@ -225,8 +225,8 @@ trait CGenFunctionsExt extends CGenFunctions {
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
     case NamedLambdaInput(_, funname, fun, x, y) =>
       val retType = remap(getBlockResult(y).tp)
-      //stream.println(retType + " " + quote(sym) + "(" + remap(x.tp) + " " + quote(x) + ") {")
-      stream.println(retType + " " + funname + "(" + remap(x.tp) + " " + quote(x) + ") {")
+      stream.println(retType + " " + quote(sym) + "(" + remap(x.tp) + " " + quote(x) + ") { //" + funname)
+      //stream.println(retType + " " + funname + "(" + remap(x.tp) + " " + quote(x) + ") {")
       emitBlock(y)
       val z = getBlockResult(y)
       if (retType != "void")
@@ -283,8 +283,8 @@ trait CGenTupledFunctionsExt extends CGenFunctionsExt with GenericGenUnboxedTupl
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
     case NamedLambdaInput(_, funname, fun, UnboxedTuple(xs), y) =>
       val retType = remap(getBlockResult(y).tp)
-      //stream.println(retType + " " + quote(sym) + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
-      stream.println(retType + " " + funname + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
+      stream.println(retType + " " + quote(sym) + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") { //" + funname)
+      //stream.println(retType + " " + funname + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
       emitBlock(y)
       val z = getBlockResult(y)
       if (retType != "void")
@@ -340,8 +340,8 @@ trait SMCGenFunctionsExt extends CGenFunctions {
 
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
     case NamedLambdaInput(name,funname, fun, x, y) =>
-      //stream.println("SM_INPUT("+ name + "," + quote(sym) + "," + quote(x) +") {")
-      stream.println("SM_INPUT("+ name + "," + funname + "," + quote(x) +") {")
+      stream.println("SM_INPUT("+ name + "," + quote(sym) + "," + quote(x) +") { //" + funname)
+      //stream.println("SM_INPUT("+ name + "," + funname + "," + quote(x) +") {")
       emitBlock(y)
       stream.println("}")
     case NamedLambdaOutput(name,funname, fun, x, y) => //TODO: remove, output with 1 arg should not exist
@@ -389,8 +389,8 @@ trait SMCGenTupledFunctionsExt extends SMCGenFunctionsExt with GenericGenUnboxed
 
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
     case NamedLambdaInput(name, funname, fun, UnboxedTuple(xs), y) =>
-      //stream.println("SM_INPUT("+ name + "," + quote(sym) + "," +xs.map(s=>quote(s)).mkString(",")+") {")
-      stream.println("SM_INPUT("+ name + "," + funname + "," +xs.map(s=>quote(s)).mkString(",")+") {")
+      stream.println("SM_INPUT("+ name + "," + quote(sym) + "," +xs.map(s=>quote(s)).mkString(",")+") { //" + funname)
+      //stream.println("SM_INPUT("+ name + "," + funname + "," +xs.map(s=>quote(s)).mkString(",")+") {")
       emitBlock(y)
       stream.println("}")
     case NamedLambdaOutput(name, funname, fun, UnboxedTuple(xs), y) =>
