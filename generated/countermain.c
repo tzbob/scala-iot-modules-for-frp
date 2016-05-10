@@ -11,19 +11,18 @@ int main() {
 	printf("Counter: %d\n", x116);
 
 	printf("plus %d\n", data);
-	top1(&data, sizeof(data));
+	x176(&data, sizeof(data));
 	printf("Counter: %d\n", x116);
 
 	data = 1;
 	printf("minus %d\n", data);
-	top2(&data, sizeof(data));
+	x192(&data, sizeof(data));
 	printf("Counter: %d\n", x116);
 	
 	data = 30;
 	printf("plus %d\n", data);
-	top1(&data, sizeof(data));
+	x176(&data, sizeof(data));
 	printf("Counter: %d\n", x116);
-
 }
 
 /*

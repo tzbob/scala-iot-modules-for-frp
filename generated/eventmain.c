@@ -113,7 +113,7 @@ int main() {
 #include "LMSEventMerge8App.c"
 int main() {
 	uint8_t data = 0;
-	top1(&data, sizeof(data)); // out: 34
+	x272(&data, sizeof(data)); // out: 34
 }
 
 /*

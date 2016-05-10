@@ -10,40 +10,17 @@ int main() {
 	printf("Counter: %d\n", x134);
 
 	printf("plus %d\n", data);
-	top1(&data, sizeof(data));
+	x227(&data, sizeof(data));
 	printf("Counter: %d\n", x134);
 
 	data = 1;
 	printf("minus %d\n", data);
-	top2(&data, sizeof(data));
+	x283(&data, sizeof(data));
 	printf("Counter: %d\n", x134);
 	
 	data = 30;
 	printf("plus %d\n", data);
-	top1(&data, sizeof(data));
+	x227(&data, sizeof(data));
 	printf("Counter: %d\n", x134);
 
 }
-
-/*
-#include "Counter2App.c"
-int main() {
-	uint8_t data = 3;
-	printf("Counter: %d\n", x92);
-
-	printf("plus %d\n", data);
-	top1(&data, sizeof(data));
-	printf("Counter: %d\n", x92);
-
-	data = 1;
-	printf("minus %d\n", data);
-	top2(&data, sizeof(data));
-	printf("Counter: %d\n", x92);
-	
-	data = 30;
-	printf("plus %d\n", data);
-	top1(&data, sizeof(data));
-	printf("Counter: %d\n", x92);
-
-}
-*/

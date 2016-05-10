@@ -12,7 +12,7 @@ printf("%d\n",x5);
 *x4 = 3;
 int x8 = *x4;
 printf("%d\n",x8);
-};
+}
 void x23 () {
 int x12 = 5;
 int x13 = x12;

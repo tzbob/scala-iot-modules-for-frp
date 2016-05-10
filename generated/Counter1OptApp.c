@@ -130,7 +130,7 @@ x218((uint8_t*)&x209, sizeof(x209));
 } else {
 }
 };
-void top1(uint8_t* x164,int x165) {
+void x227(uint8_t* x164,int x165) { //top1
 x163();
 bool x169 = false;
 int x170;
@@ -210,7 +210,7 @@ bool* x70 = x66;
 *x70 = false;
 }
 };
-void top2(uint8_t* x229,int x230) {
+void x283(uint8_t* x229,int x230) { //top2
 x163();
 bool x234 = false;
 int x235;

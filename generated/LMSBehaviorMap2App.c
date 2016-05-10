@@ -111,7 +111,7 @@ x155((uint8_t*)&x156, sizeof(x156));
 } else {
 }
 };
-void top1(uint8_t* x136,int x137) {
+void x164(uint8_t* x136,int x137) { //top1
 x135();
 uint8_t* x138 = x136;
 int x139 = x137;
@@ -167,7 +167,7 @@ x83 = x87;
 } else {
 }
 };
-void top4(uint8_t* x166,int x167) {
+void x179(uint8_t* x166,int x167) { //top4
 x135();
 uint8_t* x168 = x166;
 int x169 = x167;

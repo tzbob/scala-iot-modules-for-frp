@@ -3,12 +3,36 @@
 *******************************************/
 
 #include <sancus/sm_support.h>
+
+#include <sancus_support/uart.h>
+#include <sancus_support/pmodcls.h>
+#include <sancus_support/sm_control.h>
+
 #include <msp430.h>
 
 #include "reactive.h"
-#include "uart.h"
+#include "buttons.h"
 #include "string.h"
 #include <stdbool.h>
+
+static int lcd_printf(const char* fmt, ...)
+{
+  va_list va;
+  va_start(va, fmt);
+  int result = vuprintf(pmodcls_putchar, fmt, va);
+  va_end(va);
+  return result;
+}
+
+static void __attribute__((noinline)) lcd_printf_int(const char* fmt, int i)
+{
+  lcd_printf(fmt, i);
+}
+
+static void __attribute__((noinline)) printf_int(const char* fmt, int i)
+{
+  printf(fmt, i);
+}
 
 SM_DATA(mod1) bool x1;
 SM_DATA(mod1) int x2;
@@ -92,11 +116,11 @@ SM_FUNC(mod1) void x102 () {
 bool x88 = x57;
 if (x88) {
 int x97 = x58;
-x96((uint8_t*)&x97, sizeof(x97));
+out1((const uint8_t*)&x97, sizeof(x97));
 } else {
 }
 }
-SM_INPUT(mod1,top1,x77,x78) {
+SM_INPUT(mod1,x105,x77,x78) { //top1
 x76();
 uint8_t* x79 = x77;
 int x80 = x78;
@@ -189,11 +213,11 @@ SM_FUNC(mod2) void x208 () {
 bool x194 = x163;
 if (x194) {
 int x203 = x164;
-x202((uint8_t*)&x203, sizeof(x203));
+out2((const uint8_t*)&x203, sizeof(x203));
 } else {
 }
 }
-SM_INPUT(mod2,top6,x183,x184) {
+SM_INPUT(mod2,x211,x183,x184) { //top6
 x182();
 uint8_t* x185 = x183;
 int x186 = x184;

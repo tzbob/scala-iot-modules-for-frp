@@ -90,7 +90,7 @@ x87((uint8_t*)&x88, sizeof(x88));
 } else {
 }
 };
-void top1(uint8_t* x69,int x70) {
+void x96(uint8_t* x69,int x70) { //top1
 x68();
 uint8_t* x71 = x69;
 int x72 = x70;
