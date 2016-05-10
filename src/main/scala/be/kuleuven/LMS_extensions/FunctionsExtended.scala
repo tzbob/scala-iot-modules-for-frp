@@ -383,7 +383,7 @@ trait SMCGenFunctionsExt extends CGenFunctions {
   }
 }
 
-trait SMCGenTupledFunctionsExt extends CGenFunctionsExt with GenericGenUnboxedTupleAccessExt {
+trait SMCGenTupledFunctionsExt extends SMCGenFunctionsExt with GenericGenUnboxedTupleAccessExt {
   val IR: TupledFunctionsExpExt
   import IR._
 
