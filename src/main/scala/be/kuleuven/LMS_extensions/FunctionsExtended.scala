@@ -8,19 +8,26 @@ trait FunctionsExt extends Functions {
   //TODO: rename to mainFun for example
   def doApplyDecl[A:Typ,B:Typ](fun: Rep[A => B])(implicit pos: SourceContext): Rep[B]
   def doApplyOut[A:Typ,B:Typ,C](funName: String, fun: Rep[A=>B], arg: Rep[C])(implicit pos: SourceContext): Rep[B]
-  
+
+  def doLambdaMain[A:Typ,B:Typ](fun: Rep[A] => Rep[B])(implicit pos: SourceContext): Rep[A => B]
   def doLambdaInput[A:Typ,B:Typ](moduleName: String, funName: String)(fun: Rep[A] => Rep[B])(implicit pos: SourceContext): Rep[A => B]
   def doLambdaOutput[A:Typ,B:Typ](moduleName: String, funName: String)(fun: Rep[A] => Rep[B])(implicit pos: SourceContext): Rep[A => B]
   def doLambdaEntry[A:Typ,B:Typ](moduleName: String, funName: String)(fun: Rep[A] => Rep[B])(implicit pos: SourceContext): Rep[A => B]
 
   def doNamedLambda[A:Typ,B:Typ](moduleName: String)(fun: Rep[A] => Rep[B])(implicit pos: SourceContext): Rep[A => B]
   def namedfun1[A:Typ,B:Typ](moduleName: String)(f: Rep[A] => Rep[B]): Rep[A=>B] = doNamedLambda(moduleName)(f)
+
+  def doStaticLambda[A:Typ,B:Typ](fun: Rep[A] => Rep[B])(implicit pos: SourceContext): Rep[A => B]
+  def staticfun[A:Typ,B:Typ](f: Rep[A] => Rep[B]): Rep[A=>B] = doStaticLambda(f)
 }
 
 trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
 
+  case class StaticLambda[A:Typ,B:Typ](f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
+
   case class NamedLambda[A:Typ,B:Typ](moduleName: String, f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
   case class NamedLambdaInput[A:Typ,B:Typ](moduleName: String,funName: String, f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
+  case class NamedLambdaMain[A:Typ,B:Typ](f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
   // TODO: reduce to case class to the minimum needed, it's actually just a dummy function in case of SMC
   case class NamedLambdaOutput[A:Typ,B:Typ](moduleName: String,funName: String, f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
   case class NamedLambdaEntry[A:Typ,B:Typ](moduleName: String, funName: String, f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
@@ -34,6 +41,9 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
         val ye = summarizeEffects(y)
         reflectEffect(ApplyDecl(f), ye)
       case Def(NamedLambda(_,_,_,y)) =>
+        val ye = summarizeEffects(y)
+        reflectEffect(ApplyDecl(f), ye)
+      case Def(NamedLambdaMain(_,_,y)) =>
         val ye = summarizeEffects(y)
         reflectEffect(ApplyDecl(f), ye)
       case Def(NamedLambdaInput(_,_,_,_,y)) =>
@@ -50,6 +60,16 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
     }
   }
 
+  def doStaticLambdaDef[A:Typ,B:Typ](f: Exp[A] => Exp[B]) : Def[A => B] = {
+    val x = unboxedFresh[A]
+    val y = reifyEffects(f(x)) // unfold completely at the definition site.
+
+    StaticLambda(f, x, y)
+  }
+
+  override def doStaticLambda[A:Typ,B:Typ](f: Exp[A] => Exp[B])(implicit pos: SourceContext): Exp[A => B] =
+    doStaticLambdaDef(f)
+
   override def doApplyOut[A:Typ,B:Typ,C](funName: String, f: Exp[A => B], arg: Exp[C])(implicit pos: SourceContext): Exp[B] = {
     //val x1 = unbox(arg) // no need for anymore
     f match {
@@ -61,6 +81,15 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
     }
   }
 
+  def doNamedLambdaMainDef[A:Typ,B:Typ](fun: Exp[A] => Exp[B]): Def[A=>B] = {
+    val x = unboxedFresh[A]
+    val y = reifyEffects(fun(x)) // unfold completely at the definition site.
+
+    NamedLambdaMain(fun, x, y)
+  }
+
+  override def doLambdaMain[A:Typ,B:Typ](fun: Exp[A] => Exp[B])(implicit pos: SourceContext): Exp[A => B] =
+    doNamedLambdaMainDef(fun)
 
   def doNamedLambdaInputDef[A:Typ,B:Typ](moduleName: String, funName: String)(f: Exp[A] => Exp[B]) : Def[A => B] = {
     val x = unboxedFresh[A]
@@ -103,6 +132,8 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
     doNamedLambdaDef(name)(f)
 
   override def mirror[A:Typ](e: Def[A], f: Transformer)(implicit pos: SourceContext): Exp[A] = (e match {
+    case e@StaticLambda(g,x:Exp[Any],y:Block[b]) => toAtom(StaticLambda(f(g),f(x),f(y))(e.mA,e.mB))(mtype(manifest[A]),pos)
+    case e@NamedLambdaMain(g,x:Exp[Any],y:Block[b]) => toAtom(NamedLambdaMain(f(g),f(x),f(y))(e.mA,e.mB))(mtype(manifest[A]),pos)
     case e@NamedLambdaInput(mn, fn, g,x:Exp[Any],y:Block[b]) => toAtom(NamedLambdaInput(mn, fn, f(g),f(x),f(y))(e.mA,e.mB))(mtype(manifest[A]),pos)
     case e@NamedLambdaOutput(mn, fn, g,x:Exp[Any],y:Block[b]) => toAtom(NamedLambdaOutput(mn, fn, f(g),f(x),f(y))(e.mA,e.mB))(mtype(manifest[A]),pos)
     case e@NamedLambdaEntry(mn, fn, g,x:Exp[Any],y:Block[b]) => toAtom(NamedLambdaEntry(mn, fn, f(g),f(x),f(y))(e.mA,e.mB))(mtype(manifest[A]),pos)
@@ -111,6 +142,8 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
   }).asInstanceOf[Exp[A]] // why??
 
   override def syms(e: Any): List[Sym[Any]] = e match {
+    case StaticLambda(f, x, y) => syms(y)
+    case NamedLambdaMain(f, x, y) => syms(y)
     case NamedLambdaInput(_, _, f, x, y) => syms(y)
     case NamedLambdaOutput(_, _, f, x, y) => syms(y)
     case NamedLambdaEntry(_, _, f, x, y) => syms(y)
@@ -119,6 +152,8 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
   }
 
   override def boundSyms(e: Any): List[Sym[Any]] = e match {
+    case StaticLambda(f, x, y) => syms(x) ::: effectSyms(y)
+    case NamedLambdaMain(f, x, y) => syms(x) ::: effectSyms(y)
     case NamedLambdaInput(_, _, f, x, y) => syms(x) ::: effectSyms(y)
     case NamedLambdaOutput(_, _, f, x, y) => syms(x) ::: effectSyms(y)
     case NamedLambdaEntry(_, _, f, x, y) => syms(x) ::: effectSyms(y)
@@ -127,6 +162,8 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
   }
 
   override def symsFreq(e: Any): List[(Sym[Any], Double)] = e match {
+    case StaticLambda(f, x, y) => freqHot(y)
+    case NamedLambdaMain(f, x, y) => freqHot(y)
     case NamedLambdaInput(_, _, f, x, y) => freqHot(y)
     case NamedLambdaOutput(_, _, f, x, y) => freqHot(y)
     case NamedLambdaEntry(_, _, f, x, y) => freqHot(y)
@@ -136,6 +173,9 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
 }
 
 trait TupledFunctionsExt extends TupledFunctions with FunctionsExt with TupleOpsExt {
+
+  def staticfun0[B:Typ](f: () => Rep[B]): Rep[Unit=>B] =
+    doStaticLambda((t: Rep[Unit]) => f())
 
   def namedfun0[B:Typ](name: String)(f: () => Rep[B]): Rep[Unit=>B] =
     doNamedLambda(name)((t: Rep[Unit]) => f())
@@ -150,6 +190,9 @@ trait TupledFunctionsExt extends TupledFunctions with FunctionsExt with TupleOps
   def namedfun6[A1:Typ,A2:Typ,A3:Typ,A4:Typ,A5:Typ,A6:Typ,B:Typ](name: String)(f: (Rep[A1], Rep[A2],Rep[A3],Rep[A4],Rep[A5],Rep[A6]) => Rep[B]): Rep[((A1,A2,A3,A4,A5,A6))=>B] =
     doNamedLambda(name)((t: Rep[(A1,A2,A3,A4,A5,A6)]) => f(tuple6_get1(t), tuple6_get2(t), tuple6_get3(t), tuple6_get4(t), tuple6_get5(t), tuple6_get6(t)))
 
+  def mainfun(f: () => Rep[Int])(implicit typInt: Typ[Int]): Rep[Unit=>Int] = {
+    doLambdaMain((t: Rep[Unit]) => f())
+  }
   def inputfun[A1:Typ,A2:Typ,B:Typ](moduleName: String, funName: String)(f: (Rep[A1], Rep[A2]) => Rep[B]): Rep[((A1,A2))=>B] =
     doLambdaInput(moduleName, funName)(   (t: Rep[(A1,A2)]) => f(tuple2_get1(t), tuple2_get2(t))   )
   def outputfun[A1:Typ,A2:Typ,B:Typ](moduleName: String, funName: String)(f: (Rep[A1], Rep[A2]) => Rep[B]): Rep[((A1,A2))=>B] =
@@ -170,6 +213,8 @@ trait TupledFunctionsExt extends TupledFunctions with FunctionsExt with TupleOps
 
 trait TupledFunctionsExpExt extends TupledFunctionsExp with TupledFunctionsExt with FunctionsExpExt {
   override def boundSyms(e: Any): List[Sym[Any]] = e match {
+    case StaticLambda(f, UnboxedTuple(xs), y) => xs.flatMap(syms) ::: effectSyms(y)
+    case NamedLambdaMain(f, UnboxedTuple(xs), y) => xs.flatMap(syms) ::: effectSyms(y)
     case NamedLambdaInput(_,_, f, UnboxedTuple(xs), y) => xs.flatMap(syms) ::: effectSyms(y)
     case NamedLambdaOutput(_,_, f, UnboxedTuple(xs), y) => xs.flatMap(syms) ::: effectSyms(y)
     case NamedLambdaEntry(_,_, f, UnboxedTuple(xs), y) => xs.flatMap(syms) ::: effectSyms(y)
@@ -178,6 +223,8 @@ trait TupledFunctionsExpExt extends TupledFunctionsExp with TupledFunctionsExt w
   }
 
   override def mirror[A:Typ](e: Def[A], f: Transformer)(implicit pos: SourceContext): Exp[A] = (e match {
+    case e@StaticLambda(g,UnboxedTuple(xs),y:Block[b]) => toAtom(StaticLambda(f(g),UnboxedTuple(f(xs))(e.mA),f(y))(e.mA,e.mB))(mtype(manifest[A]),implicitly[SourceContext])
+    case e@NamedLambdaMain(g,UnboxedTuple(xs),y:Block[b]) => toAtom(NamedLambdaMain(f(g),UnboxedTuple(f(xs))(e.mA),f(y))(e.mA,e.mB))(mtype(manifest[A]),implicitly[SourceContext])
     case e@NamedLambdaInput(mn, fn, g,UnboxedTuple(xs),y:Block[b]) => toAtom(NamedLambdaInput(mn, fn, f(g),UnboxedTuple(f(xs))(e.mA),f(y))(e.mA,e.mB))(mtype(manifest[A]),implicitly[SourceContext])
     case e@NamedLambdaOutput(mn, fn, g,UnboxedTuple(xs),y:Block[b]) => toAtom(NamedLambdaOutput(mn, fn, f(g),UnboxedTuple(f(xs))(e.mA),f(y))(e.mA,e.mB))(mtype(manifest[A]),implicitly[SourceContext])
     case e@NamedLambdaEntry(mn, fn, g,UnboxedTuple(xs),y:Block[b]) => toAtom(NamedLambdaEntry(mn, fn, f(g),UnboxedTuple(f(xs))(e.mA),f(y))(e.mA,e.mB))(mtype(manifest[A]),implicitly[SourceContext])
@@ -223,6 +270,22 @@ trait CGenFunctionsExt extends CGenFunctions {
   import IR._
 
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
+    case StaticLambda(fun,x,y) =>
+      /*val retType = remap(getBlockResult(y).tp)
+      stream.println("static " + retType+" "+quote(sym)+" (" + remap(x.tp) + " " + quote(x) + ") {")
+      emitBlock(y)
+      val z = getBlockResult(y)
+      if (retType != "void")
+        stream.println("return " + quote(z) + ";")
+      stream.println("};")*/
+    case NamedLambdaMain(fun, x, y) =>
+      /*val retType = remap(getBlockResult(y).tp)
+      stream.println(retType + " " + "main" + "(" + remap(x.tp) + " " + quote(x) + ") {")
+      emitBlock(y)
+      val z = getBlockResult(y)
+      if (retType != "void")
+        stream.println("return " + quote(z) + ";")
+      stream.println("};")*/
     case NamedLambdaInput(_, funname, fun, x, y) =>
       val retType = remap(getBlockResult(y).tp)
       stream.println(retType + " " + quote(sym) + "(" + remap(x.tp) + " " + quote(x) + ") { //" + funname)
@@ -281,6 +344,22 @@ trait CGenTupledFunctionsExt extends CGenFunctionsExt with GenericGenUnboxedTupl
   import IR._
 
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
+    case StaticLambda(fun, UnboxedTuple(xs), y) =>
+      /*val retType = remap(getBlockResult(y).tp)
+      stream.println("static " + retType + " " + quote(sym) + " (" + xs.map(s=>remap(s.tp) + " " + quote(s)).mkString(",") + ") {")
+      emitBlock(y)
+      val z = getBlockResult(y)
+      if (retType != "void")
+        stream.println("return " + quote(z) + ";")
+      stream.println("};")*/
+    case NamedLambdaMain(fun, UnboxedTuple(xs), y) =>
+      /*val retType = remap(getBlockResult(y).tp)
+      stream.println(retType + " " + "main" + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
+      emitBlock(y)
+      val z = getBlockResult(y)
+      if (retType != "void")
+        stream.println("return " + quote(z) + ";")
+      stream.println("};")*/
     case NamedLambdaInput(_, funname, fun, UnboxedTuple(xs), y) =>
       val retType = remap(getBlockResult(y).tp)
       stream.println(retType + " " + quote(sym) + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") { //" + funname)
@@ -339,14 +418,30 @@ trait SMCGenFunctionsExt extends CGenFunctions {
   import IR._
 
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
+    case e@StaticLambda(fun, x, y) =>
+      val retType = remap(getBlockResult(y).tp)
+      stream.println("static " + retType +" "+quote(sym)+" ("+remap(x.tp)+" "+quote(x)+") {")
+      emitBlock(y)
+      val z = getBlockResult(y)
+      if (retType != "void")
+        stream.println("return " + quote(z) + ";")
+      stream.println("}")
+    case NamedLambdaMain(fun, x, y) =>
+      val retType = remap(getBlockResult(y).tp)
+      stream.println(retType + " " + "main" + "(" + remap(x.tp) + " " + quote(x) + ") {")
+      emitBlock(y)
+      val z = getBlockResult(y)
+      if (retType != "void")
+        stream.println("return " + quote(z) + ";")
+      stream.println("};")
     case NamedLambdaInput(name,funname, fun, x, y) =>
       stream.println("SM_INPUT("+ name + "," + quote(sym) + "," + quote(x) +") { //" + funname)
       //stream.println("SM_INPUT("+ name + "," + funname + "," + quote(x) +") {")
       emitBlock(y)
       stream.println("}")
     case NamedLambdaOutput(name,funname, fun, x, y) => //TODO: remove, output with 1 arg should not exist
-      //stream.println("SM_OUTPUT("+ name + "," + quote(sym) + ");")
-      stream.println("SM_OUTPUT("+ name + "," + funname + ");")
+      stream.println("SM_OUTPUT("+ name + "," + quote(sym) + ");")
+      //stream.println("SM_OUTPUT("+ name + "," + funname + ");")
     case NamedLambdaEntry(name, funname, fun, x, y) =>
       val retType = remap(getBlockResult(y).tp)
       //stream.println("SM_ENTRY("+ name + ") " + retType + " " + quote(sym) + "(" + remap(x.tp) + " " + quote(x) + ") {")
@@ -377,8 +472,8 @@ trait SMCGenFunctionsExt extends CGenFunctions {
     case ApplyDecl(fun) =>
     //do nothing - only for effect - used for main fun or top level functions
     case ApplyOut(funName, fun, arg) =>
-      //stream.println(quote(fun) + "((const uint8_t*)&" + quote(arg) + ", sizeof(" + quote(arg) + "));")
-      stream.println(funName + "((const uint8_t*)&" + quote(arg) + ", sizeof(" + quote(arg) + "));")
+      stream.println(quote(fun) + "((const uint8_t*)&" + quote(arg) + ", sizeof(" + quote(arg) + "));")
+      //stream.println(funName + "((const uint8_t*)&" + quote(arg) + ", sizeof(" + quote(arg) + "));")
     case _ => super.emitNode(sym, rhs)
   }
 }
@@ -388,14 +483,30 @@ trait SMCGenTupledFunctionsExt extends SMCGenFunctionsExt with GenericGenUnboxed
   import IR._
 
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
+    case StaticLambda(fun, UnboxedTuple(xs), y) =>
+      val retType = remap(getBlockResult(y).tp)
+      stream.println("static " + retType+" "+quote(sym)+" ("+xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",")+") {")
+      emitBlock(y)
+      val z = getBlockResult(y)
+      if (retType != "void")
+        stream.println("return " + quote(z) + ";")
+      stream.println("}")
+    case NamedLambdaMain(fun, UnboxedTuple(xs), y) =>
+      val retType = remap(getBlockResult(y).tp)
+      stream.println(retType + " " + "main" + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
+      emitBlock(y)
+      val z = getBlockResult(y)
+      if (retType != "void")
+        stream.println("return " + quote(z) + ";")
+      stream.println("};")
     case NamedLambdaInput(name, funname, fun, UnboxedTuple(xs), y) =>
       stream.println("SM_INPUT("+ name + "," + quote(sym) + "," +xs.map(s=>quote(s)).mkString(",")+") { //" + funname)
       //stream.println("SM_INPUT("+ name + "," + funname + "," +xs.map(s=>quote(s)).mkString(",")+") {")
       emitBlock(y)
       stream.println("}")
     case NamedLambdaOutput(name, funname, fun, UnboxedTuple(xs), y) =>
-      //stream.println("SM_OUTPUT("+ name + "," + quote(sym) + ");")
-      stream.println("SM_OUTPUT("+ name + "," + funname + ");")
+      stream.println("SM_OUTPUT("+ name + "," + quote(sym) + ");")
+      //stream.println("SM_OUTPUT("+ name + "," + funname + ");")
     case NamedLambdaEntry(name, funname, fun, UnboxedTuple(xs), y) =>
       val retType = remap(getBlockResult(y).tp)
       //stream.println("SM_ENTRY("+ name + ") " + retType + " " + quote(sym) + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
