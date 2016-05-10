@@ -120,13 +120,30 @@ trait SMCGenModules extends CGenEffect with SMCLikeCodeGen {
     )
     case Headers() =>
       stream.println(
-        "#include <sancus/sm_support.h>\n" +
-        "#include <msp430.h>\n" +
-        "\n" +
-        "#include \"reactive.h\"\n" +
-        "#include \"uart.h\"\n" +
-        "#include \"string.h\"\n"+
-        "#include <stdbool.h>\n"
+        "#include <sancus/sm_support.h>\n\n" +
+          "#include <sancus_support/uart.h>\n" +
+          "#include <sancus_support/pmodcls.h>\n" +
+          "#include <sancus_support/sm_control.h>\n\n" +
+          "#include <msp430.h>\n\n" +
+          "#include \"reactive.h\"\n" +
+          "#include \"buttons.h\"\n" +
+          "#include \"string.h\"\n" +
+          "#include <stdbool.h>\n\n" +
+          "static int lcd_printf(const char* fmt, ...)\n" +
+          "{\n  " +
+          "va_list va;\n  " +
+          "va_start(va, fmt);\n  " +
+          "int result = vuprintf(pmodcls_putchar, fmt, va);\n  " +
+          "va_end(va);\n  return result;\n" +
+          "}\n\n" +
+          "static void __attribute__((noinline)) lcd_printf_int(const char* fmt, int i)\n" +
+          "{\n  " +
+          "lcd_printf(fmt, i);\n" +
+          "}\n\n" +
+          "static void __attribute__((noinline)) printf_int(const char* fmt, int i)\n" +
+          "{\n" +
+          "  printf(fmt, i);\n" +
+          "}\n"
       )
     case _ => super.emitNode(sym, rhs)
   }
