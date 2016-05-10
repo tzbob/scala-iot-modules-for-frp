@@ -65,6 +65,13 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
 
   }
 
+  import Buttons._
+  override def ButtonEvent(b: Button)(implicit n: ModuleName): Event[Int] = {
+    val input = ConcreteInputEvent[Int]()
+    registerButton(b, input)
+    input
+  }
+
   override def TimerEvent(i: Rep[Int])(implicit n: ModuleName) = ConcreteInputEvent[Int]( )  // only conceptual
   override def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit mn: ModuleName) = {
     val externalInputID = Node.informNextId

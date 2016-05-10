@@ -50,6 +50,28 @@ trait Counter2App extends FRPDSLApplication {
 
 }
 
+trait Counter3App extends FRPDSLApplication {
+
+  override def createApplication: List[Module[_]] = {
+    val mod1 = createModule[Int] { implicit n: ModuleName =>
+      val input1 = ButtonEvent(Buttons.button1)
+      val input2 = ButtonEvent(Buttons.button2)
+      val negate2 = input2.map( (i: Rep[Int]) => 0-i)
+      val merged =
+        input1.merge(negate2, (x:Rep[Int],y:Rep[Int]) => x + y)
+      val filtered =
+        merged.filter( x => Math.abs(x) < 10)
+      val counter =
+        filtered.foldp((x:Rep[Int], state:Rep[Int])=>state + x, 0)
+      Some(out("counterOut", counter.changes()))
+
+    }
+
+    mod1::Nil
+  }
+
+}
+
 import OutputGenerator.withOutFile
 
 object CounterAppRunner {
@@ -68,6 +90,11 @@ object CounterAppRunner {
     withOutFile("Counter2App.c") {
       System.err.println("Counter2App:")
       (new Counter2App with CFRPDSLApplicationRunner).run
+    }
+
+    withOutFile("Counter3App.c") {
+      System.err.println("Counter3App:")
+      (new Counter3App with SMCFRPDSLApplicationRunner).run
     }
 
   }

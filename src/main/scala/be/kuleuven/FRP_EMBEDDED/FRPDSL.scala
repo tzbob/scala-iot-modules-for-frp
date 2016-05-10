@@ -7,7 +7,6 @@ trait FRPDSL extends EventOps with BehaviorOps {
     val output: OutputEvent[A]
   }
 
-  def generateModule(module: Module[_]): Unit
 }
 
 trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
@@ -31,14 +30,16 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
   def buildProgram(modList: List[Module[_]]): () => Rep[Unit] = {
     () => {
       headers()
-      for (module <- modList) {
+      val list = for (module <- modList) yield {
         generateModule(module)
       }
-      generateExtras(modList)
+      val inputToToplevel = list.flatten
+      //inputToToplevel.foreach( x => System.err.println(x._1))
+      generateExtras(modList, inputToToplevel)
     }
   }
 
-  override def generateModule(module: Module[_]): Unit = {
+  def generateModule(module: Module[_]): Map[NodeID,Rep[((Ptr[Byte],Int))=>Unit]] = {
     // generate per level
     System.err.println("max level : " + getMaxLevel)
     for (i <- 0 to getMaxLevel) {
@@ -69,7 +70,9 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
 
   def generateGlobalFRPInits(module: Module[_]): Unit
 
-  def generateTopFunctions(module: Module[_], initModule: Rep[(Unit) => Unit]): Unit = {
+  def generateTopFunctions(module: Module[_], initModule: Rep[(Unit) => Unit]): Map[NodeID,Rep[((Ptr[Byte],Int))=>Unit]] = {
+
+    val inputToTopMap: scala.collection.mutable.Map[NodeID,Rep[((Ptr[Byte],Int))=>Unit]] = scala.collection.mutable.HashMap()
 
     //get all input events
     val inputs = getInputEventNodes
@@ -78,12 +81,15 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
     // generate top functions
     for( ie <- modinputs) {
       System.err.println("Generate dependencies of inputnode " + ie.id)
-      generateTopFunction(ie, initModule, module)
+      val toplevelfun = generateTopFunction(ie, initModule, module)
+      inputToTopMap += ((ie.id, toplevelfun))
     }
     System.err.println("End of generateModule")
+
+    inputToTopMap.toMap
   }
 
-  def generateTopFunction[X](input: InputEvent[X], initModule: => Rep[(Unit)=>Unit], m: Module[_]): Unit = {
+  def generateTopFunction[X](input: InputEvent[X], initModule: => Rep[(Unit)=>Unit], m: Module[_]): Rep[((Ptr[Byte],Int))=>Unit] = {
     System.err.println("top" + input.id)
 
     val descendantIDs = getDecendantNodeIDs(input).filter(id => id != input.id)
@@ -100,9 +106,9 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
       case coe @ AOutputEvent(_) => System.err.println("Output for: " + coe.parent.id)
       case _ => System.err.println("No outputs for this module")
     }
-    val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName == input.moduleName)
+    //val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName == input.moduleName)
 
-    val top = inputfun(input.moduleName.str, "top"+input.id) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
+    val top: Rep[((Ptr[Byte],Int))=>Unit] = inputfun(input.moduleName.str, "top"+input.id) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
       //if(behaviorsInModule.size > 0) initModule()
       initModule()
 
@@ -120,13 +126,16 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
       unitToRepUnit( () )
     }
     doApplyDecl(top)
+    top
   }
 
-  def generateExtras(modlist: List[Module[_]]): Unit = {
+  def generateExtras(modlist: List[Module[_]], inputToToplevel: List[(NodeID, Rep[((Ptr[Byte], Int)) => Unit])]): Unit = {
 
     for( mod <- modlist) {
       declare_module(mod.name.str)
     }
+
+    generateButtonFunctions(inputToToplevel)
 
     //globalInitFun()
 
@@ -134,6 +143,28 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
     //deployFun(modNames, getOutInList)
 
     //mainFun()
+  }
+
+  def generateButtonFunctions(inputToToplevel: List[(NodeID, Rep[((Ptr[Byte], Int)) => Unit])]): Unit = {
+    for( (bId,inputset) <- getButtonsRegister) {
+
+      val f: Rep[(Int) => Unit] = fun { (pressed: Rep[Int]) =>
+        if(rep_asinstanceof(pressed, typ[Int], typ[Boolean])) {
+          for(input <- inputset) {
+            val buttonId: Rep[Int] = var_new(bId)
+            val in: Rep[Byte] = rep_asinstanceof(buttonId, typ[Int], typ[Byte])
+            val inptr = ptr_new(in)
+
+            val resultInput = inputToToplevel.filter{ case (inputID, _) => inputID == input.id }
+            assert(resultInput.length == 1)
+            resultInput(0)._2(inptr,1) // call the top function from the button function
+          }
+        }
+        unitToRepUnit( () )
+      }
+
+      doApplyDecl(f)
+    }
   }
 }
 

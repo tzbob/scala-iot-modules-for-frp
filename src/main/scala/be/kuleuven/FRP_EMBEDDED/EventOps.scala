@@ -29,6 +29,16 @@ trait EventOps extends NodeOps {
       )(implicit n: ModuleName): Behavior[C]
   }
 
+  object Buttons extends Enumeration {
+    type Button = Value
+    val button1 = Value(1)
+    val button2 = Value(2)
+    val button3 = Value(3)
+    val button4 = Value(4)
+  }
+
+  import Buttons._
+  def ButtonEvent(b: Button)(implicit n: ModuleName): Event[Int]
   def TimerEvent(i: Rep[Int])(implicit n: ModuleName)/*(implicit tI:Typ[Int])*/: Event[Int]
   def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit n: ModuleName): Event[A] // oe possibly null (!)
 
@@ -40,6 +50,17 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
   behavior: BehaviorOps =>
 
   private val outInList = scala.collection.mutable.ListBuffer.empty[(String, String, String, String)]
+  private val buttonsRegister: scala.collection.mutable.Map[Int,Set[InputEvent[_]]] = scala.collection.mutable.HashMap()
+
+  def getButtonsRegister: Map[Int, Set[InputEvent[_]]] = buttonsRegister.toMap
+  import Buttons._
+  def registerButton(b: Button, inputEvent: InputEvent[_]): Unit = {
+    val button:Option[Set[InputEvent[_]]] = buttonsRegister.get(b.id)
+    button match {
+      case Some(set) => buttonsRegister.update(b.id, set + inputEvent )
+      case None => buttonsRegister += ((b.id, HashSet(inputEvent)))
+    }
+  }
 
   def getOutInList: List[(String,String,String,String)] = outInList.toList
   def addToOutInList(oe: OutputEvent[_], inputModName: String, inputID: NodeID): Unit = {
