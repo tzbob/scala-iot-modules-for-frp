@@ -73,31 +73,6 @@ trait Counter3App extends FRPDSLApplication {
 
 }
 
-trait TestApp extends FRPDSLApplication {
-
-  override def createApplication: List[Module[_]] = {
-    val mod1 = createModule[Int] { implicit n: ModuleName =>
-      val inc = TimerEvent(5)
-      val inc1 = inc.constant(1)
-      val incdecValue = inc1.foldp( (x,state:Rep[Int]) => state + x, 0)
-
-      val plus = TimerEvent(5)
-      val snapPlus = incdecValue.snapshot(plus)
-
-      val filtered =
-        snapPlus.filter( x => Math.abs(x) < 10)
-      val counter =
-        filtered.foldp((x:Rep[Int], state:Rep[Int])=>state + x, 0)
-      //val printed = counter.changes.printIntLCD( (x:Rep[Int]) => x )
-      Some(out("counterOut", counter.changes()))
-
-    }
-
-    mod1::Nil
-  }
-
-}
-
 trait Counter4App extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
@@ -123,8 +98,8 @@ trait Counter4App extends FRPDSLApplication {
         merged.filter( x => Math.abs(x) < 10)
       val counter =
         filtered.foldp((x:Rep[Int], state:Rep[Int])=>state + x, 0)
-      //val printed = counter.changes.printIntLCD( (x:Rep[Int]) => x )
-      Some(out("counterOut", counter.changes()))
+      val printed = counter.changes.printIntLCD( (x:Rep[Int]) => x )
+      Some(out("counterOut", printed))
 
     }
 
@@ -158,15 +133,9 @@ object CounterAppRunner {
       (new Counter3App with SMCFRPDSLApplicationRunner).run
     }
 
-    /*
-    withOutFile("TestApp.c") {
-      System.err.println("TestApp:")
-      (new TestApp with CFRPDSLApplicationRunner).run
-    }*/
-
-    /*withOutFile("Counter4App.c") {
+    withOutFile("Counter4App.c") {
       System.err.println("Counter4App:")
       (new Counter4App with SMCFRPDSLApplicationRunner).run
-    }*/
+    }
   }
 }
