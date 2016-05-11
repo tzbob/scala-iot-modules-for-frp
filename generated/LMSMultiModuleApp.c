@@ -239,7 +239,7 @@ static void x217 () {
   buttons_init();
   asm("eint");
 }
-static void x222 () {
+static void x221 () {
   //DEPLOY FUNCTION
   sancus_enable(&mod1);
   sm_register_existing(&mod1);  sancus_enable(&mod2);
@@ -249,7 +249,7 @@ static void x222 () {
 int main() {
 x217();
 puts("main started");
-x222();
+x221();
 return 0;
 };
 /*****************************************

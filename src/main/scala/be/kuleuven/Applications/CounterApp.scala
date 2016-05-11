@@ -63,6 +63,67 @@ trait Counter3App extends FRPDSLApplication {
         merged.filter( x => Math.abs(x) < 10)
       val counter =
         filtered.foldp((x:Rep[Int], state:Rep[Int])=>state + x, 0)
+      val printed = counter.changes.printIntLCD( (x:Rep[Int]) => x )
+      Some(out("counterOut", printed))
+
+    }
+
+    mod1::Nil
+  }
+
+}
+
+trait TestApp extends FRPDSLApplication {
+
+  override def createApplication: List[Module[_]] = {
+    val mod1 = createModule[Int] { implicit n: ModuleName =>
+      val inc = TimerEvent(5)
+      val inc1 = inc.constant(1)
+      val incdecValue = inc1.foldp( (x,state:Rep[Int]) => state + x, 0)
+
+      val plus = TimerEvent(5)
+      val snapPlus = incdecValue.snapshot(plus)
+
+      val filtered =
+        snapPlus.filter( x => Math.abs(x) < 10)
+      val counter =
+        filtered.foldp((x:Rep[Int], state:Rep[Int])=>state + x, 0)
+      //val printed = counter.changes.printIntLCD( (x:Rep[Int]) => x )
+      Some(out("counterOut", counter.changes()))
+
+    }
+
+    mod1::Nil
+  }
+
+}
+
+trait Counter4App extends FRPDSLApplication {
+
+  override def createApplication: List[Module[_]] = {
+    val mod1 = createModule[Int] { implicit n: ModuleName =>
+      val inc = ButtonEvent(Buttons.button3)
+      val inc1 = inc.constant(1)
+      val dec = ButtonEvent(Buttons.button4)
+      val dec1 = dec.constant(-1)
+      val mergeIncDec = inc1.merge(dec1, (x,y)=>x+y)
+      val incdecValue = mergeIncDec.foldp( (x,state:Rep[Int]) => state + x, 0)
+
+      val plus = ButtonEvent(Buttons.button1)
+      val snapPlus = incdecValue.snapshot(plus)
+
+      val min = ButtonEvent(Buttons.button2)
+      val snapMin = incdecValue.snapshot(min)
+
+
+      val negate2 = snapMin.map( (i: Rep[Int]) => 0-i)
+      val merged =
+        snapPlus.merge(negate2, (x:Rep[Int],y:Rep[Int]) => x + y)
+      val filtered =
+        merged.filter( x => Math.abs(x) < 10)
+      val counter =
+        filtered.foldp((x:Rep[Int], state:Rep[Int])=>state + x, 0)
+      //val printed = counter.changes.printIntLCD( (x:Rep[Int]) => x )
       Some(out("counterOut", counter.changes()))
 
     }
@@ -97,5 +158,15 @@ object CounterAppRunner {
       (new Counter3App with SMCFRPDSLApplicationRunner).run
     }
 
+    /*
+    withOutFile("TestApp.c") {
+      System.err.println("TestApp:")
+      (new TestApp with CFRPDSLApplicationRunner).run
+    }*/
+
+    /*withOutFile("Counter4App.c") {
+      System.err.println("Counter4App:")
+      (new Counter4App with SMCFRPDSLApplicationRunner).run
+    }*/
   }
 }

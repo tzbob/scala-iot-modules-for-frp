@@ -34,7 +34,7 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
         generateModule(module)
       }
       val inputToToplevel = list.flatten
-      //inputToToplevel.foreach( x => System.err.println(x._1))
+
       generateExtras(modList, inputToToplevel)
     }
   }
@@ -141,7 +141,7 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
       systemInits()
       unitToRepUnit( () )
     }
-    doApplyDecl(init)
+    //doApplyDecl(init)
 
     val modNames = modlist.map{ m => m.name.toString()}
     //deployFun(modNames, getOutInList)
@@ -160,7 +160,7 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
 
       unitToRepUnit( () )
     }
-    doApplyDecl(deploy)
+    //doApplyDecl(deploy)
 
     val main = mainfun { () =>
       init( () )

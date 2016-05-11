@@ -25,6 +25,7 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
       case en @ ConcreteChangesEvent(_) => Some(en)
       case en @ ConcreteSnapshotEvent(_,_) => Some(en)
       case en @ ConcreteInputEvent( ) => Some(en)
+      case en @ ConcretePrintIntLCDEvent(_,_) => Some(en)
       case _ => None
     }
   }
@@ -38,6 +39,7 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
       case en @ ConcreteChangesEvent(_) => en
       case en @ ConcreteSnapshotEvent(_,_) => en
       case en @ ConcreteInputEvent( ) => en
+      case en @ ConcretePrintIntLCDEvent(_,_) => en
       case _ => throw new Exception("Event without Implementation")
     }
   }
@@ -172,6 +174,29 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
 
   }
 
+  case class ConcretePrintIntLCDEvent[A](parent: EventImpl[A], f: Rep[A] => Rep[Int])(implicit tA: Typ[A], mn: ModuleName)
+    extends PrintIntLCD[A](parent, f) with EventImpl[A] {
+
+    override val impl = new ImplWrapper()
+    lazy val parentvalue: Rep[In] = readVar(parent.getValue)
+    lazy val parentfired: Rep[Boolean] = readVar(parent.getFired)
+    lazy val eventfun: Rep[(Unit)=>Unit] = {
+      namedfun0 (mn.str) { () =>
+        if(parentfired) {
+          var_assign(fired, unit(true))
+          var_assign[In](value, parentvalue)
+          val intToPrint = f(parentvalue)
+          printIntToLCD(intToPrint)
+        } else {
+          var_assign(fired, unit(false))
+        }
+      }
+    }
+    override def produceFunction() = eventfun
+    override def useFunction() = eventfun( () )
+
+  }
+
   case class ConcreteMergeEvent[A](parents: (EventImpl[A],EventImpl[A]), f: (Rep[A],Rep[A])=>Rep[A] )(implicit tA:Typ[A], mn: ModuleName)
     extends MergeEvent[A](parents,f) with EventImpl[A] {
 
@@ -266,6 +291,7 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
       implicit val tOut = typOut
       ConcreteFoldp2Behavior[A,B,C](this, e, f1,f2,f3, init)(typOut, tB, tC, n)
     }
+    override def printIntLCD(f: Rep[A]=>Rep[Int])(implicit n: ModuleName): Event[A] = ConcretePrintIntLCDEvent(this,f)
 
     addNodeToNodemap(id,this)
     override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()

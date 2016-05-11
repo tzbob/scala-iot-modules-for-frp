@@ -12,6 +12,8 @@ trait Modules extends Base {
   def eventLoop(): Rep[Unit]
   def headers(): Rep[Unit]
 
+  def printIntToLCD(i: Rep[Int]): Rep[Unit]
+
 }
 
 trait ModulesExp extends Modules with ExpressionsExt with EffectExp {
@@ -23,6 +25,12 @@ trait ModulesExp extends Modules with ExpressionsExt with EffectExp {
   case class RegisterButton(id:Int, cb: Rep[(Int)=>Unit]) extends Def[Unit]
   case class EventLoop() extends Def[Unit]
   case class Headers() extends Def[Unit]
+  case class PrintIntLCD(i: Rep[Int]) extends Def[Unit]
+
+  override def printIntToLCD(i: Rep[Int]): Rep[Unit] = {
+    reflectEffect(new PrintIntLCD(i))
+    Const()
+  }
 
   override def declare_module(n: String): Rep[Unit] = {
     reflectEffect(new ModuleDecl(n))
@@ -81,6 +89,7 @@ trait CGenModules extends CGenEffect with SMCLikeCodeGen {
         "#include <math.h>\n" +
         "#include <stdbool.h>\n"
       )
+    case PrintIntLCD(i) => stream.println("printf(\"%d \", " + quote(i) + ");")
     case _ => super.emitNode(sym, rhs)
   }
 }
@@ -144,6 +153,7 @@ trait SMCGenModules extends CGenEffect with SMCLikeCodeGen {
           "  printf(fmt, i);\n" +
           "}\n"
       )
+    case PrintIntLCD(i) => stream.println("lcd_printf_int(\"%d \", " + quote(i) + ");")
     case _ => super.emitNode(sym, rhs)
   }
 }
