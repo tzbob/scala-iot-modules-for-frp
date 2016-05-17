@@ -11,6 +11,8 @@ trait Modules extends Base {
   def registerButton(id: Int, cb: Rep[(Int)=>Unit]): Rep[Unit]
   def eventLoop(): Rep[Unit]
   def headers(): Rep[Unit]
+  def enableInterrupts(): Rep[Unit]
+  def disableInterrupts(): Rep[Unit]
 
   def printIntToLCD(i: Rep[Int]): Rep[Unit]
 
@@ -26,6 +28,8 @@ trait ModulesExp extends Modules with ExpressionsExt with EffectExp {
   case class EventLoop() extends Def[Unit]
   case class Headers() extends Def[Unit]
   case class PrintIntLCD(i: Rep[Int]) extends Def[Unit]
+  case class DisInts() extends Def[Unit]
+  case class EnInts() extends Def[Unit]
 
   override def printIntToLCD(i: Rep[Int]): Rep[Unit] = {
     reflectEffect(new PrintIntLCD(i))
@@ -66,6 +70,16 @@ trait ModulesExp extends Modules with ExpressionsExt with EffectExp {
     reflectEffect(new Headers())
     Const()
   }
+
+  override def enableInterrupts(): Rep[Unit] = {
+    reflectEffect(new EnInts())
+    Const()
+  }
+
+  override def disableInterrupts(): Rep[Unit] = {
+    reflectEffect(new DisInts())
+    Const()
+  }
 }
 
 
@@ -90,6 +104,8 @@ trait CGenModules extends CGenEffect with SMCLikeCodeGen {
         "#include <stdbool.h>\n"
       )
     case PrintIntLCD(i) => stream.println("printf(\"%d \", " + quote(i) + ");")
+    case EnInts() => // nothing
+    case DisInts() => // nothing
     case _ => super.emitNode(sym, rhs)
   }
 }
@@ -154,6 +170,8 @@ trait SMCGenModules extends CGenEffect with SMCLikeCodeGen {
           "}\n"
       )
     case PrintIntLCD(i) => stream.println("lcd_printf_int(\"%d \", " + quote(i) + ");")
+    case EnInts() => stream.println("asm(\"eint\");\n")
+    case DisInts() => stream.println("asm(\"dint\");\n")
     case _ => super.emitNode(sym, rhs)
   }
 }

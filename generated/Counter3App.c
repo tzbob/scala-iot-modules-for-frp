@@ -159,16 +159,18 @@ lcd_printf_int("%d ", x137);
 x133 = false;
 }
 }
-SM_OUTPUT(mod1,x182);
-SM_FUNC(mod1) void x188 () {
-bool x174 = x133;
-if (x174) {
-int x183 = x134;
-x182((const uint8_t*)&x183, sizeof(x183));
+SM_OUTPUT(mod1,x183);
+SM_FUNC(mod1) void x189 () {
+bool x175 = x133;
+if (x175) {
+int x184 = x134;
+x183((const uint8_t*)&x184, sizeof(x184));
 } else {
 }
 }
-SM_INPUT(mod1,x191,x162,x163) { //top1
+SM_INPUT(mod1,x193,x162,x163) { //top1
+asm("dint");
+
 x161();
 uint8_t* x164 = x162;
 int x165 = x163;
@@ -178,7 +180,9 @@ x115();
 x125();
 x132();
 x145();
-x188();
+x189();
+asm("eint");
+
 }
 SM_FUNC(mod1) void x58 (uint8_t* x32,int x33) {
 int x36 = 0;
@@ -216,21 +220,25 @@ x60 = x64;
 x59 = false;
 }
 }
-SM_INPUT(mod1,x208,x193,x194) { //top2
+SM_INPUT(mod1,x212,x195,x196) { //top2
+asm("dint");
+
 x161();
-uint8_t* x195 = x193;
-int x196 = x194;
-x58(x195,x196);
+uint8_t* x197 = x195;
+int x198 = x196;
+x58(x197,x198);
 x71();
 x97();
 x115();
 x125();
 x132();
 x145();
-x188();
+x189();
+asm("eint");
+
 }
 DECLARE_SM(mod1, 0x1234);
-static void x237 () {
+static void x241 () {
   //INIT FUNCTION
   WDTCTL = WDTHOLD | WDTPW;
   uart_init();
@@ -239,40 +247,40 @@ static void x237 () {
   buttons_init();
   asm("eint");
 }
-static void x240 () {
+static void x244 () {
   //DEPLOY FUNCTION
   sancus_enable(&mod1);
   sm_register_existing(&mod1);
 
 }
-static void x222 (int x211) {
-bool x212 = (bool ) x211;
-if (x212) {
-int x213 = 2;
-int x214 = x213;
-uint8_t x215 = (uint8_t ) x214;
-uint8_t* x216 = &x215;
-x208(x216,1);
+static void x226 (int x215) {
+bool x216 = (bool ) x215;
+if (x216) {
+int x217 = 2;
+int x218 = x217;
+uint8_t x219 = (uint8_t ) x218;
+uint8_t* x220 = &x219;
+x212(x220,1);
 } else {
 }
 }
-static void x234 (int x223) {
-bool x224 = (bool ) x223;
-if (x224) {
-int x225 = 1;
-int x226 = x225;
-uint8_t x227 = (uint8_t ) x226;
-uint8_t* x228 = &x227;
-x191(x228,1);
+static void x238 (int x227) {
+bool x228 = (bool ) x227;
+if (x228) {
+int x229 = 1;
+int x230 = x229;
+uint8_t x231 = (uint8_t ) x230;
+uint8_t* x232 = &x231;
+x193(x232,1);
 } else {
 }
 }
 int main() {
-x237();
+x241();
 puts("main started");
-x240();
-buttons_register_callback(Button2,x222);
-buttons_register_callback(Button1,x234);
+x244();
+buttons_register_callback(Button2,x226);
+buttons_register_callback(Button1,x238);
 while(1)
   buttons_handle_events();
 return 0;

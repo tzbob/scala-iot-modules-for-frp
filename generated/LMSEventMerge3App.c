@@ -124,20 +124,20 @@ x124 = x128;
 x123 = false;
 }
 };
-void x168(uint8_t* x161,int x162) {
-uint8_t* x163 = x161;
-uint8_t x165 = *x163;
-printf("%u\n",x165);
+void x169(uint8_t* x162,int x163) {
+uint8_t* x164 = x162;
+uint8_t x166 = *x164;
+printf("%u\n",x166);
 };
-void x174() {
-bool x160 = x123;
-if (x160) {
-int x169 = x124;
-x168((uint8_t*)&x169, sizeof(x169));
+void x175() {
+bool x161 = x123;
+if (x161) {
+int x170 = x124;
+x169((uint8_t*)&x170, sizeof(x170));
 } else {
 }
 };
-void x177(uint8_t* x150,int x151) { //top1
+void x179(uint8_t* x150,int x151) { //top1
 x149();
 uint8_t* x152 = x150;
 int x153 = x151;
@@ -145,7 +145,7 @@ x29(x152,x153);
 x84();
 x122();
 x135();
-x174();
+x175();
 };
 void x58(uint8_t* x32,int x33) {
 int x36 = 0;
@@ -182,16 +182,16 @@ x86 = 2;
 x85 = false;
 }
 };
-void x192(uint8_t* x179,int x180) { //top2
+void x196(uint8_t* x181,int x182) { //top2
 x149();
-uint8_t* x181 = x179;
-int x182 = x180;
-x58(x181,x182);
+uint8_t* x183 = x181;
+int x184 = x182;
+x58(x183,x184);
 x84();
 x96();
 x122();
 x135();
-x174();
+x175();
 };
 /*****************************************
   End of C Generated Code                  

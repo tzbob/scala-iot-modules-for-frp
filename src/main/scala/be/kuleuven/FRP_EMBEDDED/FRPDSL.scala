@@ -109,6 +109,8 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
     //val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName == input.moduleName)
 
     val top: Rep[((Ptr[Byte],Int))=>Unit] = inputfun(input.moduleName.str, "top"+input.id) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
+      disableInterrupts()
+
       //if(behaviorsInModule.size > 0) initModule()
       initModule()
 
@@ -123,6 +125,7 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
         case _ => // we didn't had an output, it was None
       }
 
+      enableInterrupts()
       unitToRepUnit( () )
     }
     doApplyDecl(top)
