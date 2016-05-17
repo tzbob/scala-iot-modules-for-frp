@@ -245,8 +245,10 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
     // Important! This nodes is only tied to the chain of the event parent
     // This is made explicit in buildGraphTopDown function
     // BUT !!!!!
-    // Since it does depend on the behavior, it needs to be leveled after the behavior level!!!
-    override val level = parentBeh.level + 1
+    // Since it does also depend on the behavior, it needs to be leveled after the the max level of both!!!
+    // this is actually a level for generation
+    // a difference can be made between frp level and generation level (important for side effects)
+    override val level = scala.math.max(parentBeh.level, parentEvent.level) + 1 //TODO: genlevel
     override val inputNodeIDs: Set[NodeID] = parentEvent.inputNodeIDs
 
     override def buildGraphTopDown() = {

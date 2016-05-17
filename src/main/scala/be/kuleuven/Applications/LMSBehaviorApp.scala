@@ -78,6 +78,46 @@ trait LMSBehaviorSnapshotApp extends FRPDSLApplication {
   }
 }
 
+trait LMSBehaviorSnapshot2App extends FRPDSLApplication {
+
+  override def createApplication: List[Module[_]] = {
+    createModule[Int] { implicit n:ModuleName =>
+      val t = TimerEvent(10)
+      val fp1 = t.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 0)
+
+      val t2 = TimerEvent(5)
+      val c2 = t2.constant(1)
+      val c3 = c2.constant(2)
+      val c4 = c3.constant(3) // a long event side
+
+      val ss = fp1.snapshot(c4)
+
+      val fp2 = ss.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 0)
+      Some(out("out", fp2.changes()))
+    }::Nil
+  }
+}
+
+trait LMSBehaviorSnapshot3App extends FRPDSLApplication {
+
+  override def createApplication: List[Module[_]] = {
+    createModule[Int] { implicit n:ModuleName =>
+      val t = TimerEvent(10)
+      val c1 = t.constant(1)
+      val c2 = c1.constant(2)
+      val c3 = c2.constant(3) // a long behavior side
+      val fp1 = c3.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 0)
+
+      val t2 = TimerEvent(5)
+
+      val ss = fp1.snapshot(t2)
+
+      val fp2 = ss.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 0)
+      Some(out("out", fp2.changes()))
+    }::Nil
+  }
+}
+
 trait LMSMultiModuleApp extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
@@ -129,6 +169,16 @@ object LMSBehaviorAppRunner {
     withOutFile("LMSBehaviorSnapshotApp.c") {
       System.err.println("BehaviorSnapshotApp:")
       (new LMSBehaviorSnapshotApp with CFRPDSLApplicationRunner).run
+    }
+
+    withOutFile("LMSBehaviorSnapshot2App.c") {
+      System.err.println("BehaviorSnapshot2App:")
+      (new LMSBehaviorSnapshot2App with CFRPDSLApplicationRunner).run
+    }
+
+    withOutFile("LMSBehaviorSnapshot3App.c") {
+      System.err.println("BehaviorSnapshot3App:")
+      (new LMSBehaviorSnapshot3App with CFRPDSLApplicationRunner).run
     }
 
     withOutFile("LMSMultiModuleApp.c") {
