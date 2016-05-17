@@ -412,6 +412,7 @@ static void x442 () {
   //DEPLOY FUNCTION
   sancus_enable(&mod1);
   sm_register_existing(&mod1);
+
 }
 static void x400 (int x389) {
 bool x390 = (bool ) x389;

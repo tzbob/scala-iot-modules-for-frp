@@ -113,7 +113,7 @@ trait SMCGenModules extends CGenEffect with SMCLikeCodeGen {
       strB.append("  //DEPLOY FUNCTION\n")
       for( n <- l ) {
         strB.append("  sancus_enable(&" + n + ");\n")
-        strB.append("  sm_register_existing(&" + n +");")
+        strB.append("  sm_register_existing(&" + n +");\n")
       }
       stream.println(strB.toString())
     }

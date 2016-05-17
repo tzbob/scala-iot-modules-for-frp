@@ -242,8 +242,10 @@ static void x217 () {
 static void x221 () {
   //DEPLOY FUNCTION
   sancus_enable(&mod1);
-  sm_register_existing(&mod1);  sancus_enable(&mod2);
+  sm_register_existing(&mod1);
+  sancus_enable(&mod2);
   sm_register_existing(&mod2);
+
   REACTIVE_CONNECT(mod1, x96, mod2, x211);
 }
 int main() {
