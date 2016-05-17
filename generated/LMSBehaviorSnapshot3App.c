@@ -108,7 +108,7 @@ x95 = x99;
 } else {
 }
 };
-void x165(uint8_t* x151,int x152) { //top1
+void x163(uint8_t* x151,int x152) { //top1
 x150();
 uint8_t* x153 = x151;
 int x154 = x152;
@@ -168,28 +168,28 @@ x127 = true;
 int x130 = x117;
 x128 = x130;
 };
-void x186(uint8_t* x179,int x180) {
-uint8_t* x181 = x179;
-uint8_t x183 = *x181;
-printf("%u\n",x183);
+void x183(uint8_t* x176,int x177) {
+uint8_t* x178 = x176;
+uint8_t x180 = *x178;
+printf("%u\n",x180);
 };
-void x192() {
-bool x178 = x127;
-if (x178) {
-int x187 = x128;
-x186((uint8_t*)&x187, sizeof(x187));
+void x189() {
+bool x175 = x127;
+if (x175) {
+int x184 = x128;
+x183((uint8_t*)&x184, sizeof(x184));
 } else {
 }
 };
-void x196(uint8_t* x167,int x168) { //top6
+void x192(uint8_t* x165,int x166) { //top6
 x150();
-uint8_t* x169 = x167;
-int x170 = x168;
-x58(x169,x170);
+uint8_t* x167 = x165;
+int x168 = x166;
+x58(x167,x168);
 x116();
 x126();
 x133();
-x192();
+x189();
 };
 /*****************************************
   End of C Generated Code                  

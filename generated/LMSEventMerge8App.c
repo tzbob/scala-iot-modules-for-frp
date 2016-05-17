@@ -248,20 +248,20 @@ x204 = x209;
 x203 = false;
 }
 };
-void x264(uint8_t* x257,int x258) {
-uint8_t* x259 = x257;
-uint8_t x261 = *x259;
-printf("%u\n",x261);
+void x263(uint8_t* x256,int x257) {
+uint8_t* x258 = x256;
+uint8_t x260 = *x258;
+printf("%u\n",x260);
 };
-void x270() {
-bool x256 = x189;
-if (x256) {
-int x265 = x190;
-x264((uint8_t*)&x265, sizeof(x265));
+void x269() {
+bool x255 = x189;
+if (x255) {
+int x264 = x190;
+x263((uint8_t*)&x264, sizeof(x264));
 } else {
 }
 };
-void x274(uint8_t* x237,int x238) { //top1
+void x272(uint8_t* x237,int x238) { //top1
 x236();
 uint8_t* x239 = x237;
 int x240 = x238;
@@ -277,7 +277,7 @@ x161();
 x188();
 x202();
 x216();
-x270();
+x269();
 };
 /*****************************************
   End of C Generated Code                  

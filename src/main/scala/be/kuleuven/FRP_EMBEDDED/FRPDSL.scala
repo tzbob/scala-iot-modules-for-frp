@@ -109,7 +109,7 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
     //val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName == input.moduleName)
 
     val top: Rep[((Ptr[Byte],Int))=>Unit] = inputfun(input.moduleName.str, "top"+input.id) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
-      disableInterrupts()
+      //disableInterrupts()
 
       //if(behaviorsInModule.size > 0) initModule()
       initModule()
@@ -125,7 +125,7 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
         case _ => // we didn't had an output, it was None
       }
 
-      enableInterrupts()
+      //enableInterrupts()
       unitToRepUnit( () )
     }
     doApplyDecl(top)
@@ -188,7 +188,7 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
     val buttonFunctions = for( (bId,inputset) <- getButtonsRegister) yield {
 
       val f = staticfun { (pressed: Rep[Int]) =>
-        if(rep_asinstanceof(pressed, typ[Int], typ[Boolean])) {
+        if(pressed == 1) {
           for(input <- inputset) {
             val buttonId: Rep[Int] = var_new(bId)
             val in: Rep[Byte] = rep_asinstanceof(buttonId, typ[Int], typ[Byte])
@@ -196,7 +196,7 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
 
             val resultInput = inputToToplevel.filter{ case (inputID, _) => inputID == input.id }
             assert(resultInput.length == 1)
-            resultInput(0)._2(inptr,1) // call the top function from the button function
+            resultInput(0)._2(inptr,sizeof(in)) // call the top function from the button function
           }
         }
         unitToRepUnit( () )

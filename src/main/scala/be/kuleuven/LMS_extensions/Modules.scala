@@ -1,6 +1,7 @@
 package be.kuleuven.LMS_extensions
 
 import scala.lms.common.{CGenEffect, EffectExp, Base}
+import scala.reflect.SourceContext
 
 trait Modules extends Base {
 
@@ -13,6 +14,7 @@ trait Modules extends Base {
   def headers(): Rep[Unit]
   def enableInterrupts(): Rep[Unit]
   def disableInterrupts(): Rep[Unit]
+  def sizeof(s: Rep[_])(implicit pos: SourceContext, tIn:Typ[Int]): Rep[Int]
 
   def printIntToLCD(i: Rep[Int]): Rep[Unit]
 
@@ -30,23 +32,24 @@ trait ModulesExp extends Modules with ExpressionsExt with EffectExp {
   case class PrintIntLCD(i: Rep[Int]) extends Def[Unit]
   case class DisInts() extends Def[Unit]
   case class EnInts() extends Def[Unit]
+  case class Sizeof(s:Exp[_]) extends Def[Int]
 
-  override def printIntToLCD(i: Rep[Int]): Rep[Unit] = {
+  override def printIntToLCD(i: Rep[Int]): Exp[Unit] = {
     reflectEffect(new PrintIntLCD(i))
     Const()
   }
 
-  override def declare_module(n: String): Rep[Unit] = {
+  override def declare_module(n: String): Exp[Unit] = {
     reflectEffect(new ModuleDecl(n))
     Const()
   }
 
-  override def systemInits(): Rep[Unit] = {
+  override def systemInits(): Exp[Unit] = {
     reflectEffect(new GlobalInit())
     Const()
   }
 
-  override def moduleDeploy(modNames: List[String]): Rep[Unit] = {
+  override def moduleDeploy(modNames: List[String]): Exp[Unit] = {
     reflectEffect(new ModuleDeploy(modNames))
     Const()
   }
@@ -56,29 +59,33 @@ trait ModulesExp extends Modules with ExpressionsExt with EffectExp {
     Const()
   }
 
-  override def registerButton(id: Int, cb: Rep[(Int)=>Unit]): Rep[Unit] = {
+  override def registerButton(id: Int, cb: Exp[(Int)=>Unit]): Exp[Unit] = {
     reflectEffect(new RegisterButton(id,cb))
     Const()
   }
 
-  override def eventLoop(): Rep[Unit] = {
+  override def eventLoop(): Exp[Unit] = {
     reflectEffect(new EventLoop())
     Const()
   }
 
-  override def headers(): Rep[Unit] = {
+  override def headers(): Exp[Unit] = {
     reflectEffect(new Headers())
     Const()
   }
 
-  override def enableInterrupts(): Rep[Unit] = {
+  override def enableInterrupts(): Exp[Unit] = {
     reflectEffect(new EnInts())
     Const()
   }
 
-  override def disableInterrupts(): Rep[Unit] = {
+  override def disableInterrupts(): Exp[Unit] = {
     reflectEffect(new DisInts())
     Const()
+  }
+
+  override def sizeof(s: Exp[_])(implicit pos: SourceContext, tIn: Typ[Int]): Exp[Int] = {
+    reflectEffect(Sizeof(s))
   }
 }
 
@@ -106,6 +113,7 @@ trait CGenModules extends CGenEffect with SMCLikeCodeGen {
     case PrintIntLCD(i) => stream.println("printf(\"%d \", " + quote(i) + ");")
     case EnInts() => // nothing
     case DisInts() => // nothing
+    case Sizeof(s) => stream.println("size_t " + quote(sym) +  " = sizeof(" + quote(s) + ");")
     case _ => super.emitNode(sym, rhs)
   }
 }
@@ -172,6 +180,7 @@ trait SMCGenModules extends CGenEffect with SMCLikeCodeGen {
     case PrintIntLCD(i) => stream.println("lcd_printf_int(\"%d \", " + quote(i) + ");")
     case EnInts() => stream.println("asm(\"eint\");\n")
     case DisInts() => stream.println("asm(\"dint\");\n")
+    case Sizeof(s) => stream.println("size_t " + quote(sym) +  " = sizeof(" + quote(s) + ");")
     case _ => super.emitNode(sym, rhs)
   }
 }

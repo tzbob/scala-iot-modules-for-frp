@@ -171,20 +171,20 @@ x132 = x136;
 x131 = false;
 }
 };
-void x183(uint8_t* x176,int x177) {
-uint8_t* x178 = x176;
-uint8_t x180 = *x178;
-printf("%u\n",x180);
+void x182(uint8_t* x175,int x176) {
+uint8_t* x177 = x175;
+uint8_t x179 = *x177;
+printf("%u\n",x179);
 };
-void x189() {
-bool x175 = x131;
-if (x175) {
-int x184 = x132;
-x183((uint8_t*)&x184, sizeof(x184));
+void x188() {
+bool x174 = x131;
+if (x174) {
+int x183 = x132;
+x182((uint8_t*)&x183, sizeof(x183));
 } else {
 }
 };
-void x193(uint8_t* x160,int x161) { //top1
+void x191(uint8_t* x160,int x161) { //top1
 x159();
 uint8_t* x162 = x160;
 int x163 = x161;
@@ -196,7 +196,7 @@ x91();
 x104();
 x130();
 x143();
-x189();
+x188();
 };
 /*****************************************
   End of C Generated Code                  
