@@ -22,7 +22,7 @@ trait CFRPDSLOptImpl extends CFRPDSL_Impl with FRPDSLOptImpl
 
 trait CFRPDSLApplicationRunner_Impl extends CFRPDSL_Impl with FRPDSLApplication {
 
-  def run(): Unit = {
+  def compile(): Unit = {
     System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
     System.err.println("Creating flow graph...")
     val modList = createApplication()

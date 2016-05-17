@@ -115,27 +115,27 @@ object CounterAppRunner {
 
     withOutFile("Counter1App.c") {
       System.err.println("Counter1App:")
-      (new Counter1App with CFRPDSLApplicationRunner).run
+      (new Counter1App with CFRPDSLApplicationRunner).compile
     }
 
     withOutFile("Counter1OptApp.c") {
       System.err.println("Counter1OptApp:")
-      (new Counter1App with CFRPDSLOptApplicationRunner).run
+      (new Counter1App with CFRPDSLOptApplicationRunner).compile
     }
 
     withOutFile("Counter2App.c") {
       System.err.println("Counter2App:")
-      (new Counter2App with CFRPDSLApplicationRunner).run
+      (new Counter2App with CFRPDSLApplicationRunner).compile
     }
 
     withOutFile("Counter3App.c") {
       System.err.println("Counter3App:")
-      (new Counter3App with SMCFRPDSLApplicationRunner).run
+      (new Counter3App with SMCFRPDSLApplicationRunner).compile
     }
 
     withOutFile("Counter4App.c") {
       System.err.println("Counter4App:")
-      (new Counter4App with SMCFRPDSLApplicationRunner).run
+      (new Counter4App with SMCFRPDSLApplicationRunner).compile
     }
   }
 }

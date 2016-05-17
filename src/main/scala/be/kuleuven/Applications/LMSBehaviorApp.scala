@@ -148,42 +148,42 @@ object LMSBehaviorAppRunner {
 
     withOutFile("LMSBehaviorStartsWith1App.c") {
       System.err.println("BehaviorStartsWith1App:")
-      (new LMSBehaviorStartsWith1App with CFRPDSLApplicationRunner).run
+      (new LMSBehaviorStartsWith1App with CFRPDSLApplicationRunner).compile
     }
 
     withOutFile("LMSBehaviorFoldp1App.c") {
       System.err.println("BehaviorFoldp1App:")
-      (new LMSBehaviorFoldp1App with CFRPDSLApplicationRunner).run
+      (new LMSBehaviorFoldp1App with CFRPDSLApplicationRunner).compile
     }
 
     withOutFile("LMSBehaviorMap2App.c") {
       System.err.println("BehaviorMap2App:")
-      (new LMSBehaviorMap2App with CFRPDSLApplicationRunner).run
+      (new LMSBehaviorMap2App with CFRPDSLApplicationRunner).compile
     }
 
     withOutFile("LMSBehaviorChangesApp.c") {
       System.err.println("BehaviorChangesApp:")
-      (new LMSBehaviorChangesApp with CFRPDSLApplicationRunner).run
+      (new LMSBehaviorChangesApp with CFRPDSLApplicationRunner).compile
     }
 
     withOutFile("LMSBehaviorSnapshotApp.c") {
       System.err.println("BehaviorSnapshotApp:")
-      (new LMSBehaviorSnapshotApp with CFRPDSLApplicationRunner).run
+      (new LMSBehaviorSnapshotApp with CFRPDSLApplicationRunner).compile
     }
 
     withOutFile("LMSBehaviorSnapshot2App.c") {
       System.err.println("BehaviorSnapshot2App:")
-      (new LMSBehaviorSnapshot2App with CFRPDSLApplicationRunner).run
+      (new LMSBehaviorSnapshot2App with CFRPDSLApplicationRunner).compile
     }
 
     withOutFile("LMSBehaviorSnapshot3App.c") {
       System.err.println("BehaviorSnapshot3App:")
-      (new LMSBehaviorSnapshot3App with CFRPDSLApplicationRunner).run
+      (new LMSBehaviorSnapshot3App with CFRPDSLApplicationRunner).compile
     }
 
     withOutFile("LMSMultiModuleApp.c") {
       System.err.println("MultiModuleApp:")
-      (new LMSMultiModuleApp with SMCFRPDSLApplicationRunner).run
+      (new LMSMultiModuleApp with SMCFRPDSLApplicationRunner).compile
     }
 
   }

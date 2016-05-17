@@ -21,7 +21,7 @@ trait SMCFRPDSLOptImpl extends SMCFRPDSL_Impl with FRPDSLOptImpl
 
 trait SMCFRPDSLApplicationRunner_Impl extends SMCFRPDSL_Impl with FRPDSLApplication {
 
-  def run(): Unit = {
+  def compile(): Unit = {
     System.err.println("%%%%%%%%%%%%%%%%%%%%%%%%%%")
     System.err.println("Creating flow graph...")
     val modList = createApplication
