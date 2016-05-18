@@ -28,7 +28,7 @@ trait EventOps extends NodeOps {
        init: Rep[C]
       )(implicit n: ModuleName): Behavior[C]
 
-    def printIntLCD(f: Rep[A]=>Rep[Int])(implicit n: ModuleName): Event[A]
+    private[FRP_EMBEDDED] def printIntLCD(f: Rep[A]=>Rep[Int])(implicit n: ModuleName): Event[A]
   }
 
   object Buttons extends Enumeration {

@@ -7,6 +7,7 @@ trait FRPDSLApplication extends FRPDSL {
 
   def createApplication(): List[Module[_]]
   def createModule[A] (graphfun: (ModuleName)=>Option[OutputEvent[A]] ): Module[A]
+  def createLCDModule[A] (graphfun: (ModuleName)=>(Event[A],Rep[A]=>Rep[Int]) ): Module[Nothing]
 }
 
 trait FRPDSLApplication_Impl extends FRPDSLApplication {
@@ -32,6 +33,20 @@ trait FRPDSLApplication_Impl extends FRPDSLApplication {
       override val output = out
     }
   }
+
+  override def createLCDModule[A] (graphfun: (ModuleName)=>(Event[A],Rep[A]=>Rep[Int]) ): Module[Nothing] = {
+    val name: String = new String("mod").concat(ModuleNumber.nextid.toString)
+    val mod = new ModuleName(name)
+
+    val (e,f) = graphfun(mod)
+    e.printIntLCD(f)(mod)
+
+    new Module[Nothing] {
+      override val name = mod
+      override val output = null
+    }
+  }
+
 }
 
 trait FRPDSLApplicationRunner extends FRPDSLApplication_Impl with FRPDSLImpl

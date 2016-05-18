@@ -159,16 +159,7 @@ lcd_printf_int("%d ", x137);
 x133 = false;
 }
 }
-SM_OUTPUT(mod1,x182);
-SM_FUNC(mod1) void x188 () {
-bool x174 = x133;
-if (x174) {
-int x183 = x134;
-x182((const uint8_t*)&x183, sizeof(x183));
-} else {
-}
-}
-SM_INPUT(mod1,x191,x162,x163) { //top1
+SM_INPUT(mod1,x175,x162,x163) { //top1
 x161();
 uint8_t* x164 = x162;
 int x165 = x163;
@@ -178,7 +169,6 @@ x115();
 x125();
 x132();
 x145();
-x188();
 }
 SM_FUNC(mod1) void x58 (uint8_t* x32,int x33) {
 int x36 = 0;
@@ -216,21 +206,20 @@ x60 = x64;
 x59 = false;
 }
 }
-SM_INPUT(mod1,x208,x193,x194) { //top2
+SM_INPUT(mod1,x191,x177,x178) { //top2
 x161();
-uint8_t* x195 = x193;
-int x196 = x194;
-x58(x195,x196);
+uint8_t* x179 = x177;
+int x180 = x178;
+x58(x179,x180);
 x71();
 x97();
 x115();
 x125();
 x132();
 x145();
-x188();
 }
 DECLARE_SM(mod1, 0x1234);
-static void x239 () {
+static void x222 () {
   //INIT FUNCTION
   WDTCTL = WDTHOLD | WDTPW;
   uart_init();
@@ -239,42 +228,42 @@ static void x239 () {
   buttons_init();
   asm("eint");
 }
-static void x242 () {
+static void x225 () {
   //DEPLOY FUNCTION
   sancus_enable(&mod1);
   sm_register_existing(&mod1);
 
 }
-static void x223 (int x211) {
-bool x212 = x211 == 1;
-if (x212) {
-int x213 = 2;
-int x214 = x213;
-uint8_t x215 = (uint8_t ) x214;
-uint8_t* x216 = &x215;
-size_t x217 = sizeof(x215);
-x208(x216,x217);
+static void x206 (int x194) {
+bool x195 = x194 == 1;
+if (x195) {
+int x196 = 2;
+int x197 = x196;
+uint8_t x198 = (uint8_t ) x197;
+uint8_t* x199 = &x198;
+size_t x200 = sizeof(x198);
+x191(x199,x200);
 } else {
 }
 }
-static void x236 (int x224) {
-bool x225 = x224 == 1;
-if (x225) {
-int x226 = 1;
-int x227 = x226;
-uint8_t x228 = (uint8_t ) x227;
-uint8_t* x229 = &x228;
-size_t x230 = sizeof(x228);
-x191(x229,x230);
+static void x219 (int x207) {
+bool x208 = x207 == 1;
+if (x208) {
+int x209 = 1;
+int x210 = x209;
+uint8_t x211 = (uint8_t ) x210;
+uint8_t* x212 = &x211;
+size_t x213 = sizeof(x211);
+x175(x212,x213);
 } else {
 }
 }
 int main() {
-x239();
+x222();
 puts("main started");
-x242();
-buttons_register_callback(Button2,x223);
-buttons_register_callback(Button1,x236);
+x225();
+buttons_register_callback(Button2,x206);
+buttons_register_callback(Button1,x219);
 while(1)
   buttons_handle_events();
 return 0;
