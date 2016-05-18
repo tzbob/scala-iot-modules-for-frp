@@ -29,6 +29,8 @@ trait BehaviorOps extends NodeOps {
     // changes: create an event stream that fires an event each time the value of the behavior changes,
     // carrying the new value
     def changes ()(implicit n: ModuleName): Event[A]
+
+    private[FRP_EMBEDDED] def printIntLCD(f: Rep[A]=>Rep[Int])(implicit n: ModuleName): Behavior[Int]
   }
 
   def constantB[A:Typ](value: Rep[A])(implicit n: ModuleName): Behavior[A]
@@ -127,5 +129,19 @@ trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {
     }
 
     System.err.println("Create StartsWithBehavior(ID:" + id + "): " + inputNodeIDs)
+  }
+
+  abstract class PrintIntLCDBehavior[A](parent: Behavior[A], f: Rep[A]=>Rep[Int])(implicit tA: Typ[A], mn: ModuleName) extends Behavior[Int] {
+    override val moduleName = mn
+    override val typOut: Typ[Out] = typ[Int]
+    override val level = parent.level + 1
+    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
+
+    override def buildGraphTopDown() = {
+      parent.addChild(id)
+      parent.buildGraphTopDown()
+    }
+
+    System.err.println("Create printIntLCDBehavior(ID:" + id + "): " + inputNodeIDs)
   }
 }

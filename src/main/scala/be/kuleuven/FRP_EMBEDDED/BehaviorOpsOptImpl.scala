@@ -166,6 +166,28 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
 
   }
 
+  case class ConcretePrintIntLCDBehavior[A](parent: Behavior[A],f: Rep[A]=>Rep[Int])(implicit tA: Typ[A], mn: ModuleName)
+    extends PrintIntLCDBehavior[A](parent,f) with BehaviorOptImpl[Int] {
+
+    lazy val parentvalue: Var[A] = parent.getValue
+    lazy val value = vardeclmod_new[Int](mn.str)
+    override def getValue = value
+    lazy val valueInit = var_assign[Int](value, f(parentvalue))
+    override def getInitializer() = valueInit
+    lazy val behaviorfun: Rep[(Unit)=>Unit] = {
+      namedfun0 (mn.str) { () =>
+        printIntToLCD(f(parentvalue))
+        unitToRepUnit( () )
+      }
+    }
+    override def produceFunction() = behaviorfun
+    override def useFunction() = behaviorfun( () )
+    override def generateNode(): Unit = {
+      //value
+      behaviorfun
+    }
+  }
+
   trait BehaviorOptImpl[A] extends Behavior[A] with NodeImpl[A] {
 
     override def snapshot[B:Typ](e: Event[B])(implicit n: ModuleName): Event[A] = {
@@ -176,6 +198,10 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
     override def map2[B:Typ, C:Typ](b: Behavior[B], f: (Rep[A], Rep[B]) => Rep[C])(implicit n: ModuleName): Behavior[C] = {
       implicit val tOut: Typ[A] = typOut
       ConcreteMap2Behavior((this, b), f)
+    }
+    override def printIntLCD(f: Rep[A]=>Rep[Int])(implicit n: ModuleName): Behavior[Int] = {
+      implicit val tOut: Typ[A] = typOut
+      ConcretePrintIntLCDBehavior(this,f)
     }
     override def genSnapshot[B](e: Event[(A) => B])(implicit n: ModuleName): Event[B] = ???
 
