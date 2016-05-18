@@ -516,8 +516,9 @@ buttons_register_callback(Button2,x449);
 buttons_register_callback(Button4,x462);
 buttons_register_callback(Button1,x475);
 buttons_register_callback(Button3,x488);
-while(1)
+while(1) {
   buttons_handle_events();
+}
 return 0;
 };
 /*****************************************

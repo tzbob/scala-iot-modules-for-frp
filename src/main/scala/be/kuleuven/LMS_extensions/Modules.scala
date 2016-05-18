@@ -10,7 +10,7 @@ trait Modules extends Base {
   def moduleDeploy(modNames: List[String]): Rep[Unit]
   def connectionDeploy(modOut: String, outfun: Rep[_], modIn: String, infun: Rep[_]): Rep[Unit]
   def registerButton(id: Int, cb: Rep[(Int)=>Unit]): Rep[Unit]
-  def eventLoop(): Rep[Unit]
+  def eventLoop(buttonHandler: Boolean, timerHandler: Boolean): Rep[Unit]
   def headers(): Rep[Unit]
   def enableInterrupts(): Rep[Unit]
   def disableInterrupts(): Rep[Unit]
@@ -27,7 +27,7 @@ trait ModulesExp extends Modules with ExpressionsExt with EffectExp {
   case class ModuleDeploy(modNames: List[String]) extends Def[Unit]
   case class ConnectionDeploy(modOut: String, outfun: Exp[_], modIn: String, infun: Exp[_]) extends Def[Unit]
   case class RegisterButton(id:Int, cb: Rep[(Int)=>Unit]) extends Def[Unit]
-  case class EventLoop() extends Def[Unit]
+  case class EventLoop(buttonHandler: Boolean, timerHandler: Boolean) extends Def[Unit]
   case class Headers() extends Def[Unit]
   case class PrintIntLCD(i: Rep[Int]) extends Def[Unit]
   case class DisInts() extends Def[Unit]
@@ -64,8 +64,8 @@ trait ModulesExp extends Modules with ExpressionsExt with EffectExp {
     Const()
   }
 
-  override def eventLoop(): Exp[Unit] = {
-    reflectEffect(new EventLoop())
+  override def eventLoop(buttonHandler: Boolean, timerHandler: Boolean): Exp[Unit] = {
+    reflectEffect(new EventLoop(buttonHandler,timerHandler))
     Const()
   }
 
@@ -100,7 +100,7 @@ trait CGenModules extends CGenEffect with SMCLikeCodeGen {
     case ModuleDeploy(l) => // nothing
     case ConnectionDeploy(a,b,c,d) => // nothing
     case RegisterButton(_,_) => //nothing
-    case EventLoop() => // nothing
+    case EventLoop(bH, tH) => // nothing
     case Headers() =>
       stream.println(
         "#include <stdio.h>\n" +
@@ -143,11 +143,19 @@ trait SMCGenModules extends CGenEffect with SMCLikeCodeGen {
     }
     case ConnectionDeploy(modOut, outfun, modIn, infun) =>
       stream.println("  REACTIVE_CONNECT(" + modOut + ", " + quote(outfun) + ", " + modIn + ", " + quote(infun) + ");")
-    case EventLoop() =>
-      stream.println(
-        "while(1)\n" +
-        "  buttons_handle_events();"
-      )
+    case EventLoop(bH,tH) => {
+      val strB = new StringBuilder
+      strB.append("while(1) {\n")
+      if(bH){
+        strB.append("  buttons_handle_events();\n")
+      }
+      if(tH){
+        strB.append("  timer_handler();\n")
+      }
+      strB.append("}")
+      stream.println(strB.toString())
+    }
+
     case RegisterButton(id, cb) =>
       stream.println("buttons_register_callback(Button" + id + "," +  quote(cb) + ");")
     case Headers() =>

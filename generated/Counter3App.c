@@ -264,8 +264,9 @@ puts("main started");
 x225();
 buttons_register_callback(Button2,x206);
 buttons_register_callback(Button1,x219);
-while(1)
+while(1) {
   buttons_handle_events();
+}
 return 0;
 };
 /*****************************************
