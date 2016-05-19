@@ -72,6 +72,33 @@ trait Counter3App extends FRPDSLApplication {
 
 }
 
+trait Counter3bApp extends FRPDSLApplication {
+
+  override def createApplication: List[Module[_]] = {
+    val mod1 = createModule[Int] { implicit n: ModuleName =>
+      val input1 = ButtonEvent(Buttons.button1)
+      val input2 = ButtonEvent(Buttons.button2)
+      val negate2 = input2.map( (i: Rep[Int]) => 0-i)
+      val merged =
+        input1.merge(negate2, (x:Rep[Int],y:Rep[Int]) => x + y)
+      val filtered =
+        merged.filter( x => Math.abs(x) < 10)
+      val counter =
+        filtered.foldp((x:Rep[Int], state:Rep[Int])=>state + x, 0)
+
+      Some(out("out",counter.changes()))
+    }
+
+    val mod2 = createLCDModule { implicit n: ModuleName =>
+      val input = ExternalEvent(mod1.output)
+      (input, (x:Rep[Int])=>x)
+    }
+
+    mod1::mod2::Nil
+  }
+
+}
+
 trait Counter4App extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
@@ -170,6 +197,11 @@ object CounterAppRunner {
     withOutFile("Counter3App.c") {
       System.err.println("Counter3App:")
       (new Counter3App with SMCFRPDSLApplicationRunner).compile
+    }
+
+    withOutFile("Counter3MultiApp.c") {
+      System.err.println("Counter3MultiApp:")
+      (new Counter3bApp with SMCFRPDSLOptApplicationRunner).compile
     }
 
     withOutFile("Counter4App.c") {
