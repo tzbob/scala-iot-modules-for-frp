@@ -178,7 +178,6 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
       implicit val tOut: Typ[A] = typOut
       ConcretePrintIntLCDBehavior(this,f)
     }
-    override def genSnapshot[B](e: Event[(A) => B])(implicit n: ModuleName): Event[B] = ???
 
     addNodeToNodemap(id,this)
     addBehaviorID(id)
