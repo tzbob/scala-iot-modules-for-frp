@@ -16,10 +16,10 @@ trait CLikeGenArrayOpsExt extends CLikeGenArrayOps {
 
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = {
     rhs match {
-      case ArrayLength(x) => throw new UnsupportedOperationException("Not supported in SMC.")
+      case ArrayLength(x) => throw new UnsupportedOperationException("Not supported in C.")
       case ArrayApply(x,n) => emitValDef(sym, src"$x[$n]")
-      case ArrayUpdate(x,n,y) => stream.println(src"$x.update($n,$y);")
-      case ArraySlice(x,s,e) => throw new UnsupportedOperationException("Not supported in SMC.")
+      case ArrayUpdate(x,n,y) => throw new UnsupportedOperationException("Not supported in C.")
+      case ArraySlice(x,s,e) => throw new UnsupportedOperationException("Not supported in C.")
       case _ => super.emitNode(sym, rhs)
     }
   }
