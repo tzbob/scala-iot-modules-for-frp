@@ -44,7 +44,7 @@ int main() {
 }*/
 
 
-
+/*
 #include "LMSBehaviorSnapshotApp.c"
 int main() {
 	uint8_t data1 = 10;
@@ -61,5 +61,28 @@ int main() {
 	printf("top2\n");
 	printf("behavior disconnected: %d\n",x59);
 	printf("behavior at snapshot: %d\n",x81);
+}*/
+
+
+/*
+#include "LMSBehaviorConstantApp.c"
+int main() {
+	//init_module1();
+	//printf("behavior: %d\n",x47);
+	uint8_t x = 2;
+	x96(&x, sizeof(x)); // out: 5
+	x = 4;
+	x96(&x, sizeof(x)); // out: 7
+}*/
+
+
+
+#include "LMSBehaviorPropagationExampleApp.c"
+int main() {
+	//init_module1();
+	//printf("behavior: %d\n",x47);
+	uint8_t x = 1;
+	x109(&x, sizeof(x)); // out = b: 6
+	x109(&x, sizeof(x)); // out = b: 8
 }
 
