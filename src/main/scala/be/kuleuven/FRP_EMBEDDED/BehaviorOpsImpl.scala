@@ -17,11 +17,8 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
     override def generateNode(): Unit = {
       value
     }
-    override def produceFunction() =
-      throw new IllegalStateException("Not defined on ConstantBehavior") //TODO: implement
-    override def useFunction() =
-      throw new IllegalStateException("Not defined on ConstantBehavior") //TODO: implement
-
+    override def produceFunction() = ()
+    override def useFunction() = ()
   }
 
   case class ConcreteMap2Behavior[A:Typ,B:Typ,C](parents: (Behavior[A],Behavior[B]), f: (Rep[A],Rep[B])=>Rep[C])(implicit tC: Typ[C], mn: ModuleName)

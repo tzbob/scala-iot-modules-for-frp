@@ -49,7 +49,7 @@ trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {
     override val inputNodeIDs: Set[NodeID] = HashSet(this.id)
 
     override def buildGraphTopDown() =
-      throw new IllegalStateException("Not defined on ConstantBehavior") //TODO: implement
+      // nothing to do, no parents
 
     System.err.println("Create ConstantBehavior(ID:" + id + "): " + inputNodeIDs)
   }

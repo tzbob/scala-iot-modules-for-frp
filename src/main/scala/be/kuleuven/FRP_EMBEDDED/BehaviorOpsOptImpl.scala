@@ -31,11 +31,8 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
       value
     }
 
-    override def produceFunction() =
-      throw new IllegalStateException("Not defined on ConstantBehavior") //TODO: implement
-    override def useFunction() = {
-      throw new IllegalStateException("Not defined on ConstantBehavior") //TODO: implement
-    }
+    override def produceFunction() = ()
+    override def useFunction() = ()
 
   }
 
