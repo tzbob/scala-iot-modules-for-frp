@@ -17,7 +17,7 @@ trait LMSFunction1App extends FRPDSLApplication {
   }
 }
 
-import OutputGenerator.withOutFile
+/*import OutputGenerator.withOutFile
 
 object LMSFunctionAppRunner {
 
@@ -30,3 +30,4 @@ object LMSFunctionAppRunner {
     }*/
   }
 }
+*/
