@@ -27,11 +27,10 @@ trait BehaviorOps extends NodeOps {
     // changes: create an event stream that fires an event each time the value of the behavior changes,
     // carrying the new value
     def changes ()(implicit n: ModuleName): Event[A]
-
-    private[FRP_EMBEDDED] def printIntLCD(f: Rep[A]=>Rep[Int])(implicit n: ModuleName): Behavior[Int]
   }
 
   def constantB[A:Typ](value: Rep[A])(implicit n: ModuleName): Behavior[A]
+  private[FRP_EMBEDDED] def printLCD(l: List[(Behavior[Int], String, Int, Int)])(implicit n: ModuleName): Behavior[Nothing] //TODO: Int -> unit
 }
 
 trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {
@@ -129,17 +128,41 @@ trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {
     System.err.println("Create StartsWithBehavior(ID:" + id + "): " + inputNodeIDs)
   }
 
-  abstract class PrintIntLCDBehavior[A](parent: Behavior[A], f: Rep[A]=>Rep[Int])(implicit tA: Typ[A], mn: ModuleName) extends Behavior[Int] {
+  abstract class PrintLCDBehavior( list: List[(Behavior[Int], String, Int, Int)] )(implicit mn: ModuleName) extends Behavior[Nothing] {
     override val moduleName = mn
-    override val typOut: Typ[Out] = typ[Int]
-    override val level = parent.level + 1
-    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
+    override val typOut: Typ[Out] = null
 
-    override def buildGraphTopDown() = {
-      parent.addChild(id)
-      parent.buildGraphTopDown()
+    val parents = for (p <- list) yield { p._1 }
+    val parentlevels = for ( p <- parents) yield { p.level }
+    override val level = parentlevels.max + 1
+
+    def getParentInputnodes(): Set[NodeID] = {
+      val setB = scala.collection.mutable.ListBuffer.empty[NodeID]
+      for (i <- parents) {
+        for( nodeid <- i.inputNodeIDs) setB += nodeid
+      }
+      setB.toSet
     }
 
-    System.err.println("Create printIntLCDBehavior(ID:" + id + "): " + inputNodeIDs)
+    override val inputNodeIDs: Set[NodeID] = getParentInputnodes()
+
+    lazy val behaviorfun: Rep[(Unit)=>Unit] = {
+      namedfun0 (mn.str) { () =>
+        for( (b, label, row, col) <- list ) {
+          val parentvalue = readVar(b.getValue)
+          printToLCD(parentvalue, label, row, col)
+        }
+        unitToRepUnit( () )
+      }
+    }
+
+    override def buildGraphTopDown() = {
+      for( (b,_,_,_) <- list ) {
+        b.addChild(id)
+        b.buildGraphTopDown()
+      }
+    }
+
+    System.err.println("Create printLCDBehavior(ID:" + id + "): " + inputNodeIDs)
   }
 }

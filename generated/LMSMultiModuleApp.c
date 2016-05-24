@@ -17,16 +17,21 @@
 
 static int lcd_printf(const char* fmt, ...)
 {
-  va_list va;
-  va_start(va, fmt);
-  int result = vuprintf(pmodcls_putchar, fmt, va);
-  va_end(va);
+    va_list va;
+    va_start(va, fmt);
+    int result = vuprintf(pmodcls_putchar, fmt, va);
+    va_end(va);
   return result;
 }
 
 static void __attribute__((noinline)) lcd_printf_int(const char* fmt, int i)
 {
-  lcd_printf(fmt, i);
+    lcd_printf(fmt, i);
+}
+
+static void __attribute__((noinline)) lcd_printf_string(char* s)
+{
+    lcd_printf("%s", s);
 }
 
 static void __attribute__((noinline)) printf_int(const char* fmt, int i)

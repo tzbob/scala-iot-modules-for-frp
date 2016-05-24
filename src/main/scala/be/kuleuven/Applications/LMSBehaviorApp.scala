@@ -210,7 +210,7 @@ object LMSBehaviorAppRunner {
 
     withOutFile("LMSBehaviorConstantApp.c") {
       System.err.println("BehaviorConstantApp:")
-      (new LMSBehaviorConstantApp with CFRPDSLApplicationRunner).compile
+      (new LMSBehaviorConstantApp with SMCFRPDSLApplicationRunner).compile
     }
 
     withOutFile("LMSBehaviorPropagationExampleApp.c") {

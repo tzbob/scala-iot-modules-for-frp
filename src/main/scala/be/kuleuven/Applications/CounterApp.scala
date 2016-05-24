@@ -53,7 +53,7 @@ trait Counter2App extends FRPDSLApplication {
 trait Counter3App extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
-    val mod1 = createLCDModule[Int] { implicit n: ModuleName =>
+    val mod1 = createLCDModule { implicit n: ModuleName =>
       val input1 = ButtonEvent(Buttons.button1)
       val input2 = ButtonEvent(Buttons.button2)
       val negate2 = input2.map( (i: Rep[Int]) => 0-i)
@@ -64,7 +64,7 @@ trait Counter3App extends FRPDSLApplication {
       val counter =
         filtered.foldp((x:Rep[Int], state:Rep[Int])=>state + x, 0)
 
-      (counter.changes(), (x)=>x)
+      (counter, "", 0,0)::Nil
     }
 
     mod1::Nil
@@ -91,7 +91,7 @@ trait Counter3bApp extends FRPDSLApplication {
 
     val mod2 = createLCDModule { implicit n: ModuleName =>
       val input = ExternalEvent(mod1.output)
-      (input, (x:Rep[Int])=>x)
+      (input.startsWith(0), "", 0, 0)::Nil
     }
 
     mod1::mod2::Nil
@@ -102,7 +102,7 @@ trait Counter3bApp extends FRPDSLApplication {
 trait Counter4App extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
-    val mod1 = createLCDModule[Int] { implicit n: ModuleName =>
+    val mod1 = createLCDModule { implicit n: ModuleName =>
       val inc = ButtonEvent(Buttons.button3)
       val inc1 = inc.constant(1)
       val dec = ButtonEvent(Buttons.button4)
@@ -124,9 +124,8 @@ trait Counter4App extends FRPDSLApplication {
         merged.filter( x => Math.abs(x) < 10)
       val counter =
         filtered.foldp((x:Rep[Int], state:Rep[Int])=>state + x, 0)
-      //val printed = counter.changes.printIntLCD( (x:Rep[Int]) => x )
-      //Some(out("counterOut", printed))
-      (counter.changes(), (x)=>x)
+
+      (counter, "", 0,0)::Nil
 
     }
 
@@ -152,7 +151,6 @@ trait Counter5App extends FRPDSLApplication {
       val min = ButtonEvent(Buttons.button2)
       val snapMin = incdecValue.snapshot(min)
 
-
       val negate2 = snapMin.map( (i: Rep[Int]) => 0-i)
       val merged =
         snapPlus.merge(negate2, (x:Rep[Int],y:Rep[Int]) => x + y)
@@ -166,7 +164,9 @@ trait Counter5App extends FRPDSLApplication {
 
     val mod2 = createLCDModule { implicit n: ModuleName =>
       val input: Event[Int] = ExternalEvent(mod1.output)
-      (input, (x:Rep[Int])=>x)
+      val b = input.startsWith(0)
+
+      (b, "Counter: ", 0 , 0)::Nil
     }
 
     mod1::mod2::Nil
@@ -211,7 +211,7 @@ object CounterAppRunner {
 
     withOutFile("Counter5App.c") {
       System.err.println("Counter5App:")
-      (new Counter5App with SMCFRPDSLApplicationRunner).compile
+      (new Counter5App with SMCFRPDSLOptApplicationRunner).compile
     }
 
   }

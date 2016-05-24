@@ -176,7 +176,7 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
         registerButton(id, resultButton(0)._2)
       }
 
-      eventLoop(getButtonsRegister.keys.toList.length > 0,false)
+      eventLoop(getButtonsRegister.keys.toList.length > 0, false)
 
       unit(0)
     }

@@ -28,7 +28,6 @@ trait EventOps extends NodeOps {
        init: Rep[C]
       )(implicit n: ModuleName): Behavior[C]
 
-    private[FRP_EMBEDDED] def printIntLCD(f: Rep[A]=>Rep[Int])(implicit n: ModuleName): Event[A]
   }
 
   object Buttons extends Enumeration {
@@ -260,19 +259,4 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
     System.err.println("Create SnapshotEvent(ID:" + id + "): " + inputNodeIDs)
   }
 
-  abstract class PrintIntLCD[A](parent: Event[A], f: Rep[A]=>Rep[Int])(implicit tA: Typ[A], mn: ModuleName) extends Event[A] {
-    override val moduleName = mn
-    override type In = A
-    override val typIn: Typ[In] = parent.typOut //tA?
-    override val typOut: Typ[Out] = typIn //tA?
-    override val level = parent.level + 1
-    override val inputNodeIDs: Set[NodeID] = parent.inputNodeIDs
-
-    override def buildGraphTopDown() = {
-      parent.addChild(id)
-      parent.buildGraphTopDown()
-    }
-
-    System.err.println("Create printLCDEvent(ID:" + id + "): " + inputNodeIDs)
-  }
 }
