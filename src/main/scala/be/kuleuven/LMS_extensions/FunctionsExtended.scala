@@ -9,6 +9,7 @@ trait FunctionsExt extends Functions {
   def doApplyDecl[A:Typ,B:Typ](fun: Rep[A => B])(implicit pos: SourceContext): Rep[B]
   def doApplyOut[A:Typ,B:Typ,C](funName: String, fun: Rep[A=>B], arg: Rep[C])(implicit pos: SourceContext): Rep[B]
 
+  def doLambdaTimer[A:Typ,B:Typ](fun: Rep[A] => Rep[B])(implicit pos: SourceContext): Rep[A => B]
   def doLambdaMain[A:Typ,B:Typ](fun: Rep[A] => Rep[B])(implicit pos: SourceContext): Rep[A => B]
   def doLambdaInput[A:Typ,B:Typ](moduleName: String, funName: String)(fun: Rep[A] => Rep[B])(implicit pos: SourceContext): Rep[A => B]
   def doLambdaOutput[A:Typ,B:Typ](moduleName: String, funName: String)(fun: Rep[A] => Rep[B])(implicit pos: SourceContext): Rep[A => B]
@@ -28,6 +29,7 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
   case class NamedLambda[A:Typ,B:Typ](moduleName: String, f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
   case class NamedLambdaInput[A:Typ,B:Typ](moduleName: String,funName: String, f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
   case class NamedLambdaMain[A:Typ,B:Typ](f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
+  case class NamedLambdaTimer[A:Typ,B:Typ](f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
   // TODO: reduce to case class to the minimum needed, it's actually just a dummy function in case of SMC
   case class NamedLambdaOutput[A:Typ,B:Typ](moduleName: String,funName: String, f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
   case class NamedLambdaEntry[A:Typ,B:Typ](moduleName: String, funName: String, f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
@@ -44,6 +46,9 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
         val ye = summarizeEffects(y)
         reflectEffect(ApplyDecl(f), ye)
       case Def(NamedLambdaMain(_,_,y)) =>
+        val ye = summarizeEffects(y)
+        reflectEffect(ApplyDecl(f), ye)
+      case Def(NamedLambdaTimer(_,_,y)) =>
         val ye = summarizeEffects(y)
         reflectEffect(ApplyDecl(f), ye)
       case Def(NamedLambdaInput(_,_,_,_,y)) =>
@@ -91,6 +96,16 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
   override def doLambdaMain[A:Typ,B:Typ](fun: Exp[A] => Exp[B])(implicit pos: SourceContext): Exp[A => B] =
     doNamedLambdaMainDef(fun)
 
+  def doNamedLambdaTimerDef[A:Typ,B:Typ](fun: Exp[A] => Exp[B]): Def[A=>B] = {
+    val x = unboxedFresh[A]
+    val y = reifyEffects(fun(x)) // unfold completely at the definition site.
+
+    NamedLambdaTimer(fun, x, y)
+  }
+
+  override def doLambdaTimer[A:Typ,B:Typ](fun: Exp[A] => Exp[B])(implicit pos: SourceContext): Exp[A => B] =
+    doNamedLambdaTimerDef(fun)
+
   def doNamedLambdaInputDef[A:Typ,B:Typ](moduleName: String, funName: String)(f: Exp[A] => Exp[B]) : Def[A => B] = {
     val x = unboxedFresh[A]
     val y = reifyEffects(f(x)) // unfold completely at the definition site.
@@ -134,6 +149,7 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
   override def mirror[A:Typ](e: Def[A], f: Transformer)(implicit pos: SourceContext): Exp[A] = (e match {
     case e@StaticLambda(g,x:Exp[Any],y:Block[b]) => toAtom(StaticLambda(f(g),f(x),f(y))(e.mA,e.mB))(mtype(manifest[A]),pos)
     case e@NamedLambdaMain(g,x:Exp[Any],y:Block[b]) => toAtom(NamedLambdaMain(f(g),f(x),f(y))(e.mA,e.mB))(mtype(manifest[A]),pos)
+    case e@NamedLambdaTimer(g,x:Exp[Any],y:Block[b]) => toAtom(NamedLambdaTimer(f(g),f(x),f(y))(e.mA,e.mB))(mtype(manifest[A]),pos)
     case e@NamedLambdaInput(mn, fn, g,x:Exp[Any],y:Block[b]) => toAtom(NamedLambdaInput(mn, fn, f(g),f(x),f(y))(e.mA,e.mB))(mtype(manifest[A]),pos)
     case e@NamedLambdaOutput(mn, fn, g,x:Exp[Any],y:Block[b]) => toAtom(NamedLambdaOutput(mn, fn, f(g),f(x),f(y))(e.mA,e.mB))(mtype(manifest[A]),pos)
     case e@NamedLambdaEntry(mn, fn, g,x:Exp[Any],y:Block[b]) => toAtom(NamedLambdaEntry(mn, fn, f(g),f(x),f(y))(e.mA,e.mB))(mtype(manifest[A]),pos)
@@ -144,6 +160,7 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
   override def syms(e: Any): List[Sym[Any]] = e match {
     case StaticLambda(f, x, y) => syms(y)
     case NamedLambdaMain(f, x, y) => syms(y)
+    case NamedLambdaTimer(f, x, y) => syms(y)
     case NamedLambdaInput(_, _, f, x, y) => syms(y)
     case NamedLambdaOutput(_, _, f, x, y) => syms(y)
     case NamedLambdaEntry(_, _, f, x, y) => syms(y)
@@ -154,6 +171,7 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
   override def boundSyms(e: Any): List[Sym[Any]] = e match {
     case StaticLambda(f, x, y) => syms(x) ::: effectSyms(y)
     case NamedLambdaMain(f, x, y) => syms(x) ::: effectSyms(y)
+    case NamedLambdaTimer(f, x, y) => syms(x) ::: effectSyms(y)
     case NamedLambdaInput(_, _, f, x, y) => syms(x) ::: effectSyms(y)
     case NamedLambdaOutput(_, _, f, x, y) => syms(x) ::: effectSyms(y)
     case NamedLambdaEntry(_, _, f, x, y) => syms(x) ::: effectSyms(y)
@@ -164,6 +182,7 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
   override def symsFreq(e: Any): List[(Sym[Any], Double)] = e match {
     case StaticLambda(f, x, y) => freqHot(y)
     case NamedLambdaMain(f, x, y) => freqHot(y)
+    case NamedLambdaTimer(f, x, y) => freqHot(y)
     case NamedLambdaInput(_, _, f, x, y) => freqHot(y)
     case NamedLambdaOutput(_, _, f, x, y) => freqHot(y)
     case NamedLambdaEntry(_, _, f, x, y) => freqHot(y)
@@ -193,6 +212,9 @@ trait TupledFunctionsExt extends TupledFunctions with FunctionsExt with TupleOps
   def mainfun(f: () => Rep[Int])(implicit typInt: Typ[Int]): Rep[Unit=>Int] = {
     doLambdaMain((t: Rep[Unit]) => f())
   }
+  def timercallback(f: () => Rep[Unit]): Rep[Unit=>Unit] = {
+    doLambdaTimer((t: Rep[Unit]) => f())
+  }
   def inputfun[A1:Typ,A2:Typ,B:Typ](moduleName: String, funName: String)(f: (Rep[A1], Rep[A2]) => Rep[B]): Rep[((A1,A2))=>B] =
     doLambdaInput(moduleName, funName)(   (t: Rep[(A1,A2)]) => f(tuple2_get1(t), tuple2_get2(t))   )
   def outputfun[A1:Typ,A2:Typ,B:Typ](moduleName: String, funName: String)(f: (Rep[A1], Rep[A2]) => Rep[B]): Rep[((A1,A2))=>B] =
@@ -215,6 +237,7 @@ trait TupledFunctionsExpExt extends TupledFunctionsExp with TupledFunctionsExt w
   override def boundSyms(e: Any): List[Sym[Any]] = e match {
     case StaticLambda(f, UnboxedTuple(xs), y) => xs.flatMap(syms) ::: effectSyms(y)
     case NamedLambdaMain(f, UnboxedTuple(xs), y) => xs.flatMap(syms) ::: effectSyms(y)
+    case NamedLambdaTimer(f, UnboxedTuple(xs), y) => xs.flatMap(syms) ::: effectSyms(y)
     case NamedLambdaInput(_,_, f, UnboxedTuple(xs), y) => xs.flatMap(syms) ::: effectSyms(y)
     case NamedLambdaOutput(_,_, f, UnboxedTuple(xs), y) => xs.flatMap(syms) ::: effectSyms(y)
     case NamedLambdaEntry(_,_, f, UnboxedTuple(xs), y) => xs.flatMap(syms) ::: effectSyms(y)
@@ -225,6 +248,7 @@ trait TupledFunctionsExpExt extends TupledFunctionsExp with TupledFunctionsExt w
   override def mirror[A:Typ](e: Def[A], f: Transformer)(implicit pos: SourceContext): Exp[A] = (e match {
     case e@StaticLambda(g,UnboxedTuple(xs),y:Block[b]) => toAtom(StaticLambda(f(g),UnboxedTuple(f(xs))(e.mA),f(y))(e.mA,e.mB))(mtype(manifest[A]),implicitly[SourceContext])
     case e@NamedLambdaMain(g,UnboxedTuple(xs),y:Block[b]) => toAtom(NamedLambdaMain(f(g),UnboxedTuple(f(xs))(e.mA),f(y))(e.mA,e.mB))(mtype(manifest[A]),implicitly[SourceContext])
+    case e@NamedLambdaTimer(g,UnboxedTuple(xs),y:Block[b]) => toAtom(NamedLambdaTimer(f(g),UnboxedTuple(f(xs))(e.mA),f(y))(e.mA,e.mB))(mtype(manifest[A]),implicitly[SourceContext])
     case e@NamedLambdaInput(mn, fn, g,UnboxedTuple(xs),y:Block[b]) => toAtom(NamedLambdaInput(mn, fn, f(g),UnboxedTuple(f(xs))(e.mA),f(y))(e.mA,e.mB))(mtype(manifest[A]),implicitly[SourceContext])
     case e@NamedLambdaOutput(mn, fn, g,UnboxedTuple(xs),y:Block[b]) => toAtom(NamedLambdaOutput(mn, fn, f(g),UnboxedTuple(f(xs))(e.mA),f(y))(e.mA,e.mB))(mtype(manifest[A]),implicitly[SourceContext])
     case e@NamedLambdaEntry(mn, fn, g,UnboxedTuple(xs),y:Block[b]) => toAtom(NamedLambdaEntry(mn, fn, f(g),UnboxedTuple(f(xs))(e.mA),f(y))(e.mA,e.mB))(mtype(manifest[A]),implicitly[SourceContext])
@@ -278,6 +302,7 @@ trait CGenFunctionsExt extends CGenFunctions {
       if (retType != "void")
         stream.println("return " + quote(z) + ";")
       stream.println("};")*/
+    case NamedLambdaTimer(fun, x, y) => // nothing
     case NamedLambdaMain(fun, x, y) =>
       /*val retType = remap(getBlockResult(y).tp)
       stream.println(retType + " " + "main" + "(" + remap(x.tp) + " " + quote(x) + ") {")
@@ -352,6 +377,7 @@ trait CGenTupledFunctionsExt extends CGenFunctionsExt with GenericGenUnboxedTupl
       if (retType != "void")
         stream.println("return " + quote(z) + ";")
       stream.println("};")*/
+    case NamedLambdaTimer(fun, UnboxedTuple(xs), y) => // nothing
     case NamedLambdaMain(fun, UnboxedTuple(xs), y) =>
       /*val retType = remap(getBlockResult(y).tp)
       stream.println(retType + " " + "main" + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
@@ -426,6 +452,7 @@ trait SMCGenFunctionsExt extends CGenFunctions {
       if (retType != "void")
         stream.println("return " + quote(z) + ";")
       stream.println("}")
+    case NamedLambdaTimer(fun, x, y) => throw new Exception("Timerhandler should not have arguments.")
     case NamedLambdaMain(fun, x, y) =>
       val retType = remap(getBlockResult(y).tp)
       stream.println(retType + " " + "main" + "(" + remap(x.tp) + " " + quote(x) + ") {")
@@ -495,6 +522,20 @@ trait SMCGenTupledFunctionsExt extends SMCGenFunctionsExt with GenericGenUnboxed
       val retType = remap(getBlockResult(y).tp)
       stream.println(retType + " " + "main" + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
       emitBlock(y)
+      val z = getBlockResult(y)
+      if (retType != "void")
+        stream.println("return " + quote(z) + ";")
+      stream.println("};")
+    case NamedLambdaTimer(fun, UnboxedTuple(xs), y) =>
+      val retType = remap(getBlockResult(y).tp)
+      stream.println(retType + " " + "timer_handler" + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
+      stream.println("tsc_t time = tsc_read();")
+      stream.println("static int intervals_5s = 0;")
+      stream.println("int currTime = (float)time / 100000000;\n")
+      stream.println("if(currTime > intervals_5s){\n")
+      stream.println("intervals_5s = currTime;\n")
+      emitBlock(y)
+      stream.println("}\n")
       val z = getBlockResult(y)
       if (retType != "void")
         stream.println("return " + quote(z) + ";")

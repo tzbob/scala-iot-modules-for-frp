@@ -132,6 +132,7 @@ trait SMCGenModules extends CGenEffect with SMCLikeCodeGen {
     }
     case ConnectionDeploy(modOut, outfun, modIn, infun) =>
       stream.println("  REACTIVE_CONNECT(" + modOut + ", " + quote(outfun) + ", " + modIn + ", " + quote(infun) + ");")
+
     case EventLoop(bH,tH) => {
       val strB = new StringBuilder
       strB.append("while(1) {\n")
@@ -152,6 +153,7 @@ trait SMCGenModules extends CGenEffect with SMCLikeCodeGen {
         "#include <sancus/sm_support.h>\n\n" +
           "#include <sancus_support/uart.h>\n" +
           "#include <sancus_support/pmodcls.h>\n" +
+          "#include <sancus_support/tsc.h>\n" +
           "#include <sancus_support/sm_control.h>\n\n" +
           "#include <msp430.h>\n\n" +
           "#include \"reactive.h\"\n" +

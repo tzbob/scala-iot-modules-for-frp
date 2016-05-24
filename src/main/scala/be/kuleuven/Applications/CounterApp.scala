@@ -174,6 +174,31 @@ trait Counter5App extends FRPDSLApplication {
 
 }
 
+trait Counter6App extends FRPDSLApplication {
+
+  override def createApplication: List[Module[_]] = {
+    val mod1 = createLCDModule { implicit n: ModuleName =>
+      val input1 = SystemTimerEvent(1)
+      val cInput1 = input1.constant(5)
+      val input2 = ButtonEvent(Buttons.button1)
+      val cInput2 = input2.constant(1)
+      val negate2 = cInput2.map( (i: Rep[Int]) => 0-i)
+      val merged =
+        cInput1.merge(negate2, (x:Rep[Int],y:Rep[Int]) => x + y)
+      val filtered =
+        merged.filter( x => Math.abs(x) < 10)
+      val counter =
+        filtered.foldp((x:Rep[Int], state:Rep[Int])=>state + x, 0)
+
+      (counter, "Counter: " , 0, 0)::Nil
+
+    }
+
+    mod1::Nil
+  }
+
+}
+
 import OutputGenerator.withOutFile
 
 object CounterAppRunner {
@@ -212,6 +237,11 @@ object CounterAppRunner {
     withOutFile("Counter5App.c") {
       System.err.println("Counter5App:")
       (new Counter5App with SMCFRPDSLOptApplicationRunner).compile
+    }
+
+    withOutFile("Counter6App.c") {
+      System.err.println("Counter6App:")
+      (new Counter6App with SMCFRPDSLOptApplicationRunner).compile
     }
 
   }

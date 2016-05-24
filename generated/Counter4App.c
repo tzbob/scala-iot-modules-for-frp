@@ -6,6 +6,7 @@
 
 #include <sancus_support/uart.h>
 #include <sancus_support/pmodcls.h>
+#include <sancus_support/tsc.h>
 #include <sancus_support/sm_control.h>
 
 #include <msp430.h>

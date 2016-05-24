@@ -41,6 +41,7 @@ trait EventOps extends NodeOps {
   import Buttons._
   def ButtonEvent(b: Button)(implicit n: ModuleName): Event[Int]
   def TimerEvent(i: Rep[Int])(implicit n: ModuleName)/*(implicit tI:Typ[Int])*/: Event[Int]
+  def SystemTimerEvent(i: Rep[Int])(implicit n: ModuleName)/*(implicit tI:Typ[Int])*/: Event[Int]
   def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit n: ModuleName): Event[A] // oe possibly null (!)
 
   abstract class OutputEvent[A:Typ](val mn: ModuleName, val outName: String)
@@ -52,6 +53,8 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
 
   private val outInList = scala.collection.mutable.ListBuffer.empty[(OutputEvent[_], InputEvent[_])]
   private val buttonsRegister: scala.collection.mutable.Map[Int,Set[InputEvent[_]]] = scala.collection.mutable.HashMap()
+  private val timersRegister: scala.collection.mutable.Map[Int,InputEvent[_]] = scala.collection.mutable.HashMap()
+  private[FRP_EMBEDDED] val systemTimer = 0
 
   def getButtonsRegister: Map[Int, Set[InputEvent[_]]] = buttonsRegister.toMap
   import Buttons._
@@ -64,6 +67,12 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
       }
       case None => buttonsRegister += ((b.id, HashSet(inputEvent)))
     }
+  }
+
+  def getTimersRegister: Map[Int, InputEvent[_]] = timersRegister.toMap
+  def registerTimer(id: Int, inputEvent: InputEvent[_]): Unit = {
+    if(timersRegister.contains(id)) throw new Exception("Timer (" + id + ") is already registered.")
+    timersRegister += ((id, inputEvent))
   }
 
   def getOutInList: List[(OutputEvent[_], InputEvent[_])] = outInList.toList

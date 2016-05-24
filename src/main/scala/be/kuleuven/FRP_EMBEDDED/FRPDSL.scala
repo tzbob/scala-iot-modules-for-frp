@@ -163,7 +163,26 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
 
       unitToRepUnit( () )
     }
-    //doApplyDecl(deploy)
+
+    val otimercb = getTimersRegister.get(systemTimer)
+
+
+    val timercb = otimercb match {
+      case Some(tcb) => {
+        val resultInput = inputToToplevel.filter{ case (inputID, _) => inputID == tcb.id }
+        assert(resultInput.length == 1)
+        val timercb = timercallback { () =>
+          val timerVal: Rep[Int] = var_new(5)
+          val in: Rep[Byte] = rep_asinstanceof(timerVal, typ[Int], typ[Byte])
+          val inptr = ptr_new(in)
+          resultInput(0)._2(inptr,sizeof(in))
+          unitToRepUnit( () )
+        }
+        doApplyDecl(timercb)
+        Some(timercb)
+      }
+      case None => None
+    }
 
     val main = mainfun { () =>
       init( () )
@@ -176,7 +195,7 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
         registerButton(id, resultButton(0)._2)
       }
 
-      eventLoop(getButtonsRegister.keys.toList.length > 0, false)
+      eventLoop(getButtonsRegister.keys.toList.length > 0, timercb.isDefined)
 
       unit(0)
     }
