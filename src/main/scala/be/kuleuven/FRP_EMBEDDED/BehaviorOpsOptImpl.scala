@@ -19,7 +19,7 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
   }
 
   override def constantB[A:Typ](c: Rep[A])(implicit n: ModuleName): Behavior[A] = new ConcreteConstantBehavior[A](c)
-  private[FRP_EMBEDDED] override def printLCD(l: List[(Behavior[Int], String, Int, Int)])(implicit n: ModuleName): Behavior[Nothing] = {
+  override def printLCD(l: List[(Behavior[Int], String, Int, Int)])(implicit n: ModuleName): Behavior[Nothing] = {
     ConcretePrintLCDBehavior(l)
   }
 
