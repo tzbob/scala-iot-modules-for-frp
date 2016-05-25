@@ -30,7 +30,7 @@ trait BehaviorOps extends NodeOps {
   }
 
   def constantB[A:Typ](value: Rep[A])(implicit n: ModuleName): Behavior[A]
-  private[FRP_EMBEDDED] def printLCD(l: List[(Behavior[Int], String, Int, Int)])(implicit n: ModuleName): Behavior[Nothing] //TODO: Int -> unit
+  private[FRP_EMBEDDED] def printLCD(l: List[(Behavior[Int], String, Int, Int)])(implicit n: ModuleName): Behavior[Nothing]
 }
 
 trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {

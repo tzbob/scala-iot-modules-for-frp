@@ -5,7 +5,6 @@ import scala.reflect.SourceContext
 
 trait FunctionsExt extends Functions {
 
-  //TODO: rename to mainFun for example
   def doApplyDecl[A:Typ,B:Typ](fun: Rep[A => B])(implicit pos: SourceContext): Rep[B]
   def doApplyOut[A:Typ,B:Typ,C](funName: String, fun: Rep[A=>B], arg: Rep[C])(implicit pos: SourceContext): Rep[B]
 
@@ -30,7 +29,6 @@ trait FunctionsExpExt extends FunctionsExp with FunctionsExt {
   case class NamedLambdaInput[A:Typ,B:Typ](moduleName: String,funName: String, f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
   case class NamedLambdaMain[A:Typ,B:Typ](f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
   case class NamedLambdaTimer[A:Typ,B:Typ](f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
-  // TODO: reduce to case class to the minimum needed, it's actually just a dummy function in case of SMC
   case class NamedLambdaOutput[A:Typ,B:Typ](moduleName: String,funName: String, f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
   case class NamedLambdaEntry[A:Typ,B:Typ](moduleName: String, funName: String, f: Exp[A] => Exp[B], x: Exp[A], y: Block[B]) extends Def[A => B] { val mA = manifest[A]; val mB = manifest[B] }
   case class ApplyDecl[A:Typ,B:Typ](f: Exp[A => B]) extends Def[B] { val mA = manifest[A]; val mB = manifest[B] }
@@ -263,7 +261,7 @@ trait TupledFunctionsExpExt extends TupledFunctionsExp with TupledFunctionsExt w
     val mA = implicitly[Typ[A]]
     x match {
       case _ if tupledTypOf(mA, 6) =>
-        x match { case t : Rep[(a1,a2,a3,a4,a5,a6)] =>
+        x match { case t : Rep[(a1,a2,a3,a4,a5,a6)] @unchecked =>
           UnboxedTuple[A](List(
             tuple6_get1(t)(mA.typeArguments(0).asInstanceOf[Typ[a1]], pos),
             tuple6_get2(t)(mA.typeArguments(1).asInstanceOf[Typ[a2]], pos),

@@ -209,7 +209,7 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
     val parentLeft: Event[In] = parents._1
     val parentRight: Event[In] = parents._2
     override val level = scala.math.max(parentLeft.level, parentRight.level) + 1
-    override val typIn: Typ[In] = parentLeft.typOut //TODO: fix if different typed Events can be merged
+    override val typIn: Typ[In] = parentLeft.typOut
     override val typOut: Typ[Out] = typIn
 
     val inputIDsLeft: Set[NodeID] = parentLeft.inputNodeIDs
@@ -256,7 +256,7 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
     // Since it does also depend on the behavior, it needs to be leveled after the the max level of both!!!
     // this is actually a level for generation
     // a difference can be made between frp level and generation level (important for side effects)
-    override val level = scala.math.max(parentBeh.level, parentEvent.level) + 1 //TODO: genlevel
+    override val level = scala.math.max(parentBeh.level, parentEvent.level) + 1
     override val inputNodeIDs: Set[NodeID] = parentEvent.inputNodeIDs
 
     override def buildGraphTopDown() = {
