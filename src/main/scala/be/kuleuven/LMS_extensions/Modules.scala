@@ -16,10 +16,16 @@ trait ModulesExp extends Modules with ExpressionsExt with EffectExp {
   case class RegisterButton(id:Int, cb: Rep[(Int)=>Unit]) extends Def[Unit]
   case class EventLoop(buttonHandler: Boolean, timerHandler: Boolean) extends Def[Unit]
   case class Headers() extends Def[Unit]
+  case class ClearLCD() extends Def[Unit]
   case class PrintLCD[A:Typ](i: Rep[A], label: String, row: Int, col: Int) extends Def[Unit]
   case class DisInts() extends Def[Unit]
   case class EnInts() extends Def[Unit]
   case class Sizeof(s:Exp[_]) extends Def[Int]
+
+  def clearLCD(): Exp[Unit] = {
+    reflectEffect(new ClearLCD())
+    Const()
+  }
 
   def printToLCD[A:Typ](i: Rep[A], label: String, row: Int, col:Int): Exp[Unit] = {
     reflectEffect(new PrintLCD(i, label, row, col))
@@ -97,6 +103,7 @@ trait CGenModules extends CGenEffect with SMCLikeCodeGen {
         "#include <math.h>\n" +
         "#include <stdbool.h>\n"
       )
+    case ClearLCD() => //nothing
     case PrintLCD(i, label, row, col) => {
       stream.println("printf(\"" + label + "%d\", " + quote(i) + ");")
     }
@@ -167,6 +174,7 @@ trait SMCGenModules extends CGenEffect with SMCLikeCodeGen {
           "  int result = vuprintf(pmodcls_putchar, fmt, va);\n  " +
           "  va_end(va);\n  return result;\n" +
           "}\n\n" +
+          "static void __attribute__((noinline)) lcd_clear()\n{\n  lcd_printf(\"%s\",\"                                \");\n}" +
           "static void __attribute__((noinline)) lcd_printf_int(const char* fmt, int i)\n" +
           "{\n  " +
           "  lcd_printf(fmt, i);\n" +
@@ -180,6 +188,7 @@ trait SMCGenModules extends CGenEffect with SMCLikeCodeGen {
           "  printf(fmt, i);\n" +
           "}\n"
       )
+    case ClearLCD() => stream.println("lcd_clear();");
     case PrintLCD(i, label, row, col) => {
       stream.println("pmodcls_set_cursor_position(" + row + "," +  col + ");")
       stream.println("lcd_printf_int(\"" + label + "%d\", " + quote(i) + ");")

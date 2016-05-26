@@ -148,6 +148,7 @@ trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {
 
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
+        clearLCD()
         for( (b, label, row, col) <- list ) {
           val parentvalue = readVar(b.getValue)
           printToLCD(parentvalue, label, row, col)

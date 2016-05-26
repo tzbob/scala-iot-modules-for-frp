@@ -25,7 +25,10 @@ static int lcd_printf(const char* fmt, ...)
   return result;
 }
 
-static void __attribute__((noinline)) lcd_printf_int(const char* fmt, int i)
+static void __attribute__((noinline)) lcd_clear()
+{
+  lcd_printf("%s","                                ");
+}static void __attribute__((noinline)) lcd_printf_int(const char* fmt, int i)
 {
     lcd_printf(fmt, i);
 }
