@@ -2,72 +2,41 @@
   Emitting C Generated Code                  
 *******************************************/
 
-#include <sancus/sm_support.h>
-
-#include <sancus_support/uart.h>
-#include <sancus_support/pmodcls.h>
-#include <sancus_support/tsc.h>
-#include <sancus_support/sm_control.h>
-
-#include <msp430.h>
-
-#include "reactive.h"
-#include "buttons.h"
-#include "string.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
+#include <math.h>
 #include <stdbool.h>
 
-static int lcd_printf(const char* fmt, ...)
-{
-    va_list va;
-    va_start(va, fmt);
-    int result = vuprintf(pmodcls_putchar, fmt, va);
-    va_end(va);
-  return result;
-}
-
-static void __attribute__((noinline)) lcd_clear()
-{
-  lcd_printf("%s","                                ");
-}static void __attribute__((noinline)) lcd_printf_int(const char* fmt, int i)
-{
-    lcd_printf(fmt, i);
-}
-
-static void __attribute__((noinline)) lcd_printf_string(char* s)
-{
-    lcd_printf("%s", s);
-}
-
-static void __attribute__((noinline)) printf_int(const char* fmt, int i)
-{
-  printf(fmt, i);
-}
-
-SM_DATA(mod1) bool x1;
-SM_DATA(mod1) int x2;
-SM_DATA(mod1) int x30;
-SM_DATA(mod1) int x31;
-SM_DATA(mod1) int x39;
-SM_DATA(mod1) bool x46;
-SM_DATA(mod1) int x47;
-SM_DATA(mod1) int x53;
-SM_FUNC(mod1) void x68 () {
-int x54 = x53;
-bool x55 = x54 == 0;
-if (x55) {
+bool x1;
+int x2;
+int x30;
+bool x31;
+int x32;
+bool x33;
+int x44;
+bool x45;
+bool x60;
+int x61;
+int x72;
+void x87() {
+int x73 = x72;
+bool x74 = x73 == 0;
+if (x74) {
 x30 = 3;
-x31 = 0;
-int x58 = x31;
-int x59 = x30;
-int x60 = x58 + x59;
-x39 = x60;
-x53 = 1;
+x32 = 0;
+int x77 = x32;
+int x78 = x30;
+int x79 = x77 + x78;
+x44 = x79;
+x72 = 1;
 } else {
 }
-x46 = false;
+x60 = false;
 x1 = false;
-}
-SM_FUNC(mod1) void x29 (uint8_t* x3,int x4) {
+};
+void x29(uint8_t* x3,int x4) {
 int x7 = 0;
 int x8 = 0;
 int x6 = x4;
@@ -91,68 +60,63 @@ x1 = true;
 int x25 = x7;
 int x26 = (int ) x25;
 x2 = x26;
+};
+void x43() {
+bool x34 = x1;
+if (x34) {
+x33 = true;
+int x36 = x2;
+x32 = x36;
+} else {
+x33 = false;
 }
-SM_FUNC(mod1) void x38 () {
-bool x32 = x1;
-if (x32) {
-int x33 = x2;
-x31 = x33;
+};
+void x59() {
+bool x46 = x33;
+bool x47 = x31;
+bool x48 = x46 || x47;
+if (x48) {
+int x49 = x32;
+int x50 = x30;
+int x51 = x49 + x50;
+x44 = x51;
+x45 = true;
+} else {
+x45 = false;
+}
+};
+void x71() {
+bool x62 = x45;
+if (x62) {
+x60 = true;
+int x64 = x44;
+x61 = x64;
+} else {
+x60 = false;
+}
+};
+void x106(uint8_t* x99,int x100) {
+uint8_t* x101 = x99;
+uint8_t x103 = *x101;
+printf("%u\n",x103);
+};
+void x112() {
+bool x98 = x60;
+if (x98) {
+int x107 = x61;
+x106((uint8_t*)&x107, sizeof(x107));
 } else {
 }
-}
-SM_FUNC(mod1) void x45 () {
-int x40 = x31;
-int x41 = x30;
-int x42 = x40 + x41;
-x39 = x42;
-}
-SM_FUNC(mod1) void x52 () {
-x46 = true;
-int x49 = x39;
-x47 = x49;
-}
-SM_OUTPUT(mod1,x87);
-SM_FUNC(mod1) void x93 () {
-bool x79 = x46;
-if (x79) {
-int x88 = x47;
-x87((const uint8_t*)&x88, sizeof(x88));
-} else {
-}
-}
-SM_INPUT(mod1,x96,x69,x70) { //top1
-x68();
-uint8_t* x71 = x69;
-int x72 = x70;
-x29(x71,x72);
-x38();
-x45();
-x52();
-x93();
-}
-DECLARE_SM(mod1, 0x1234);
-static void x101 () {
-  //INIT FUNCTION
-  WDTCTL = WDTHOLD | WDTPW;
-  uart_init();
-  pmodcls_init();
-  pmodcls_set_wrap_mode(PmodClsWrapAt16);
-  buttons_init();
-  asm("eint");
-}
-static void x104 () {
-  //DEPLOY FUNCTION
-  sancus_enable(&mod1);
-  sm_register_existing(&mod1);
-
-}
-int main() {
-x101();
-puts("main started");
-x104();
-while(1) {
-}
-return 0;
+};
+void x115(uint8_t* x88,int x89) { //top1
+x87();
+uint8_t* x90 = x88;
+int x91 = x89;
+x29(x90,x91);
+x43();
+x59();
+x71();
+x112();
 };
 /*****************************************
   End of C Generated Code                  

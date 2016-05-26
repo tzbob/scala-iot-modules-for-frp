@@ -12,24 +12,26 @@
 bool x1;
 int x2;
 int x30;
-bool x40;
-int x41;
-int x47;
+bool x31;
+bool x44;
+int x45;
+int x56;
 bool x57;
-int x58;
-int x64;
-void x76() {
-int x65 = x64;
-bool x66 = x65 == 0;
-if (x66) {
+bool x70;
+int x71;
+int x82;
+void x94() {
+int x83 = x82;
+bool x84 = x83 == 0;
+if (x84) {
 x30 = 1;
-x47 = 10;
-x64 = 1;
+x56 = 10;
+x82 = 1;
 } else {
 }
-x57 = false;
+x70 = false;
 x1 = false;
-x40 = false;
+x44 = false;
 };
 void x29(uint8_t* x3,int x4) {
 int x7 = 0;
@@ -56,59 +58,73 @@ int x25 = x7;
 int x26 = (int ) x25;
 x2 = x26;
 };
-void x39() {
-bool x31 = x1;
-if (x31) {
-int x32 = x2;
-int x33 = x30;
-int x34 = x32 + x33;
-x30 = x34;
+void x43() {
+bool x32 = x1;
+if (x32) {
+x31 = true;
+int x34 = x2;
+int x35 = x30;
+int x36 = x34 + x35;
+x30 = x36;
 } else {
+x31 = false;
 }
 };
-void x46() {
-x40 = true;
-int x43 = x30;
-x41 = x43;
-};
-void x56() {
-bool x48 = x40;
-if (x48) {
-int x49 = x41;
-int x50 = x47;
-int x51 = x49 + x50;
-x47 = x51;
+void x55() {
+bool x46 = x31;
+if (x46) {
+x44 = true;
+int x48 = x30;
+x45 = x48;
 } else {
+x44 = false;
 }
 };
-void x63() {
+void x69() {
+bool x58 = x44;
+if (x58) {
 x57 = true;
-int x60 = x47;
-x58 = x60;
+int x60 = x45;
+int x61 = x56;
+int x62 = x60 + x61;
+x56 = x62;
+} else {
+x57 = false;
+}
 };
-void x96(uint8_t* x89,int x90) {
-uint8_t* x91 = x89;
-uint8_t x93 = *x91;
-printf("%u\n",x93);
+void x81() {
+bool x72 = x57;
+if (x72) {
+x70 = true;
+int x74 = x56;
+x71 = x74;
+} else {
+x70 = false;
+}
 };
-void x102() {
-bool x88 = x57;
-if (x88) {
-int x97 = x58;
-x96((uint8_t*)&x97, sizeof(x97));
+void x114(uint8_t* x107,int x108) {
+uint8_t* x109 = x107;
+uint8_t x111 = *x109;
+printf("%u\n",x111);
+};
+void x120() {
+bool x106 = x70;
+if (x106) {
+int x115 = x71;
+x114((uint8_t*)&x115, sizeof(x115));
 } else {
 }
 };
-void x105(uint8_t* x77,int x78) { //top1
-x76();
-uint8_t* x79 = x77;
-int x80 = x78;
-x29(x79,x80);
-x39();
-x46();
-x56();
-x63();
-x102();
+void x123(uint8_t* x95,int x96) { //top1
+x94();
+uint8_t* x97 = x95;
+int x98 = x96;
+x29(x97,x98);
+x43();
+x55();
+x69();
+x81();
+x120();
 };
 /*****************************************
   End of C Generated Code                  

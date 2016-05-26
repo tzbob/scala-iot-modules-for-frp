@@ -5,6 +5,17 @@ import be.kuleuven.LMS_extensions.ScalaOpsPkgExpExt
 trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
   eventImpl: EventOpsImpl =>
 
+  implicit def behaviorToBehaviorImpl[X](b: Behavior[X]): BehaviorImpl[X] = {
+    b match {
+      case bn @ ConcreteConstantBehavior(_) => bn
+      case bn @ ConcreteMap2Behavior(_,_) => bn
+      case bn @ ConcreteFoldpBehavior(_,_,_) => bn
+      case bn @ ConcreteFoldp2Behavior(_,_,_,_,_,_) => bn
+      case bn @ ConcreteStartsWithBehavior(_,_) => bn
+      case _ => throw new Exception("Event without Implementation")
+    }
+  }
+
   override def constantB[A:Typ](c: Rep[A])(implicit n: ModuleName): Behavior[A] = new ConcreteConstantBehavior[A](c)
   override def printLCD(l: List[(Behavior[Int], String, Int, Int)])(implicit n: ModuleName): Behavior[Nothing] = {
     ConcretePrintLCDBehavior(l)
@@ -18,32 +29,49 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
     lazy val valueInit = var_assign[A](value, init)
     override def getInitializer() = valueInit
 
+    lazy val behaviorfun: Rep[(Unit)=>Unit] = {
+      namedfun0 (mn.str) { () =>
+        var_assign(fired, unit(true))
+        unitToRepUnit(())
+      }
+    }
+
     override def generateNode(): Unit = {
       value
+      fired
     }
-    override def produceFunction() = ()
-    override def useFunction() = ()
+    override def produceFunction() = behaviorfun
+    override def useFunction() = behaviorfun( () )
   }
 
   case class ConcreteMap2Behavior[A:Typ,B:Typ,C](parents: (Behavior[A],Behavior[B]), f: (Rep[A],Rep[B])=>Rep[C])(implicit tC: Typ[C], mn: ModuleName)
     extends Map2Behavior[A,B,C](parents, f) with BehaviorImpl[C] {
 
     lazy val parentleftvalue: Var[A] = parentLeft.getValue
+    lazy val parentleftfired: Var[Boolean] = parentLeft.getFired
     lazy val parentrightvalue: Var[B] = parentRight.getValue
+    lazy val parentrightfired: Var[Boolean] = parentRight.getFired
     lazy val value = vardeclmod_new[C](mn.str)
     override def getValue = value
     lazy val valueInit = var_assign[C](value, f(parentleftvalue, parentrightvalue))
     override def getInitializer() = valueInit
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
-        var_assign[C](value, f(parentleftvalue, parentrightvalue))
-        unitToRepUnit( () )
+        if(parentleftfired || parentrightfired) {
+          var_assign[C](value, f(parentleftvalue, parentrightvalue))
+          var_assign(fired, unit(true))
+        }
+        else{
+          var_assign(fired, unit(false))
+        }
+        unitToRepUnit(())
       }
     }
     override def produceFunction() = behaviorfun
     override def useFunction() = behaviorfun( () )
     override def generateNode(): Unit = {
       value
+      fired
       behaviorfun
     }
 
@@ -61,7 +89,11 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
         if(parentfired) {
+          var_assign(fired, unit(true))
           var_assign[B](value, f(parentvalue,readVar(value)))
+        }
+        else{
+          var_assign(fired, unit(false))
         }
         unitToRepUnit( () )
       }
@@ -70,6 +102,7 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
     override def useFunction() = behaviorfun( () )
     override def generateNode(): Unit = {
       value
+      fired
       behaviorfun
     }
 
@@ -95,13 +128,15 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
           var_assign[C](value, f3(parentleftvalue, parentrightvalue, readVar(value)))
         }
         else if(parentleftfired) {
+          var_assign(fired, unit(true))
           var_assign[C](value, f1(parentleftvalue, readVar(value)))
         }
         else if(parentrightfired){
+          var_assign(fired, unit(true))
           var_assign[C](value, f2(parentrightvalue, readVar(value)))
         }
         else{
-          // nothing to do
+          var_assign(fired, unit(false))
         }
         unitToRepUnit( () )
       }
@@ -111,6 +146,7 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
     override def useFunction() = behaviorfun( () )
     override def generateNode(): Unit = {
       value
+      fired
       behaviorfun
     }
 
@@ -128,7 +164,11 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
         if(parentfired) {
+          var_assign(fired, unit(true))
           var_assign[A](value, parentvalue)
+        }
+        else {
+          var_assign(fired, unit(false))
         }
         unitToRepUnit( () )
       }
@@ -138,6 +178,7 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
     override def useFunction() = behaviorfun( () )
     override def generateNode(): Unit = {
       value
+      fired
       behaviorfun
     }
   }
@@ -169,6 +210,9 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
 
     addNodeToNodemap(id,this)
     addBehaviorID(id)
+
+    lazy val fired = vardeclmod_new[Boolean](moduleName.str)
+    def getFired = fired
 
     override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()
     override def addChild(id: NodeID): Unit = {

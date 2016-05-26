@@ -14,19 +14,20 @@ int x2;
 bool x30;
 int x31;
 int x42;
-bool x50;
-int x51;
-int x57;
-void x68() {
-int x58 = x57;
-bool x59 = x58 == 0;
-if (x59) {
+bool x43;
+bool x54;
+int x55;
+int x66;
+void x77() {
+int x67 = x66;
+bool x68 = x67 == 0;
+if (x68) {
 x42 = 1;
-x57 = 1;
+x66 = 1;
 } else {
 }
 x30 = false;
-x50 = false;
+x54 = false;
 x1 = false;
 };
 void x29(uint8_t* x3,int x4) {
@@ -64,41 +65,48 @@ x31 = 5;
 x30 = false;
 }
 };
-void x49() {
-bool x43 = x30;
-if (x43) {
-int x44 = x31;
-x42 = x44;
+void x53() {
+bool x44 = x30;
+if (x44) {
+x43 = true;
+int x46 = x31;
+x42 = x46;
+} else {
+x43 = false;
+}
+};
+void x65() {
+bool x56 = x43;
+if (x56) {
+x54 = true;
+int x58 = x42;
+x55 = x58;
+} else {
+x54 = false;
+}
+};
+void x96(uint8_t* x89,int x90) {
+uint8_t* x91 = x89;
+uint8_t x93 = *x91;
+printf("%u\n",x93);
+};
+void x102() {
+bool x88 = x54;
+if (x88) {
+int x97 = x55;
+x96((uint8_t*)&x97, sizeof(x97));
 } else {
 }
 };
-void x56() {
-x50 = true;
-int x53 = x42;
-x51 = x53;
-};
-void x87(uint8_t* x80,int x81) {
-uint8_t* x82 = x80;
-uint8_t x84 = *x82;
-printf("%u\n",x84);
-};
-void x93() {
-bool x79 = x50;
-if (x79) {
-int x88 = x51;
-x87((uint8_t*)&x88, sizeof(x88));
-} else {
-}
-};
-void x96(uint8_t* x69,int x70) { //top1
-x68();
-uint8_t* x71 = x69;
-int x72 = x70;
-x29(x71,x72);
+void x105(uint8_t* x78,int x79) { //top1
+x77();
+uint8_t* x80 = x78;
+int x81 = x79;
+x29(x80,x81);
 x41();
-x49();
-x56();
-x93();
+x53();
+x65();
+x102();
 };
 /*****************************************
   End of C Generated Code                  

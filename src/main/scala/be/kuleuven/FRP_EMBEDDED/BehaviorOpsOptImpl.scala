@@ -31,32 +31,55 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
     lazy val valueInit = var_assign[A](value, init)
     override def getInitializer() = valueInit
 
+    lazy val behaviorfun = {
+      namedfun1 (mn.str) { (f: Rep[Ptr[Boolean]]) =>
+        ptr_assignToVal(f, true)
+        unitToRepUnit( () )
+      }
+    }
+
     override def generateNode() = {
       value
     }
 
-    override def produceFunction() = ()
-    override def useFunction() = ()
+    override def produceFunction() = behaviorfun
+    override def useFunction() = {
+      allocLocalBehVar()
+      val fired: Var[Boolean] = getSymMap.getOrElse(id, null)._2
+      behaviorfun(ptr_new(fired))
+    }
 
   }
 
-  case class ConcreteMap2Behavior[A:Typ,B:Typ,C](parents: (Behavior[A],Behavior[B]), f: (Rep[A],Rep[B])=>Rep[C])(implicit tC: Typ[C], mn: ModuleName)
-    extends Map2Behavior[A,B,C](parents, f) with BehaviorOptImpl[C]{
+  case class ConcreteMap2Behavior[A:Typ,B:Typ,C](parents: (Behavior[A],Behavior[B]), fun: (Rep[A],Rep[B])=>Rep[C])(implicit tC: Typ[C], mn: ModuleName)
+    extends Map2Behavior[A,B,C](parents, fun) with BehaviorOptImpl[C]{
 
     lazy val parentleftvalue: Var[A] = parentLeft.getValue
     lazy val parentrightvalue: Var[B] = parentRight.getValue
     lazy val value = vardeclmod_new[C](mn.str)
     override def getValue = value
-    lazy val valueInit = var_assign[C](value, f(parentleftvalue, parentrightvalue))
+    lazy val valueInit = var_assign[C](value, fun(parentleftvalue, parentrightvalue))
     override def getInitializer() = valueInit
-    lazy val behaviorfun: Rep[(Unit)=>Unit] = {
-      namedfun0 (mn.str) { () =>
-        var_assign[C](value, f(parentleftvalue, parentrightvalue))
+    lazy val behaviorfun = {
+      namedfun3 (mn.str) { (lf: Rep[Boolean], rf: Rep[Boolean], f: Rep[Ptr[Boolean]]) =>
+        if(lf || rf) {
+          ptr_assignToVal(f, true)
+          var_assign[C](value, fun(parentleftvalue, parentrightvalue))
+        }
+        else {
+          ptr_assignToVal(f, false)
+        }
         unitToRepUnit( () )
       }
     }
     override def produceFunction() = behaviorfun
-    override def useFunction() = behaviorfun( () )
+    override def useFunction() = {
+      allocLocalBehVar()
+      val parentleftfired: Var[Boolean] = getSymMap.getOrElse(parentLeft.id, (0,var_new[Boolean](false)))._2
+      val parentrightfired: Var[Boolean] = getSymMap.getOrElse(parentRight.id, (0,var_new[Boolean](false)))._2
+      val fired: Var[Boolean] = getSymMap.getOrElse(id, null)._2
+      behaviorfun(parentleftfired, parentrightfired, ptr_new(fired) )
+    }
     override def generateNode() = {
       value
       behaviorfun
@@ -64,8 +87,8 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
 
   }
 
-  case class ConcreteFoldpBehavior[A,B](parent: Event[A], f: (Rep[A],Rep[B])=>Rep[B], init: Rep[B])(implicit tA: Typ[A], tB: Typ[B], mn: ModuleName)
-    extends FoldpBehavior[A,B](parent,f,init) with BehaviorOptImpl[B] {
+  case class ConcreteFoldpBehavior[A,B](parent: Event[A], fun: (Rep[A],Rep[B])=>Rep[B], init: Rep[B])(implicit tA: Typ[A], tB: Typ[B], mn: ModuleName)
+    extends FoldpBehavior[A,B](parent,fun,init) with BehaviorOptImpl[B] {
 
     lazy val value = vardeclmod_new[B](mn.str)
     override def getValue = value
@@ -73,9 +96,13 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
     override def getInitializer() = valueInit
 
     lazy val behaviorfun = {
-      namedfun2 (mn.str) { (pv: Rep[A], pf: Rep[Boolean]) =>
+      namedfun3 (mn.str) { (pv: Rep[A], pf: Rep[Boolean], f: Rep[Ptr[Boolean]]) =>
         if(pf) {
-          var_assign[B](value, f(pv,readVar(value)))
+          ptr_assignToVal(f, true)
+          var_assign[B](value, fun(pv,readVar(value)))
+        }
+        else {
+          ptr_assignToVal(f, false)
         }
         unitToRepUnit( () )
       }
@@ -83,9 +110,11 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
 
     override def produceFunction() = behaviorfun
     override def useFunction() = {
+      allocLocalBehVar()
       val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired = getSymMap.getOrElse(parent.id, null)._2
-      behaviorfun(parentvalue, parentfired)
+      val fired: Var[Boolean] = getSymMap.getOrElse(id, null)._2
+      behaviorfun(parentvalue, parentfired, ptr_new(fired))
     }
     override def generateNode() = {
       value
@@ -106,29 +135,34 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
     lazy val valueInit = var_assign[C](value, init)
     override def getInitializer() = valueInit
     lazy val behaviorfun = {
-      namedfun4 (mn.str) { (plv: Rep[A], plf: Rep[Boolean], prv: Rep[B], prf: Rep[Boolean]) =>
+      namedfun5 (mn.str) { (plv: Rep[A], plf: Rep[Boolean], prv: Rep[B], prf: Rep[Boolean], f: Rep[Ptr[Boolean]]) =>
         if(plf && prf) {
+          ptr_assignToVal(f, true)
           var_assign[C](value, f3(plv, prv, readVar(value)))
         }
         else if(plf) {
+          ptr_assignToVal(f, true)
           var_assign[C](value, f1(plv, readVar(value)))
         }
         else if(prf){
+          ptr_assignToVal(f, true)
           var_assign[C](value, f2(prv, readVar(value)))
         }
         else{
-          // nothing to do
+          ptr_assignToVal(f, false)
         }
         unitToRepUnit( () )
       }
     }
     override def produceFunction() = behaviorfun
     override def useFunction() = {
+      allocLocalBehVar()
       val parentleftvalue = getSymMap.getOrElse(parentLeft.id, (parentLeft.createValue,0))._1.asInstanceOf[Var[A]]
       val parentleftfired = getSymMap.getOrElse(parentLeft.id, (0,var_new[Boolean](false)))._2
       val parentrightvalue = getSymMap.getOrElse(parentRight.id, (parentRight.createValue,0))._1.asInstanceOf[Var[B]]
       val parentrightfired = getSymMap.getOrElse(parentRight.id, (0,var_new[Boolean](false)))._2
-      behaviorfun(parentleftvalue, parentleftfired, parentrightvalue, parentrightfired)
+      val fired: Var[Boolean] = getSymMap.getOrElse(id, null)._2
+      behaviorfun(parentleftvalue, parentleftfired, parentrightvalue, parentrightfired, ptr_new(fired))
     }
     override def generateNode() = {
       value
@@ -145,8 +179,9 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
     lazy val valueInit = var_assign[A](value, init)
     override def getInitializer() = valueInit
     lazy val behaviorfun = {
-      namedfun2 (mn.str) { (pv: Rep[A], pf: Rep[Boolean]) =>
+      namedfun3 (mn.str) { (pv: Rep[A], pf: Rep[Boolean], f: Rep[Ptr[Boolean]]) =>
         if(pf) {
+          ptr_assignToVal(f, true)
           var_assign[A](value, pv)
         }
         unitToRepUnit( () )
@@ -155,9 +190,11 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
 
     override def produceFunction() = behaviorfun
     override def useFunction() = {
+      allocLocalBehVar()
       val parentvalue = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired = getSymMap.getOrElse(parent.id, null)._2
-      behaviorfun(parentvalue, parentfired)
+      val fired: Var[Boolean] = getSymMap.getOrElse(id, null)._2
+      behaviorfun(parentvalue, parentfired, ptr_new(fired))
     }
     override def generateNode() = {
       value
@@ -195,6 +232,13 @@ trait BehaviorOpsOptImpl extends BehaviorOps_Impl with NodeOpsImpl with ScalaOps
     // INTERNALS
     addNodeToNodemap(id,this)
     addBehaviorID(id)
+
+    def createFired = var_new[Boolean](false)
+
+    def allocLocalBehVar(): Unit = {
+      val f = createFired
+      addSymToSymMap(id, null, f)
+    }
 
     override val childNodeIDs = scala.collection.mutable.HashSet[NodeID]()
     override def addChild(id: NodeID): Unit = {

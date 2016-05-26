@@ -10,13 +10,13 @@
 #include <stdbool.h>
 
 int x134;
-int x155;
-void x163() {
-int x156 = x155;
-bool x157 = x156 == 0;
-if (x157) {
+int x166;
+void x174() {
+int x167 = x166;
+bool x168 = x167 == 0;
+if (x168) {
 x134 = 0;
-x155 = 1;
+x166 = 1;
 } else {
 }
 };
@@ -100,74 +100,87 @@ bool* x119 = x115;
 *x119 = true;
 }
 };
-void x145(int x135,bool x136) {
-bool x138 = x136;
-if (x138) {
-int x139 = x134;
-int x137 = x135;
-int x140 = x139 + x137;
-x134 = x140;
+void x150(int x135,bool x136,bool* x137) {
+bool x139 = x136;
+if (x139) {
+bool* x140 = x137;
+*x140 = true;
+int x142 = x134;
+int x138 = x135;
+int x143 = x142 + x138;
+x134 = x143;
+} else {
+bool* x140 = x137;
+*x140 = false;
+}
+};
+void x165(bool x151,int* x152,bool* x153) {
+bool x154 = x151;
+if (x154) {
+bool* x156 = x153;
+*x156 = true;
+} else {
+bool* x156 = x153;
+*x156 = false;
+}
+int x162 = x134;
+int* x155 = x152;
+*x155 = x162;
+};
+void x232(uint8_t* x225,int x226) {
+uint8_t* x227 = x225;
+uint8_t x229 = *x227;
+printf("%u\n",x229);
+};
+void x237(int x221,bool x222) {
+bool x224 = x222;
+if (x224) {
+int x223 = x221;
+x232((uint8_t*)&x223, sizeof(x223));
 } else {
 }
 };
-void x154(int* x146,bool* x147) {
-bool* x149 = x147;
-*x149 = true;
-int x151 = x134;
-int* x148 = x146;
-*x148 = x151;
-};
-void x218(uint8_t* x211,int x212) {
-uint8_t* x213 = x211;
-uint8_t x215 = *x213;
-printf("%u\n",x215);
-};
-void x223(int x207,bool x208) {
-bool x210 = x208;
-if (x210) {
-int x209 = x207;
-x218((uint8_t*)&x209, sizeof(x209));
-} else {
-}
-};
-void x227(uint8_t* x164,int x165) { //top1
-x163();
-bool x169 = false;
-int x170;
-int x171 = x170;
-int* x172 = &x171;
-bool x173 = x169;
-bool* x174 = &x173;
-uint8_t* x166 = x164;
-int x167 = x165;
-x31(x166,x167,x172,x174);
-bool x177 = false;
-int x178;
-int x179;
+void x241(uint8_t* x175,int x176) { //top1
+x174();
 bool x180 = false;
-int x181 = x179;
-bool x182 = x180;
-int x183 = x178;
-int* x184 = &x183;
-bool x185 = x177;
-bool* x186 = &x185;
-x111(x171,x173,x181,x182,x184,x186);
-bool x189 = false;
+int x181;
+int x182 = x181;
+int* x183 = &x182;
+bool x184 = x180;
+bool* x185 = &x184;
+uint8_t* x177 = x175;
+int x178 = x176;
+x31(x177,x178,x183,x185);
+bool x188 = false;
+int x189;
 int x190;
-int x191 = x190;
-int* x192 = &x191;
-bool x193 = x189;
-bool* x194 = &x193;
-x133(x183,x185,x192,x194);
-x145(x191,x193);
-bool x199 = false;
-int x200;
-int x201 = x200;
-int* x202 = &x201;
-bool x203 = x199;
-bool* x204 = &x203;
-x154(x202,x204);
-x223(x201,x203);
+bool x191 = false;
+int x192 = x190;
+bool x193 = x191;
+int x194 = x189;
+int* x195 = &x194;
+bool x196 = x188;
+bool* x197 = &x196;
+x111(x182,x184,x192,x193,x195,x197);
+bool x200 = false;
+int x201;
+int x202 = x201;
+int* x203 = &x202;
+bool x204 = x200;
+bool* x205 = &x204;
+x133(x194,x196,x203,x205);
+bool x208 = false;
+bool x209 = x208;
+bool* x210 = &x209;
+x150(x202,x204,x210);
+bool x213 = false;
+int x214;
+int x215 = x214;
+int* x216 = &x215;
+bool x217 = x213;
+bool* x218 = &x217;
+x165(x209,x216,x218);
+x237(x215,x217);
 };
 void x62(uint8_t* x32,int x33,int* x34,bool* x35) {
 int x40 = 0;
@@ -210,51 +223,54 @@ bool* x70 = x66;
 *x70 = false;
 }
 };
-void x283(uint8_t* x229,int x230) { //top2
-x163();
-bool x234 = false;
-int x235;
-int x236 = x235;
-int* x237 = &x236;
-bool x238 = x234;
-bool* x239 = &x238;
-uint8_t* x231 = x229;
-int x232 = x230;
-x62(x231,x232,x237,x239);
-bool x242 = false;
-int x243;
-int x244 = x243;
-int* x245 = &x244;
-bool x246 = x242;
-bool* x247 = &x246;
-x79(x236,x238,x245,x247);
-bool x250 = false;
-int x251;
-int x252;
-bool x253 = false;
-int x254 = x252;
-bool x255 = x253;
-int x256 = x251;
-int* x257 = &x256;
-bool x258 = x250;
-bool* x259 = &x258;
-x111(x254,x255,x244,x246,x257,x259);
-bool x262 = false;
-int x263;
-int x264 = x263;
-int* x265 = &x264;
-bool x266 = x262;
-bool* x267 = &x266;
-x133(x256,x258,x265,x267);
-x145(x264,x266);
-bool x272 = false;
-int x273;
-int x274 = x273;
-int* x275 = &x274;
-bool x276 = x272;
-bool* x277 = &x276;
-x154(x275,x277);
-x223(x274,x276);
+void x300(uint8_t* x243,int x244) { //top2
+x174();
+bool x248 = false;
+int x249;
+int x250 = x249;
+int* x251 = &x250;
+bool x252 = x248;
+bool* x253 = &x252;
+uint8_t* x245 = x243;
+int x246 = x244;
+x62(x245,x246,x251,x253);
+bool x256 = false;
+int x257;
+int x258 = x257;
+int* x259 = &x258;
+bool x260 = x256;
+bool* x261 = &x260;
+x79(x250,x252,x259,x261);
+bool x264 = false;
+int x265;
+int x266;
+bool x267 = false;
+int x268 = x266;
+bool x269 = x267;
+int x270 = x265;
+int* x271 = &x270;
+bool x272 = x264;
+bool* x273 = &x272;
+x111(x268,x269,x258,x260,x271,x273);
+bool x276 = false;
+int x277;
+int x278 = x277;
+int* x279 = &x278;
+bool x280 = x276;
+bool* x281 = &x280;
+x133(x270,x272,x279,x281);
+bool x284 = false;
+bool x285 = x284;
+bool* x286 = &x285;
+x150(x278,x280,x286);
+bool x289 = false;
+int x290;
+int x291 = x290;
+int* x292 = &x291;
+bool x293 = x289;
+bool* x294 = &x293;
+x165(x285,x292,x294);
+x237(x291,x293);
 };
 /*****************************************
   End of C Generated Code                  

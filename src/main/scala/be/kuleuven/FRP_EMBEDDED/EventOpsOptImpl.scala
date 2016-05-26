@@ -94,7 +94,7 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
 
     override def produceInput(): Unit = eventfun
     override def useInput(data: Rep[Ptr[Byte]], len: Rep[Int]): Unit = {
-      renewNode()
+      allocLocalEventVars()
       val value: Var[A] = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[A]]
       val fired: Var[Boolean] = getSymMap.getOrElse(id, null)._2
       eventfun(data, len, ptr_new(value), ptr_new(fired))
@@ -118,7 +118,7 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
 
     override def produceFunction() = eventfun
     override def useFunction() = {
-      renewNode()
+      allocLocalEventVars()
       val parentvalue: Var[A] = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired: Var[Boolean] = getSymMap.getOrElse(parent.id, null)._2
       val value = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[B]]
@@ -144,7 +144,7 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
 
     override def produceFunction() = eventfun
     override def useFunction() = {
-      renewNode()
+      allocLocalEventVars()
       val parentvalue: Var[A] = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired: Var[Boolean] = getSymMap.getOrElse(parent.id, null)._2
       val value = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[B]]
@@ -175,7 +175,7 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
 
     override def produceFunction() = eventfun
     override def useFunction() = {
-      renewNode()
+      allocLocalEventVars()
       val parentvalue: Var[A] = getSymMap.getOrElse(parent.id, null)._1.asInstanceOf[Var[A]]
       val parentfired: Var[Boolean] = getSymMap.getOrElse(parent.id, null)._2
       val value = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[A]]
@@ -210,7 +210,7 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
 
     override def produceFunction() = eventfun
     override def useFunction() = {
-      renewNode()
+      allocLocalEventVars()
       val parentleftvalue: Var[A] = getSymMap.getOrElse(parentLeft.id, (parentLeft.createValue,0))._1.asInstanceOf[Var[A]]
       val parentleftfired: Var[Boolean] = getSymMap.getOrElse(parentLeft.id, (0,var_new[Boolean](false)))._2
       val parentrightvalue: Var[A] = getSymMap.getOrElse(parentRight.id, (parentRight.createValue,0))._1.asInstanceOf[Var[A]]
@@ -227,18 +227,24 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     override val impl = new ImplWrapper
     lazy val parentvalue: Rep[In] = readVar(parent.getValue)
     lazy val eventfun = {
-      namedfun2 (mn.str) { (v: Rep[Ptr[A]], f: Rep[Ptr[Boolean]]) =>
-        ptr_assignToVal(f, true)
+      namedfun3 (mn.str) { (pf: Rep[Boolean], v: Rep[Ptr[A]], f: Rep[Ptr[Boolean]]) =>
+        if(pf){
+          ptr_assignToVal(f, true)
+        }
+        else {
+          ptr_assignToVal(f, false)
+        }
         ptr_assignToVal(v, parentvalue)
       }
     }
 
     override def produceFunction() = eventfun
     override def useFunction() = {
-      renewNode()
+      allocLocalEventVars()
+      val parentFired: Var[Boolean] = getSymMap.getOrElse(parent.id, null)._2
       val value: Var[A] = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[A]]
       val fired: Var[Boolean] = getSymMap.getOrElse(id, null)._2
-      eventfun(ptr_new(value), ptr_new(fired))
+      eventfun(parentFired, ptr_new(value), ptr_new(fired))
     }
 
   }
@@ -264,7 +270,7 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
 
     override def produceFunction() = eventfun
     override def useFunction() = {
-      renewNode()
+      allocLocalEventVars()
       val parentEventFired: Var[Boolean] = getSymMap.getOrElse(parentEvent.id, null)._2
       val value: Var[A] = getSymMap.getOrElse(id, null)._1.asInstanceOf[Var[A]]
       val fired: Var[Boolean] = getSymMap.getOrElse(id, null)._2
@@ -321,7 +327,7 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     def createValue = vardecl_new[A]
     def createFired = var_new[Boolean](false)
 
-    def renewNode(): Unit = {
+    def allocLocalEventVars(): Unit = { //TODO: rename to allocateLocalVariables
       val f = createFired
       val v = createValue
       addSymToSymMap(id, v, f)

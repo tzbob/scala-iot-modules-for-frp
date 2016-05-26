@@ -8,9 +8,10 @@
 #include "LMSBehaviorStartsWith1App.c"
 int main() {
 	uint8_t data = 5;
-	top1(&data, sizeof(data)); // out: 5
-	top1(&data, sizeof(data)); // out: 5
+	x105(&data, sizeof(data)); // out: 5
+	x105(&data, sizeof(data)); // out: 5
 }*/
+
 
 /*
 #include "LMSBehaviorFoldp1App.c"
@@ -18,19 +19,20 @@ int main() {
 
 int main() {
 	uint8_t data = 5;
-	top1(&data, sizeof(data)); // out: 6
-	top1(&data, sizeof(data)); // out: 11
+	x107(&data, sizeof(data)); // out: 6
+	x107(&data, sizeof(data)); // out: 11
 }*/
+
 
 /*
 #include "LMSBehaviorMap2App.c"
 int main() {
 	uint8_t data1 = 1;
-	top1(&data1, sizeof(data1)); // out: 3
+	x186(&data1, sizeof(data1)); // out: 3
 	uint8_t data2 = 2;	
-	top4(&data2, sizeof(data2)); // out: 5
-	top1(&data1, sizeof(data1)); // out: 6
-	top4(&data2, sizeof(data2)); // out: 8
+	x201(&data2, sizeof(data2)); // out: 5
+	x186(&data1, sizeof(data1)); // out: 6
+	x201(&data2, sizeof(data2)); // out: 8
 }*/
 
 /*
@@ -39,8 +41,8 @@ int main() {
 	//init_module1();
 	//printf("behavior: %d\n",x47);
 	uint8_t x = 1;
-	x105(&x, sizeof(x)); // out: 12
-	x105(&x, sizeof(x)); // out: 15
+	x123(&x, sizeof(x)); // out: 12
+	x123(&x, sizeof(x)); // out: 15
 }*/
 
 
@@ -49,18 +51,18 @@ int main() {
 int main() {
 	uint8_t data1 = 10;
 	uint8_t data2 = 5;	
-	x150(&data2, sizeof(data2));
+	x163(&data2, sizeof(data2));
 	printf("top2\n");
 	printf("behavior disconnected: %d\n",x59);
-	printf("behavior at snapshot: %d\n",x81);
-	x121(&data1, sizeof(data1));
+	printf("behavior at snapshot: %d\n",x85);
+	x134(&data1, sizeof(data1));
 	printf("top1\n");	
 	printf("behavior disconnected: %d\n",x59);
-	printf("behavior at snapshot: %d\n",x81);
-	x150(&data2, sizeof(data2));
+	printf("behavior at snapshot: %d\n",x85);
+	x163(&data2, sizeof(data2));
 	printf("top2\n");
 	printf("behavior disconnected: %d\n",x59);
-	printf("behavior at snapshot: %d\n",x81);
+	printf("behavior at snapshot: %d\n",x85);
 }*/
 
 
@@ -70,9 +72,9 @@ int main() {
 	//init_module1();
 	//printf("behavior: %d\n",x47);
 	uint8_t x = 2;
-	x96(&x, sizeof(x)); // out: 5
+	x115(&x, sizeof(x)); // out: 5
 	x = 4;
-	x96(&x, sizeof(x)); // out: 7
+	x115(&x, sizeof(x)); // out: 7
 }*/
 
 
@@ -82,7 +84,7 @@ int main() {
 	//init_module1();
 	//printf("behavior: %d\n",x47);
 	uint8_t x = 1;
-	x109(&x, sizeof(x)); // out = b: 6
-	x109(&x, sizeof(x)); // out = b: 8
+	x137(&x, sizeof(x)); // out = b: 6
+	x137(&x, sizeof(x)); // out = b: 8
 }
 

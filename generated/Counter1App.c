@@ -20,21 +20,22 @@ int x73;
 bool x98;
 int x99;
 int x116;
-bool x126;
-int x127;
-int x133;
-void x147() {
-int x134 = x133;
-bool x135 = x134 == 0;
-if (x135) {
+bool x117;
+bool x130;
+int x131;
+int x142;
+void x156() {
+int x143 = x142;
+bool x144 = x143 == 0;
+if (x144) {
 x116 = 0;
-x133 = 1;
+x142 = 1;
 } else {
 }
 x98 = false;
 x1 = false;
 x30 = false;
-x126 = false;
+x130 = false;
 x59 = false;
 x72 = false;
 };
@@ -105,44 +106,51 @@ x98 = false;
 x98 = false;
 }
 };
-void x125() {
-bool x117 = x98;
-if (x117) {
-int x118 = x99;
-int x119 = x116;
-int x120 = x119 + x118;
-x116 = x120;
+void x129() {
+bool x118 = x98;
+if (x118) {
+x117 = true;
+int x120 = x99;
+int x121 = x116;
+int x122 = x121 + x120;
+x116 = x122;
+} else {
+x117 = false;
+}
+};
+void x141() {
+bool x132 = x117;
+if (x132) {
+x130 = true;
+int x134 = x116;
+x131 = x134;
+} else {
+x130 = false;
+}
+};
+void x176(uint8_t* x169,int x170) {
+uint8_t* x171 = x169;
+uint8_t x173 = *x171;
+printf("%u\n",x173);
+};
+void x182() {
+bool x168 = x130;
+if (x168) {
+int x177 = x131;
+x176((uint8_t*)&x177, sizeof(x177));
 } else {
 }
 };
-void x132() {
-x126 = true;
-int x129 = x116;
-x127 = x129;
-};
-void x167(uint8_t* x160,int x161) {
-uint8_t* x162 = x160;
-uint8_t x164 = *x162;
-printf("%u\n",x164);
-};
-void x173() {
-bool x159 = x126;
-if (x159) {
-int x168 = x127;
-x167((uint8_t*)&x168, sizeof(x168));
-} else {
-}
-};
-void x176(uint8_t* x148,int x149) { //top1
-x147();
-uint8_t* x150 = x148;
-int x151 = x149;
-x29(x150,x151);
+void x185(uint8_t* x157,int x158) { //top1
+x156();
+uint8_t* x159 = x157;
+int x160 = x158;
+x29(x159,x160);
 x97();
 x115();
-x125();
-x132();
-x173();
+x129();
+x141();
+x182();
 };
 void x58(uint8_t* x32,int x33) {
 int x36 = 0;
@@ -180,17 +188,17 @@ x60 = x64;
 x59 = false;
 }
 };
-void x192(uint8_t* x178,int x179) { //top2
-x147();
-uint8_t* x180 = x178;
-int x181 = x179;
-x58(x180,x181);
+void x201(uint8_t* x187,int x188) { //top2
+x156();
+uint8_t* x189 = x187;
+int x190 = x188;
+x58(x189,x190);
 x71();
 x97();
 x115();
-x125();
-x132();
-x173();
+x129();
+x141();
+x182();
 };
 /*****************************************
   End of C Generated Code                  

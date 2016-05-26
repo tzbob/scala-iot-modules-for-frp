@@ -174,7 +174,7 @@ trait SMCGenModules extends CGenEffect with SMCLikeCodeGen {
           "  int result = vuprintf(pmodcls_putchar, fmt, va);\n  " +
           "  va_end(va);\n  return result;\n" +
           "}\n\n" +
-          "static void __attribute__((noinline)) lcd_clear()\n{\n  lcd_printf(\"%s\",\"                                \");\n}" +
+          "static void __attribute__((noinline)) lcd_clear()\n{\n  lcd_printf(\"%s\",\"                                \");\n}\n" +
           "static void __attribute__((noinline)) lcd_printf_int(const char* fmt, int i)\n" +
           "{\n  " +
           "  lcd_printf(fmt, i);\n" +

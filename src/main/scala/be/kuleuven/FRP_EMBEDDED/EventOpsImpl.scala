@@ -216,10 +216,16 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
 
     override val impl = new ImplWrapper()
     lazy val parentvalue: Rep[In] = readVar(parent.getValue)
+    lazy val parentfired: Rep[Boolean] = readVar(parent.getFired)
     lazy val eventfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>
-        var_assign(fired, unit(true))
-        var_assign[Out](value, parentvalue)
+        if(parentfired) {
+          var_assign(fired, unit(true))
+          var_assign[Out](value, parentvalue)
+        }
+        else{
+          var_assign(fired, unit(false))
+        }
       }
     }
     override def produceFunction() = eventfun
