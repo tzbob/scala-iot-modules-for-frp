@@ -10,7 +10,7 @@ class LevelEventTest extends FunSuite {
 
       override def createApplication: List[Module[_]] = {
         createModule[Nothing] { implicit n: ModuleName =>
-          val t: Event[Int] = TimerEvent(5)
+          val t: Event[Int] = AInputEvent
           val m1: Event[Int] = t.map((x) => x * 2)
           val m2: Event[Int] = m1.map((x) => x * 4)
 
@@ -30,7 +30,7 @@ class LevelEventTest extends FunSuite {
 
       override def createApplication: List[Module[_]] = {
         createModule[Nothing] { implicit n: ModuleName =>
-          val t = TimerEvent(5)
+          val t = AInputEvent
           val mleft = t.map(x => x * 2)
           val mleftleft = mleft.map(x => x * 2)
           val mleftright = mleft.map(x => x)

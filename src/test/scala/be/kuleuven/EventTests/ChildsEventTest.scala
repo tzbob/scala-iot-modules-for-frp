@@ -11,7 +11,7 @@ class ChildsEventTest extends FunSuite {
 
       override def createApplication: List[Module[_]] = {
         createModule[Nothing] { implicit n: ModuleName =>
-          val t: Event[Int] = TimerEvent(5)
+          val t: Event[Int] = AInputEvent
 
           val c1: Event[Int] = t.constant(1)
           val f1: Event[Int] = c1.filter((i: Rep[Int]) => {
@@ -64,7 +64,7 @@ class ChildsEventTest extends FunSuite {
 
       override def createApplication: List[Module[_]] = {
         createModule[Nothing] { implicit n: ModuleName =>
-          val t: Event[Int] = TimerEvent(2)
+          val t: Event[Int] = AInputEvent
 
           val m2 = t.map((x) => {
             println("map2");
@@ -106,7 +106,7 @@ class ChildsEventTest extends FunSuite {
 
       override def createApplication: List[Module[_]] = {
         createModule[Nothing] { implicit n: ModuleName =>
-          val t: Event[Int] = TimerEvent(2)
+          val t: Event[Int] = AInputEvent
 
           val m2 = t.map((x) => {
             println("map2");
