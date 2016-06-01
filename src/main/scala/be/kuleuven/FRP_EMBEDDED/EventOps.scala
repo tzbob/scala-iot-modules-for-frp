@@ -23,7 +23,8 @@ trait EventOps extends NodeOps {
     def startsWith(i: Rep[A])(implicit n: ModuleName): Behavior[A]
     def foldp[B:Typ]( f:((Rep[A],Rep[B]) => Rep[B]), init: Rep[B])(implicit n: ModuleName): Behavior[B]
     def foldp2[B:Typ, C:Typ]
-      (e: Event[B],
+      (e: Event[B])
+      (
        f1:((Rep[A],Rep[C]) => Rep[C]),f2:((Rep[B],Rep[C]) => Rep[C]), f3:((Rep[A],Rep[B],Rep[C]) => Rep[C]),
        init: Rep[C]
       )(implicit n: ModuleName): Behavior[C]
@@ -44,7 +45,7 @@ trait EventOps extends NodeOps {
   def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit n: ModuleName): Event[A]
 
   def out[A:Typ](name: String, e: Event[A])(implicit n: ModuleName): OutputEvent[A]
-  private[FRP_EMBEDDED] abstract class OutputEvent[A:Typ](val mn: ModuleName, val outName: String)
+  abstract class OutputEvent[A:Typ](val mn: ModuleName, val outName: String)
 }
 
 trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {

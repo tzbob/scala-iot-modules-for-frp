@@ -36,7 +36,7 @@ trait Counter2App extends FRPDSLApplication {
       val filtered2 =
         input2.filter( _ < 10)
       val counter =
-        filtered1.foldp2(filtered2,
+        filtered1.foldp2(filtered2)(
           (x:Rep[Int], state:Rep[Int])=>state + x,
           (y:Rep[Int], state:Rep[Int])=>state - y,
           (x:Rep[Int], y:Rep[Int], state:Rep[Int])=>state + x - y,

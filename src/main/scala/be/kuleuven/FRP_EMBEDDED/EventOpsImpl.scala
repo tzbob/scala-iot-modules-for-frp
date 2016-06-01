@@ -273,7 +273,8 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
       ConcreteFoldpBehavior[A,B](this, f, init)(typOut, tB, n)
     }
     override def foldp2[B,C]
-    (e: Event[B],
+    (e: Event[B])
+    (
      f1:((Rep[A],Rep[C]) => Rep[C]),f2:((Rep[B],Rep[C]) => Rep[C]), f3:((Rep[A],Rep[B],Rep[C]) => Rep[C]),
      init: Rep[C]
     )(implicit tB: Typ[B], tC: Typ[C], n: ModuleName): Behavior[C] = {
