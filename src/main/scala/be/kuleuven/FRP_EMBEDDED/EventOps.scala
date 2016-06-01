@@ -45,7 +45,7 @@ trait EventOps extends NodeOps {
   def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit n: ModuleName): Event[A]
 
   def out[A:Typ](name: String, e: Event[A])(implicit n: ModuleName): OutputEvent[A]
-  abstract class OutputEvent[A:Typ](val mn: ModuleName, val outName: String)
+  private[FRP_EMBEDDED] abstract class OutputEvent[A:Typ](val mn: ModuleName, val outName: String)
 }
 
 trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
