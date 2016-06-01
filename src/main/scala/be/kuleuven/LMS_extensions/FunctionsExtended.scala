@@ -329,8 +329,8 @@ trait CGenFunctionsExt extends CGenFunctions {
       stream.println("};")
     case NamedLambdaEntry(_, funname, fun, x, y) =>
       val retType = remap(getBlockResult(y).tp)
-      //stream.println(retType + " " + quote(sym) + "(" + remap(x.tp) + " " + quote(x) + ") {")
-      stream.println(retType + " " + funname + "(" + remap(x.tp) + " " + quote(x) + ") {")
+      stream.println(retType + " " + quote(sym) + "(" + remap(x.tp) + " " + quote(x) + ") {")
+      //stream.println(retType + " " + funname + "(" + remap(x.tp) + " " + quote(x) + ") {")
       emitBlock(y)
       val z = getBlockResult(y)
       if (retType != "void")
@@ -404,8 +404,8 @@ trait CGenTupledFunctionsExt extends CGenFunctionsExt with GenericGenUnboxedTupl
       stream.println("};")
     case NamedLambdaEntry(_, funname, fun, UnboxedTuple(xs), y) =>
       val retType = remap(getBlockResult(y).tp)
-      //stream.println(retType + " " + quote(sym) + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
-      stream.println(retType + " " + funname + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
+      stream.println(retType + " " + quote(sym) + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
+      //stream.println(retType + " " + funname + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
       emitBlock(y)
       val z = getBlockResult(y)
       if (retType != "void")
@@ -469,8 +469,8 @@ trait SMCGenFunctionsExt extends CGenFunctions {
       //stream.println("SM_OUTPUT("+ name + "," + funname + ");")
     case NamedLambdaEntry(name, funname, fun, x, y) =>
       val retType = remap(getBlockResult(y).tp)
-      //stream.println("SM_ENTRY("+ name + ") " + retType + " " + quote(sym) + "(" + remap(x.tp) + " " + quote(x) + ") {")
-      stream.println("SM_ENTRY("+ name + ") " + retType + " " + funname + "(" + remap(x.tp) + " " + quote(x) + ") {")
+      stream.println("SM_ENTRY("+ name + ") " + retType + " " + quote(sym) + "(" + remap(x.tp) + " " + quote(x) + ") {")
+      //stream.println("SM_ENTRY("+ name + ") " + retType + " " + funname + "(" + remap(x.tp) + " " + quote(x) + ") {")
       emitBlock(y)
       val z = getBlockResult(y)
       if (retType != "void")
@@ -548,8 +548,8 @@ trait SMCGenTupledFunctionsExt extends SMCGenFunctionsExt with GenericGenUnboxed
       //stream.println("SM_OUTPUT("+ name + "," + funname + ");")
     case NamedLambdaEntry(name, funname, fun, UnboxedTuple(xs), y) =>
       val retType = remap(getBlockResult(y).tp)
-      //stream.println("SM_ENTRY("+ name + ") " + retType + " " + quote(sym) + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
-      stream.println("SM_ENTRY("+ name + ") " + retType + " " + funname + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
+      stream.println("SM_ENTRY("+ name + ") " + retType + " " + quote(sym) + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
+      //stream.println("SM_ENTRY("+ name + ") " + retType + " " + funname + "(" + xs.map(s=>remap(s.tp)+" "+quote(s)).mkString(",") +") {")
       emitBlock(y)
       val z = getBlockResult(y)
       if (retType != "void")

@@ -20,13 +20,15 @@ int x59;
 bool x85;
 int x86;
 int x112;
-void x124() {
+void x119() {
 int x113 = x112;
 bool x114 = x113 == 0;
 if (x114) {
 x112 = 1;
 } else {
 }
+};
+void x126() {
 x85 = false;
 x1 = false;
 x30 = false;
@@ -136,29 +138,30 @@ x85 = false;
 }
 }
 };
-void x144(uint8_t* x137,int x138) {
-uint8_t* x139 = x137;
-uint8_t x141 = *x139;
-printf("%u\n",x141);
+void x147(uint8_t* x140,int x141) {
+uint8_t* x142 = x140;
+uint8_t x144 = *x142;
+printf("%u\n",x144);
 };
-void x150() {
-bool x136 = x85;
-if (x136) {
-int x145 = x86;
-x144((uint8_t*)&x145, sizeof(x145));
+void x153() {
+bool x139 = x85;
+if (x139) {
+int x148 = x86;
+x147((uint8_t*)&x148, sizeof(x148));
 } else {
 }
 };
-void x153(uint8_t* x125,int x126) { //top1
-x124();
-uint8_t* x127 = x125;
-int x128 = x126;
-x29(x127,x128);
+void x156(uint8_t* x127,int x128) { //top1
+x119();
+x126();
+uint8_t* x129 = x127;
+int x130 = x128;
+x29(x129,x130);
 x43();
 x57();
 x84();
 x111();
-x150();
+x153();
 };
 /*****************************************
   End of C Generated Code                  

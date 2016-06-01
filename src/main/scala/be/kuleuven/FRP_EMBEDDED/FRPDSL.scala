@@ -30,16 +30,16 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
   def buildProgram(modList: List[Module[_]]): () => Rep[Unit] = {
     () => {
       headers()
-      val list = for (module <- modList) yield {
+      val (list, inits) = (for (module <- modList) yield {
         generateModule(module)
-      }
+      }).unzip
       val inputToToplevel = list.flatten
 
-      generateExtras(modList, inputToToplevel)
+      generateExtras(modList, inputToToplevel, inits)
     }
   }
 
-  def generateModule(module: Module[_]): Map[NodeID,Rep[((Ptr[Byte],Int))=>Unit]] = {
+  def generateModule(module: Module[_]): (Map[NodeID,Rep[((Ptr[Byte],Int))=>Unit]], Rep[(Unit)=>Unit]) = {
     // generate per level
     System.err.println("max level : " + getMaxLevel)
     for (i <- 0 to getMaxLevel) {
@@ -52,7 +52,7 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
     val behaviorsInModule = getBehaviorNodes.values.filter( node => node.moduleName == module.name)
 
     val initialised = vardeclmod_new[Int](module.name.toString())
-    val initModule: Rep[(Unit) => Unit] = namedfun0(module.name.toString()) { () =>
+    val initModule: Rep[(Unit) => Unit] = entryfun0(module.name.toString(), "initModule") { () =>
       if (readVar(initialised) == 0) {
         for (i <- 0 to getMaxLevel) {
           getNodesOnLevel(behaviorsInModule.toList, i)
@@ -60,17 +60,24 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
         }
         var_assign(initialised, 1)
       }
-
-      generateGlobalFRPInits(module)
+      else{
+        // Nothing outside if check since this would be executable from outside of module (!)
+      }
       unitToRepUnit(())
     }
 
-    generateTopFunctions(module, initModule)
+    val initNodes: Rep[(Unit)=>Unit] = namedfun0(module.name.toString()) { () =>
+      generateGlobalFRPInits(module)
+      unitToRepUnit( () )
+    }
+
+    (generateTopFunctions(module, initModule, initNodes), initModule)
   }
 
   def generateGlobalFRPInits(module: Module[_]): Unit
 
-  def generateTopFunctions(module: Module[_], initModule: Rep[(Unit) => Unit]): Map[NodeID,Rep[((Ptr[Byte],Int))=>Unit]] = {
+  def generateTopFunctions(module: Module[_], initModule: Rep[(Unit) => Unit], initNodes: Rep[(Unit) => Unit])
+    : Map[NodeID,Rep[((Ptr[Byte],Int))=>Unit]] = {
 
     val inputToTopMap: scala.collection.mutable.Map[NodeID,Rep[((Ptr[Byte],Int))=>Unit]] = scala.collection.mutable.HashMap()
 
@@ -81,7 +88,7 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
     // generate top functions
     for( ie <- modinputs) {
       System.err.println("Generate dependencies of inputnode " + ie.id)
-      val toplevelfun = generateTopFunction(ie, initModule, module)
+      val toplevelfun = generateTopFunction(ie, initModule, initNodes, module)
       inputToTopMap += ((ie.id, toplevelfun))
     }
     System.err.println("End of generateModule")
@@ -89,7 +96,9 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
     inputToTopMap.toMap
   }
 
-  def generateTopFunction[X](input: InputEvent[X], initModule: => Rep[(Unit)=>Unit], m: Module[_]): Rep[((Ptr[Byte],Int))=>Unit] = {
+  def generateTopFunction[X](input: InputEvent[X], initModule: => Rep[(Unit)=>Unit], initNodes: Rep[(Unit)=>Unit], m: Module[_])
+    : Rep[((Ptr[Byte],Int))=>Unit] = {
+
     System.err.println("top" + input.id)
 
     val descendantIDs = getDecendantNodeIDs(input).filter(id => id != input.id)
@@ -111,8 +120,8 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
     val top: Rep[((Ptr[Byte],Int))=>Unit] = inputfun(input.moduleName.str, "top"+input.id) { (data: Rep[Ptr[Byte]], len: Rep[Int]) =>
       //disableInterrupts()
 
-      //if(behaviorsInModule.size > 0) initModule()
-      initModule()
+      initModule() // can be removed if main is always generated!
+      initNodes()
 
       resetSymMap()
       input.useInput(data, len)
@@ -132,7 +141,8 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
     top
   }
 
-  def generateExtras(modlist: List[Module[_]], inputToToplevel: List[(NodeID, Rep[((Ptr[Byte], Int)) => Unit])]): Unit = {
+  def generateExtras(modlist: List[Module[_]], inputToToplevel: List[(NodeID, Rep[((Ptr[Byte], Int)) => Unit])], initModules: List[Rep[(Unit)=>Unit]])
+    : Unit = {
 
     for( mod <- modlist) {
       declare_module(mod.name.str)
@@ -194,6 +204,9 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
         assert(resultButton.length == 1)
         registerButton(id, resultButton(0)._2)
       }
+
+      unchecked[Unit]("\n// modules inits")
+      for(init <- initModules) init( () )
 
       eventLoop(getButtonsRegister.keys.toList.length > 0, timercb.isDefined)
 

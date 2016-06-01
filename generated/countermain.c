@@ -30,21 +30,21 @@ int main() {
 #include "Counter2App.c"
 int main() {
 	uint8_t data = 3;
-	printf("Counter: %d\n", x93);
+	printf("Counter: %d\n", x94);
 
 	printf("plus %d\n", data);
-	x179(&data, sizeof(data));
-	printf("Counter: %d\n", x93);
+	x180(&data, sizeof(data));
+	printf("Counter: %d\n", x94);
 
 	data = 1;
 	printf("minus %d\n", data);
-	x193(&data, sizeof(data));
-	printf("Counter: %d\n", x93);
+	x194(&data, sizeof(data));
+	printf("Counter: %d\n", x94);
 	
 	data = 30;
 	printf("plus %d\n", data);
-	x179(&data, sizeof(data));
-	printf("Counter: %d\n", x93);
+	x180(&data, sizeof(data));
+	printf("Counter: %d\n", x94);
 
 }
 

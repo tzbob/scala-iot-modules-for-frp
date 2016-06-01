@@ -18,7 +18,7 @@ int x43;
 bool x56;
 int x57;
 int x68;
-void x80() {
+void x76() {
 int x69 = x68;
 bool x70 = x69 == 0;
 if (x70) {
@@ -26,6 +26,8 @@ x43 = 1;
 x68 = 1;
 } else {
 }
+};
+void x82() {
 x30 = false;
 x56 = false;
 x1 = false;
@@ -88,28 +90,29 @@ x57 = x60;
 x56 = false;
 }
 };
-void x99(uint8_t* x92,int x93) {
-uint8_t* x94 = x92;
-uint8_t x96 = *x94;
-printf("%u\n",x96);
+void x102(uint8_t* x95,int x96) {
+uint8_t* x97 = x95;
+uint8_t x99 = *x97;
+printf("%u\n",x99);
 };
-void x105() {
-bool x91 = x56;
-if (x91) {
-int x100 = x57;
-x99((uint8_t*)&x100, sizeof(x100));
+void x108() {
+bool x94 = x56;
+if (x94) {
+int x103 = x57;
+x102((uint8_t*)&x103, sizeof(x103));
 } else {
 }
 };
-void x108(uint8_t* x81,int x82) { //top1
-x80();
-uint8_t* x83 = x81;
-int x84 = x82;
-x29(x83,x84);
+void x111(uint8_t* x83,int x84) { //top1
+x76();
+x82();
+uint8_t* x85 = x83;
+int x86 = x84;
+x29(x85,x86);
 x41();
 x55();
 x67();
-x105();
+x108();
 };
 /*****************************************
   End of C Generated Code                  

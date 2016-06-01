@@ -79,7 +79,7 @@ int x277 = x263;
 pmodcls_set_cursor_position(0,0);
 lcd_printf_int("%d", x277);
 }
-SM_FUNC(mod1) void x305 () {
+SM_ENTRY(mod1) void x291() {
 int x282 = x281;
 bool x283 = x282 == 0;
 if (x283) {
@@ -89,6 +89,8 @@ x280();
 x281 = 1;
 } else {
 }
+}
+SM_FUNC(mod1) void x307 () {
 x141 = false;
 x181 = false;
 x1 = false;
@@ -177,11 +179,12 @@ x168 = x173;
 x167 = false;
 }
 }
-SM_INPUT(mod1,x317,x306,x307) { //top1
-x305();
-uint8_t* x308 = x306;
-int x309 = x307;
-x29(x308,x309);
+SM_INPUT(mod1,x320,x308,x309) { //top1
+x291();
+x307();
+uint8_t* x310 = x308;
+int x311 = x309;
+x29(x310,x311);
 x128();
 x166();
 x180();
@@ -286,11 +289,12 @@ x263 = x268;
 x262 = false;
 }
 }
-SM_INPUT(mod1,x333,x319,x320) { //top9
-x305();
-uint8_t* x321 = x319;
-int x322 = x320;
-x58(x321,x322);
+SM_INPUT(mod1,x337,x322,x323) { //top9
+x291();
+x307();
+uint8_t* x324 = x322;
+int x325 = x323;
+x58(x324,x325);
 x192();
 x217();
 x243();
@@ -333,11 +337,12 @@ x194 = x197;
 x193 = false;
 }
 }
-SM_INPUT(mod1,x348,x335,x336) { //top7
-x305();
-uint8_t* x337 = x335;
-int x338 = x336;
-x87(x337,x338);
+SM_INPUT(mod1,x353,x339,x340) { //top7
+x291();
+x307();
+uint8_t* x341 = x339;
+int x342 = x340;
+x87(x341,x342);
 x204();
 x243();
 x261();
@@ -379,17 +384,18 @@ x130 = -1;
 x129 = false;
 }
 }
-SM_INPUT(mod1,x361,x350,x351) { //top3
-x305();
-uint8_t* x352 = x350;
-int x353 = x351;
-x116(x352,x353);
+SM_INPUT(mod1,x367,x355,x356) { //top3
+x291();
+x307();
+uint8_t* x357 = x355;
+int x358 = x356;
+x116(x357,x358);
 x140();
 x166();
 x180();
 }
 DECLARE_SM(mod1, 0x1234);
-static void x418 () {
+static void x424 () {
   //INIT FUNCTION
   WDTCTL = WDTHOLD | WDTPW;
   uart_init();
@@ -398,68 +404,71 @@ static void x418 () {
   buttons_init();
   asm("eint");
 }
-static void x421 () {
+static void x427 () {
   //DEPLOY FUNCTION
   sancus_enable(&mod1);
   sm_register_existing(&mod1);
 
 }
-static void x376 (int x364) {
-bool x365 = x364 == 1;
-if (x365) {
-int x366 = 2;
-int x367 = x366;
-uint8_t x368 = (uint8_t ) x367;
-uint8_t* x369 = &x368;
-size_t x370 = sizeof(x368);
-x333(x369,x370);
+static void x382 (int x370) {
+bool x371 = x370 == 1;
+if (x371) {
+int x372 = 2;
+int x373 = x372;
+uint8_t x374 = (uint8_t ) x373;
+uint8_t* x375 = &x374;
+size_t x376 = sizeof(x374);
+x337(x375,x376);
 } else {
 }
 }
-static void x389 (int x377) {
-bool x378 = x377 == 1;
-if (x378) {
-int x379 = 4;
-int x380 = x379;
-uint8_t x381 = (uint8_t ) x380;
-uint8_t* x382 = &x381;
-size_t x383 = sizeof(x381);
-x361(x382,x383);
+static void x395 (int x383) {
+bool x384 = x383 == 1;
+if (x384) {
+int x385 = 4;
+int x386 = x385;
+uint8_t x387 = (uint8_t ) x386;
+uint8_t* x388 = &x387;
+size_t x389 = sizeof(x387);
+x367(x388,x389);
 } else {
 }
 }
-static void x402 (int x390) {
-bool x391 = x390 == 1;
-if (x391) {
-int x392 = 1;
-int x393 = x392;
-uint8_t x394 = (uint8_t ) x393;
-uint8_t* x395 = &x394;
-size_t x396 = sizeof(x394);
-x348(x395,x396);
+static void x408 (int x396) {
+bool x397 = x396 == 1;
+if (x397) {
+int x398 = 1;
+int x399 = x398;
+uint8_t x400 = (uint8_t ) x399;
+uint8_t* x401 = &x400;
+size_t x402 = sizeof(x400);
+x353(x401,x402);
 } else {
 }
 }
-static void x415 (int x403) {
-bool x404 = x403 == 1;
-if (x404) {
-int x405 = 3;
-int x406 = x405;
-uint8_t x407 = (uint8_t ) x406;
-uint8_t* x408 = &x407;
-size_t x409 = sizeof(x407);
-x317(x408,x409);
+static void x421 (int x409) {
+bool x410 = x409 == 1;
+if (x410) {
+int x411 = 3;
+int x412 = x411;
+uint8_t x413 = (uint8_t ) x412;
+uint8_t* x414 = &x413;
+size_t x415 = sizeof(x413);
+x320(x414,x415);
 } else {
 }
 }
 int main() {
-x418();
+x424();
 puts("main started");
-x421();
-buttons_register_callback(Button2,x376);
-buttons_register_callback(Button4,x389);
-buttons_register_callback(Button1,x402);
-buttons_register_callback(Button3,x415);
+x427();
+buttons_register_callback(Button2,x382);
+buttons_register_callback(Button4,x395);
+buttons_register_callback(Button1,x408);
+buttons_register_callback(Button3,x421);
+
+// modules inits;
+x291();
 while(1) {
   buttons_handle_events();
 }

@@ -18,13 +18,15 @@ int x43;
 bool x60;
 int x61;
 int x73;
-void x84() {
+void x80() {
 int x74 = x73;
 bool x75 = x74 == 0;
 if (x75) {
 x73 = 1;
 } else {
 }
+};
+void x86() {
 x30 = false;
 x60 = false;
 x1 = false;
@@ -92,28 +94,29 @@ x61 = x65;
 x60 = false;
 }
 };
-void x103(uint8_t* x96,int x97) {
-uint8_t* x98 = x96;
-uint8_t x100 = *x98;
-printf("%u\n",x100);
+void x106(uint8_t* x99,int x100) {
+uint8_t* x101 = x99;
+uint8_t x103 = *x101;
+printf("%u\n",x103);
 };
-void x109() {
-bool x95 = x60;
-if (x95) {
-int x104 = x61;
-x103((uint8_t*)&x104, sizeof(x104));
+void x112() {
+bool x98 = x60;
+if (x98) {
+int x107 = x61;
+x106((uint8_t*)&x107, sizeof(x107));
 } else {
 }
 };
-void x112(uint8_t* x85,int x86) { //top1
-x84();
-uint8_t* x87 = x85;
-int x88 = x86;
-x29(x87,x88);
+void x115(uint8_t* x87,int x88) { //top1
+x80();
+x86();
+uint8_t* x89 = x87;
+int x90 = x88;
+x29(x89,x90);
 x41();
 x59();
 x72();
-x109();
+x112();
 };
 /*****************************************
   End of C Generated Code                  
