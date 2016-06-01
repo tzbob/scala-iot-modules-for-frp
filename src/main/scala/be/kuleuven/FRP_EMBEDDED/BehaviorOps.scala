@@ -18,7 +18,6 @@ trait BehaviorOps extends NodeOps {
     def map2[B:Typ,C:Typ] (b: Behavior[B], f: (Rep[A], Rep[B])=>Rep[C])(implicit n: ModuleName): Behavior[C]
     //def map3
     //def map4
-    //...
 
     // Snapshot: Output event fires an event containing the current value of behavior,
     // each time input e fires an event
@@ -38,7 +37,6 @@ trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {
 
   def getBehaviorNodes: Map[NodeID,Node[_]] =
     getNodeMap.filter{ case (id, _) => getBehaviorIDs.contains(id) }
-
 
   abstract class ConstantBehavior[A](init: Rep[A])(implicit val tA: Typ[A], mn: ModuleName) extends Behavior[A] {
 
@@ -136,7 +134,7 @@ trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {
     val parentlevels = for ( p <- parents) yield { p.level }
     override val level = parentlevels.max + 1
 
-    def getParentInputnodes(): Set[NodeID] = {
+    def getParentInputnodes: Set[NodeID] = {
       val setB = scala.collection.mutable.ListBuffer.empty[NodeID]
       for (i <- parents) {
         for( nodeid <- i.inputNodeIDs) setB += nodeid
@@ -144,7 +142,7 @@ trait BehaviorOps_Impl extends BehaviorOps with ScalaOpsPkgExpExt {
       setB.toSet
     }
 
-    override val inputNodeIDs: Set[NodeID] = getParentInputnodes()
+    override val inputNodeIDs: Set[NodeID] = getParentInputnodes
 
     lazy val behaviorfun: Rep[(Unit)=>Unit] = {
       namedfun0 (mn.str) { () =>

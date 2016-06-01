@@ -27,7 +27,6 @@ trait EventOps extends NodeOps {
        f1:((Rep[A],Rep[C]) => Rep[C]),f2:((Rep[B],Rep[C]) => Rep[C]), f3:((Rep[A],Rep[B],Rep[C]) => Rep[C]),
        init: Rep[C]
       )(implicit n: ModuleName): Behavior[C]
-
   }
 
   object Buttons extends Enumeration {
@@ -38,15 +37,14 @@ trait EventOps extends NodeOps {
     val button4 = Value(4)
   }
 
-  import Buttons._
-  def ButtonEvent(b: Button)(implicit n: ModuleName): Event[Int]
-  def ButtonUpDownEvent(b: Button)(implicit n: ModuleName): Event[Int]
-  def AInputEvent( )(implicit n: ModuleName)/*(implicit tI:Typ[Int])*/: Event[Int] // only conceptual
-  def SystemTimerEvent( )(implicit n: ModuleName)/*(implicit tI:Typ[Int])*/: Event[Int]
-  def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit n: ModuleName): Event[A] // oe possibly null (!)
+  def ButtonEvent(b: Buttons.Button)(implicit n: ModuleName): Event[Int]
+  def ButtonUpDownEvent(b: Buttons.Button)(implicit n: ModuleName): Event[Int]
+  def AInputEvent( )(implicit n: ModuleName): Event[Int] // only conceptual
+  def SystemTimerEvent( )(implicit n: ModuleName): Event[Int]
+  def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit n: ModuleName): Event[A]
 
-  abstract class OutputEvent[A:Typ](val mn: ModuleName, val outName: String)
   def out[A:Typ](name: String, e: Event[A])(implicit n: ModuleName): OutputEvent[A]
+  private[FRP_EMBEDDED] abstract class OutputEvent[A:Typ](val mn: ModuleName, val outName: String)
 }
 
 trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
@@ -58,8 +56,7 @@ trait EventOps_Impl extends EventOps with ScalaOpsPkgExpExt {
   private[FRP_EMBEDDED] val systemTimer = 0
 
   def getButtonsRegister: Map[Int, (InputEvent[_], Boolean)] = buttonsRegister.toMap
-  import Buttons._
-  def registerButton(b: Button, inputEvent: InputEvent[_], updown: Boolean): Unit = {
+  def registerButton(b: Buttons.Button, inputEvent: InputEvent[_], updown: Boolean): Unit = {
     val button: Option[(InputEvent[_],_)] = buttonsRegister.get(b.id)
     button match {
       case Some(set) => {

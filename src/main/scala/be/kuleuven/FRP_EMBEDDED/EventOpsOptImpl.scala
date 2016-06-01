@@ -333,7 +333,7 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
     def createValue = vardecl_new[A]
     def createFired = var_new[Boolean](false)
 
-    def allocLocalEventVars(): Unit = { //TODO: rename to allocateLocalVariables
+    def allocLocalEventVars(): Unit = {
       val f = createFired
       val v = createValue
       addSymToSymMap(id, v, f)

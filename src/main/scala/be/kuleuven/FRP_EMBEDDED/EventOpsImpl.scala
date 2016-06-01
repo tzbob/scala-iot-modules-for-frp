@@ -58,21 +58,18 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
         }
         unitToRepUnit( () )
       }
-
     }
 
     override def useOutput(): Unit = eventfun( () )
-
   }
 
-  import Buttons._
-  override def ButtonEvent(b: Button)(implicit n: ModuleName): Event[Int] = {
+  override def ButtonEvent(b: Buttons.Button)(implicit n: ModuleName): Event[Int] = {
     val input = ConcreteInputEvent[Int]()
     registerButton(b, input, false)
     input
   }
 
-  override def ButtonUpDownEvent(b: Button)(implicit n: ModuleName): Event[Int] = {
+  override def ButtonUpDownEvent(b: Buttons.Button)(implicit n: ModuleName): Event[Int] = {
     val input = ConcreteInputEvent[Int]()
     registerButton(b, input, true)
     input
@@ -136,7 +133,6 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
 
     override def produceFunction() = eventfun
     override def useFunction() = eventfun( () )
-
   }
 
   case class ConcreteMapEvent[A,B](parent: EventImpl[A], f: Rep[A] => Rep[B])(implicit tB:Typ[B], mn: ModuleName)
@@ -310,7 +306,6 @@ trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt
         implicit val tOut = this.typOut
         this.produceFunction()
       }
-
     }
 
     override def getInitializer(): Rep[Unit] = unitToRepUnit( () )

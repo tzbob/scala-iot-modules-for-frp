@@ -175,7 +175,6 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
 
     val otimercb = getTimersRegister.get(systemTimer)
 
-
     val timercb = otimercb match {
       case Some(tcb) => {
         val resultInput = inputToToplevel.getOrElse(tcb.id, throw new Exception("Error inputToTopLevel"))
@@ -203,7 +202,7 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
       }
 
       unchecked[Unit]("\n// modules inits")
-      for(init <- initModules) init( () )
+      for(moduleInit <- initModules) moduleInit( () )
 
       eventLoop(getButtonsRegister.keys.toList.nonEmpty, timercb.isDefined)
 
