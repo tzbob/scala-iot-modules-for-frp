@@ -178,7 +178,7 @@ trait Counter6App extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
     val mod1 = createLCDModule { implicit n: ModuleName =>
-      val input1 = SystemTimerEvent(1)
+      val input1 = SystemTimerEvent() // every 5 s
       val cInput1 = input1.constant(5)
       val input2 = ButtonEvent(Buttons.button1)
       val cInput2 = input2.constant(1)
