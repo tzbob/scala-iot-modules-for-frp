@@ -787,7 +787,7 @@ x801();
 DECLARE_SM(mod1, 0x1234);
 DECLARE_SM(mod2, 0x1234);
 DECLARE_SM(mod3, 0x1234);
-static void x917 () {
+static void x909 () {
   //INIT FUNCTION
   WDTCTL = WDTHOLD | WDTPW;
   uart_init();
@@ -796,7 +796,7 @@ static void x917 () {
   buttons_init();
   asm("eint");
 }
-static void x923 () {
+static void x915 () {
   //DEPLOY FUNCTION
   sancus_enable(&mod1);
   sm_register_existing(&mod1);
@@ -809,62 +809,54 @@ static void x923 () {
   REACTIVE_CONNECT(mod1, x227, mod3, x858);
   REACTIVE_CONNECT(mod2, x606, mod3, x835);
 }
-static void x875 (int x863) {
-bool x864 = x863 == 1;
-if (x864) {
-int x865 = 2;
-int x866 = x865;
-uint8_t x867 = (uint8_t ) x866;
-uint8_t* x868 = &x867;
-size_t x869 = sizeof(x867);
-x683(x868,x869);
+static void x873 (int x863) {
+uint8_t x864 = (uint8_t ) x863;
+size_t x865 = sizeof(x864);
+uint8_t* x866 = &x864;
+bool x867 = x863 == 1;
+if (x867) {
+x683(x866,x865);
 } else {
 }
 }
-static void x888 (int x876) {
-bool x877 = x876 == 1;
-if (x877) {
-int x878 = 4;
-int x879 = x878;
-uint8_t x880 = (uint8_t ) x879;
-uint8_t* x881 = &x880;
-size_t x882 = sizeof(x880);
-x288(x881,x882);
+static void x884 (int x874) {
+uint8_t x875 = (uint8_t ) x874;
+size_t x876 = sizeof(x875);
+uint8_t* x877 = &x875;
+bool x878 = x874 == 1;
+if (x878) {
+x288(x877,x876);
 } else {
 }
 }
-static void x901 (int x889) {
-bool x890 = x889 == 1;
-if (x890) {
-int x891 = 1;
-int x892 = x891;
-uint8_t x893 = (uint8_t ) x892;
-uint8_t* x894 = &x893;
-size_t x895 = sizeof(x893);
-x615(x894,x895);
+static void x895 (int x885) {
+uint8_t x886 = (uint8_t ) x885;
+size_t x887 = sizeof(x886);
+uint8_t* x888 = &x886;
+bool x889 = x885 == 1;
+if (x889) {
+x615(x888,x887);
 } else {
 }
 }
-static void x914 (int x902) {
-bool x903 = x902 == 1;
-if (x903) {
-int x904 = 3;
-int x905 = x904;
-uint8_t x906 = (uint8_t ) x905;
-uint8_t* x907 = &x906;
-size_t x908 = sizeof(x906);
-x236(x907,x908);
+static void x906 (int x896) {
+uint8_t x897 = (uint8_t ) x896;
+size_t x898 = sizeof(x897);
+uint8_t* x899 = &x897;
+bool x900 = x896 == 1;
+if (x900) {
+x236(x899,x898);
 } else {
 }
 }
 int main() {
-x917();
+x909();
 puts("main started");
-x923();
-buttons_register_callback(Button2,x875);
-buttons_register_callback(Button4,x888);
-buttons_register_callback(Button1,x901);
-buttons_register_callback(Button3,x914);
+x915();
+buttons_register_callback(Button2,x873);
+buttons_register_callback(Button4,x884);
+buttons_register_callback(Button1,x895);
+buttons_register_callback(Button3,x906);
 
 // modules inits;
 x167();

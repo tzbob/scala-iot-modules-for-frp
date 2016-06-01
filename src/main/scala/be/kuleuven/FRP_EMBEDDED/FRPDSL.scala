@@ -30,10 +30,10 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
   def buildProgram(modList: List[Module[_]]): () => Rep[Unit] = {
     () => {
       headers()
-      val (list, inits) = (for (module <- modList) yield {
+      val (listmap, inits) = (for (module <- modList) yield {
         generateModule(module)
       }).unzip
-      val inputToToplevel = list.flatten
+      val inputToToplevel: Map[NodeID, Rep[((Ptr[Byte], Int)) => Unit]] = listmap reduce (_ ++ _)
 
       generateExtras(modList, inputToToplevel, inits)
     }
@@ -63,6 +63,7 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
       else{
         // Nothing outside if check since this would be executable from outside of module (!)
       }
+      // I mean it, nothing here!
       unitToRepUnit(())
     }
 
@@ -141,20 +142,19 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
     top
   }
 
-  def generateExtras(modlist: List[Module[_]], inputToToplevel: List[(NodeID, Rep[((Ptr[Byte], Int)) => Unit])], initModules: List[Rep[(Unit)=>Unit]])
+  def generateExtras(modlist: List[Module[_]], inputToToplevel: Map[NodeID, Rep[((Ptr[Byte], Int)) => Unit]], initModules: List[Rep[(Unit)=>Unit]])
     : Unit = {
 
     for( mod <- modlist) {
       declare_module(mod.name.str)
     }
 
-    val buttonList = generateButtonFunctions(inputToToplevel)
+    val buttonList: Map[Int, Rep[(Int)=>Unit]] = generateButtonFunctions(inputToToplevel)
 
     val init: Rep[(Unit)=>Unit] = staticfun0 { () =>
       systemInits()
       unitToRepUnit( () )
     }
-    //doApplyDecl(init)
 
     val modNames = modlist.map{ m => m.name.toString()}
     //deployFun(modNames, getOutInList)
@@ -163,9 +163,8 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
       for( (oe,ie) <- getOutInList) {
         (oe,ie) match {
           case (out @ AOutputEvent(_), in @ InputEvent(_)) => {
-            val resultInput = inputToToplevel.filter{ case (inputID, _) => inputID == in.id }
-            assert(resultInput.length == 1)
-            connectionDeploy(oe.mn.str, out.outfun , ie.moduleName.str, resultInput(0)._2)
+            val resultInput = inputToToplevel.getOrElse(in.id,throw new Exception("Error inputToTopLevel"))
+            connectionDeploy(oe.mn.str, out.outfun , ie.moduleName.str, resultInput)
           }
           case _  => throw new Exception("Output Input problem in deploy function")
         }
@@ -179,13 +178,12 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
 
     val timercb = otimercb match {
       case Some(tcb) => {
-        val resultInput = inputToToplevel.filter{ case (inputID, _) => inputID == tcb.id }
-        assert(resultInput.length == 1)
+        val resultInput = inputToToplevel.getOrElse(tcb.id, throw new Exception("Error inputToTopLevel"))
         val timercb = timercallback { () =>
-          val timerVal: Rep[Int] = var_new(5)
+          val timerVal: Rep[Int] = var_new(5) // dummy actually
           val in: Rep[Byte] = rep_asinstanceof(timerVal, typ[Int], typ[Byte])
           val inptr = ptr_new(in)
-          resultInput(0)._2(inptr,sizeof(in))
+          resultInput(inptr,sizeof(in))
           unitToRepUnit( () )
         }
         doApplyDecl(timercb)
@@ -200,42 +198,45 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
       deploy( () )
 
       for( (id,_) <- getButtonsRegister) {
-        val resultButton = buttonList.filter{ case (bID, _) => bID == id }
-        assert(resultButton.length == 1)
-        registerButton(id, resultButton(0)._2)
+        val resultButton = buttonList.getOrElse(id, throw new Exception("Error with button register"))
+        registerButton(id, resultButton)
       }
 
       unchecked[Unit]("\n// modules inits")
       for(init <- initModules) init( () )
 
-      eventLoop(getButtonsRegister.keys.toList.length > 0, timercb.isDefined)
+      eventLoop(getButtonsRegister.keys.toList.nonEmpty, timercb.isDefined)
 
       unit(0)
     }
     doApplyDecl(main)
   }
 
-  def generateButtonFunctions(inputToToplevel: List[(NodeID, Rep[((Ptr[Byte], Int)) => Unit])]): List[(Int,Rep[(Int)=>Unit])] = {
-    val buttonFunctions = for( (bId,inputset) <- getButtonsRegister) yield {
+  def generateButtonFunctions(inputToToplevel: Map[NodeID, Rep[((Ptr[Byte], Int)) => Unit]]): Map[Int,Rep[(Int)=>Unit]] = {
+    val buttonFunctions = for( (bId,(input, updown)) <- getButtonsRegister) yield {
 
       val f = staticfun { (pressed: Rep[Int]) =>
-        if(pressed == 1) {
-          for(input <- inputset) {
-            val buttonId: Rep[Int] = var_new(bId)
-            val in: Rep[Byte] = rep_asinstanceof(buttonId, typ[Int], typ[Byte])
-            val inptr = ptr_new(in)
+        val in: Rep[Byte] = rep_asinstanceof(pressed, typ[Int], typ[Byte])
+        val insize = sizeof(in)
+        val inptr = ptr_new(in)
+        val resultInput = inputToToplevel.getOrElse(input.id, throw new Exception("Error in inputToTopLevel"))
 
-            val resultInput = inputToToplevel.filter{ case (inputID, _) => inputID == input.id }
-            assert(resultInput.length == 1)
-            resultInput(0)._2(inptr,sizeof(in)) // call the top function from the button function
-          }
+        if(updown) {
+          if(pressed == 1) { resultInput(inptr, insize) }
+          else if(pressed == 0) { resultInput(inptr, insize) }
+          else { }
         }
+        else {
+          if(pressed == 1) { resultInput(inptr, insize) }
+          else { }
+        }
+
         unitToRepUnit( () )
       }
-      (bId,f)
+      bId -> f
     }
 
-    buttonFunctions.toList
+    buttonFunctions.toMap
   }
 }
 

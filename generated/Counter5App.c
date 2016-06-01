@@ -621,7 +621,7 @@ x627();
 }
 DECLARE_SM(mod1, 0x1234);
 DECLARE_SM(mod2, 0x1234);
-static void x718 () {
+static void x710 () {
   //INIT FUNCTION
   WDTCTL = WDTHOLD | WDTPW;
   uart_init();
@@ -630,7 +630,7 @@ static void x718 () {
   buttons_init();
   asm("eint");
 }
-static void x722 () {
+static void x714 () {
   //DEPLOY FUNCTION
   sancus_enable(&mod1);
   sm_register_existing(&mod1);
@@ -639,62 +639,54 @@ static void x722 () {
 
   REACTIVE_CONNECT(mod1, x466, mod2, x660);
 }
-static void x676 (int x664) {
-bool x665 = x664 == 1;
-if (x665) {
-int x666 = 2;
-int x667 = x666;
-uint8_t x668 = (uint8_t ) x667;
-uint8_t* x669 = &x668;
-size_t x670 = sizeof(x668);
-x475(x669,x670);
+static void x674 (int x664) {
+uint8_t x665 = (uint8_t ) x664;
+size_t x666 = sizeof(x665);
+uint8_t* x667 = &x665;
+bool x668 = x664 == 1;
+if (x668) {
+x475(x667,x666);
 } else {
 }
 }
-static void x689 (int x677) {
-bool x678 = x677 == 1;
-if (x678) {
-int x679 = 4;
-int x680 = x679;
-uint8_t x681 = (uint8_t ) x680;
-uint8_t* x682 = &x681;
-size_t x683 = sizeof(x681);
-x577(x682,x683);
+static void x685 (int x675) {
+uint8_t x676 = (uint8_t ) x675;
+size_t x677 = sizeof(x676);
+uint8_t* x678 = &x676;
+bool x679 = x675 == 1;
+if (x679) {
+x577(x678,x677);
 } else {
 }
 }
-static void x702 (int x690) {
-bool x691 = x690 == 1;
-if (x691) {
-int x692 = 1;
-int x693 = x692;
-uint8_t x694 = (uint8_t ) x693;
-uint8_t* x695 = &x694;
-size_t x696 = sizeof(x694);
-x535(x695,x696);
+static void x696 (int x686) {
+uint8_t x687 = (uint8_t ) x686;
+size_t x688 = sizeof(x687);
+uint8_t* x689 = &x687;
+bool x690 = x686 == 1;
+if (x690) {
+x535(x689,x688);
 } else {
 }
 }
-static void x715 (int x703) {
-bool x704 = x703 == 1;
-if (x704) {
-int x705 = 3;
-int x706 = x705;
-uint8_t x707 = (uint8_t ) x706;
-uint8_t* x708 = &x707;
-size_t x709 = sizeof(x707);
-x390(x708,x709);
+static void x707 (int x697) {
+uint8_t x698 = (uint8_t ) x697;
+size_t x699 = sizeof(x698);
+uint8_t* x700 = &x698;
+bool x701 = x697 == 1;
+if (x701) {
+x390(x700,x699);
 } else {
 }
 }
 int main() {
-x718();
+x710();
 puts("main started");
-x722();
-buttons_register_callback(Button2,x676);
-buttons_register_callback(Button4,x689);
-buttons_register_callback(Button1,x702);
-buttons_register_callback(Button3,x715);
+x714();
+buttons_register_callback(Button2,x674);
+buttons_register_callback(Button4,x685);
+buttons_register_callback(Button1,x696);
+buttons_register_callback(Button3,x707);
 
 // modules inits;
 x348();

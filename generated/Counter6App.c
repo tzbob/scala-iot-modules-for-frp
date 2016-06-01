@@ -326,16 +326,16 @@ if(currTime > intervals_5s){
 
 intervals_5s = currTime;
 
-int x329 = 5;
-int x330 = x329;
-uint8_t x331 = (uint8_t ) x330;
-uint8_t* x332 = &x331;
-size_t x333 = sizeof(x331);
-x248(x332,x333);
+int x327 = 5;
+int x328 = x327;
+uint8_t x329 = (uint8_t ) x328;
+uint8_t* x330 = &x329;
+size_t x331 = sizeof(x329);
+x248(x330,x331);
 }
 
 };
-static void x325 () {
+static void x323 () {
   //INIT FUNCTION
   WDTCTL = WDTHOLD | WDTPW;
   uart_init();
@@ -344,29 +344,27 @@ static void x325 () {
   buttons_init();
   asm("eint");
 }
-static void x328 () {
+static void x326 () {
   //DEPLOY FUNCTION
   sancus_enable(&mod1);
   sm_register_existing(&mod1);
 
 }
-static void x322 (int x310) {
-bool x311 = x310 == 1;
-if (x311) {
-int x312 = 1;
-int x313 = x312;
-uint8_t x314 = (uint8_t ) x313;
-uint8_t* x315 = &x314;
-size_t x316 = sizeof(x314);
-x307(x315,x316);
+static void x320 (int x310) {
+uint8_t x311 = (uint8_t ) x310;
+size_t x312 = sizeof(x311);
+uint8_t* x313 = &x311;
+bool x314 = x310 == 1;
+if (x314) {
+x307(x313,x312);
 } else {
 }
 }
 int main() {
-x325();
+x323();
 puts("main started");
-x328();
-buttons_register_callback(Button1,x322);
+x326();
+buttons_register_callback(Button1,x320);
 
 // modules inits;
 x197();

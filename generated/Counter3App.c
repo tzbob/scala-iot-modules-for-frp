@@ -220,7 +220,7 @@ x129();
 x134();
 }
 DECLARE_SM(mod1, 0x1234);
-static void x213 () {
+static void x209 () {
   //INIT FUNCTION
   WDTCTL = WDTHOLD | WDTPW;
   uart_init();
@@ -229,42 +229,38 @@ static void x213 () {
   buttons_init();
   asm("eint");
 }
-static void x216 () {
+static void x212 () {
   //DEPLOY FUNCTION
   sancus_enable(&mod1);
   sm_register_existing(&mod1);
 
 }
-static void x197 (int x185) {
-bool x186 = x185 == 1;
-if (x186) {
-int x187 = 2;
-int x188 = x187;
-uint8_t x189 = (uint8_t ) x188;
-uint8_t* x190 = &x189;
-size_t x191 = sizeof(x189);
-x182(x190,x191);
+static void x195 (int x185) {
+uint8_t x186 = (uint8_t ) x185;
+size_t x187 = sizeof(x186);
+uint8_t* x188 = &x186;
+bool x189 = x185 == 1;
+if (x189) {
+x182(x188,x187);
 } else {
 }
 }
-static void x210 (int x198) {
-bool x199 = x198 == 1;
-if (x199) {
-int x200 = 1;
-int x201 = x200;
-uint8_t x202 = (uint8_t ) x201;
-uint8_t* x203 = &x202;
-size_t x204 = sizeof(x202);
-x166(x203,x204);
+static void x206 (int x196) {
+uint8_t x197 = (uint8_t ) x196;
+size_t x198 = sizeof(x197);
+uint8_t* x199 = &x197;
+bool x200 = x196 == 1;
+if (x200) {
+x166(x199,x198);
 } else {
 }
 }
 int main() {
-x213();
+x209();
 puts("main started");
-x216();
-buttons_register_callback(Button2,x197);
-buttons_register_callback(Button1,x210);
+x212();
+buttons_register_callback(Button2,x195);
+buttons_register_callback(Button1,x206);
 
 // modules inits;
 x144();

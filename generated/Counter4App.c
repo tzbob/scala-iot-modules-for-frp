@@ -395,7 +395,7 @@ x166();
 x180();
 }
 DECLARE_SM(mod1, 0x1234);
-static void x424 () {
+static void x416 () {
   //INIT FUNCTION
   WDTCTL = WDTHOLD | WDTPW;
   uart_init();
@@ -404,68 +404,60 @@ static void x424 () {
   buttons_init();
   asm("eint");
 }
-static void x427 () {
+static void x419 () {
   //DEPLOY FUNCTION
   sancus_enable(&mod1);
   sm_register_existing(&mod1);
 
 }
-static void x382 (int x370) {
-bool x371 = x370 == 1;
-if (x371) {
-int x372 = 2;
-int x373 = x372;
-uint8_t x374 = (uint8_t ) x373;
-uint8_t* x375 = &x374;
-size_t x376 = sizeof(x374);
-x337(x375,x376);
+static void x380 (int x370) {
+uint8_t x371 = (uint8_t ) x370;
+size_t x372 = sizeof(x371);
+uint8_t* x373 = &x371;
+bool x374 = x370 == 1;
+if (x374) {
+x337(x373,x372);
 } else {
 }
 }
-static void x395 (int x383) {
-bool x384 = x383 == 1;
-if (x384) {
-int x385 = 4;
-int x386 = x385;
-uint8_t x387 = (uint8_t ) x386;
-uint8_t* x388 = &x387;
-size_t x389 = sizeof(x387);
-x367(x388,x389);
+static void x391 (int x381) {
+uint8_t x382 = (uint8_t ) x381;
+size_t x383 = sizeof(x382);
+uint8_t* x384 = &x382;
+bool x385 = x381 == 1;
+if (x385) {
+x367(x384,x383);
 } else {
 }
 }
-static void x408 (int x396) {
-bool x397 = x396 == 1;
-if (x397) {
-int x398 = 1;
-int x399 = x398;
-uint8_t x400 = (uint8_t ) x399;
-uint8_t* x401 = &x400;
-size_t x402 = sizeof(x400);
-x353(x401,x402);
+static void x402 (int x392) {
+uint8_t x393 = (uint8_t ) x392;
+size_t x394 = sizeof(x393);
+uint8_t* x395 = &x393;
+bool x396 = x392 == 1;
+if (x396) {
+x353(x395,x394);
 } else {
 }
 }
-static void x421 (int x409) {
-bool x410 = x409 == 1;
-if (x410) {
-int x411 = 3;
-int x412 = x411;
-uint8_t x413 = (uint8_t ) x412;
-uint8_t* x414 = &x413;
-size_t x415 = sizeof(x413);
-x320(x414,x415);
+static void x413 (int x403) {
+uint8_t x404 = (uint8_t ) x403;
+size_t x405 = sizeof(x404);
+uint8_t* x406 = &x404;
+bool x407 = x403 == 1;
+if (x407) {
+x320(x406,x405);
 } else {
 }
 }
 int main() {
-x424();
+x416();
 puts("main started");
-x427();
-buttons_register_callback(Button2,x382);
-buttons_register_callback(Button4,x395);
-buttons_register_callback(Button1,x408);
-buttons_register_callback(Button3,x421);
+x419();
+buttons_register_callback(Button2,x380);
+buttons_register_callback(Button4,x391);
+buttons_register_callback(Button1,x402);
+buttons_register_callback(Button3,x413);
 
 // modules inits;
 x291();

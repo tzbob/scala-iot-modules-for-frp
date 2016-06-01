@@ -384,7 +384,7 @@ x353();
 }
 DECLARE_SM(mod1, 0x1234);
 DECLARE_SM(mod2, 0x1234);
-static void x418 () {
+static void x414 () {
   //INIT FUNCTION
   WDTCTL = WDTHOLD | WDTPW;
   uart_init();
@@ -393,7 +393,7 @@ static void x418 () {
   buttons_init();
   asm("eint");
 }
-static void x422 () {
+static void x418 () {
   //DEPLOY FUNCTION
   sancus_enable(&mod1);
   sm_register_existing(&mod1);
@@ -402,36 +402,32 @@ static void x422 () {
 
   REACTIVE_CONNECT(mod1, x234, mod2, x386);
 }
-static void x402 (int x390) {
-bool x391 = x390 == 1;
-if (x391) {
-int x392 = 2;
-int x393 = x392;
-uint8_t x394 = (uint8_t ) x393;
-uint8_t* x395 = &x394;
-size_t x396 = sizeof(x394);
-x303(x395,x396);
+static void x400 (int x390) {
+uint8_t x391 = (uint8_t ) x390;
+size_t x392 = sizeof(x391);
+uint8_t* x393 = &x391;
+bool x394 = x390 == 1;
+if (x394) {
+x303(x393,x392);
 } else {
 }
 }
-static void x415 (int x403) {
-bool x404 = x403 == 1;
-if (x404) {
-int x405 = 1;
-int x406 = x405;
-uint8_t x407 = (uint8_t ) x406;
-uint8_t* x408 = &x407;
-size_t x409 = sizeof(x407);
-x243(x408,x409);
+static void x411 (int x401) {
+uint8_t x402 = (uint8_t ) x401;
+size_t x403 = sizeof(x402);
+uint8_t* x404 = &x402;
+bool x405 = x401 == 1;
+if (x405) {
+x243(x404,x403);
 } else {
 }
 }
 int main() {
-x418();
+x414();
 puts("main started");
-x422();
-buttons_register_callback(Button2,x402);
-buttons_register_callback(Button1,x415);
+x418();
+buttons_register_callback(Button2,x400);
+buttons_register_callback(Button1,x411);
 
 // modules inits;
 x174();

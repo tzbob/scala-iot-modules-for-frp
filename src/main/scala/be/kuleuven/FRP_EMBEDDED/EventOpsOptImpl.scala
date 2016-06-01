@@ -45,7 +45,13 @@ trait EventOpsOptImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExp
   import Buttons._
   override def ButtonEvent(b: Button)(implicit n: ModuleName): Event[Int] = {
     val input = ConcreteInputEvent[Int]()
-    registerButton(b, input)
+    registerButton(b, input, false)
+    input
+  }
+
+  override def ButtonUpDownEvent(b: Button)(implicit n: ModuleName): Event[Int] = {
+    val input = ConcreteInputEvent[Int]()
+    registerButton(b, input, true)
     input
   }
 
