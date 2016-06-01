@@ -41,7 +41,7 @@ trait EventOps extends NodeOps {
   import Buttons._
   def ButtonEvent(b: Button)(implicit n: ModuleName): Event[Int]
   def ButtonUpDownEvent(b: Button)(implicit n: ModuleName): Event[Int]
-  def TimerEvent(i: Rep[Int])(implicit n: ModuleName)/*(implicit tI:Typ[Int])*/: Event[Int]
+  def AInputEvent( )(implicit n: ModuleName)/*(implicit tI:Typ[Int])*/: Event[Int] // only conceptual
   def SystemTimerEvent(i: Rep[Int])(implicit n: ModuleName)/*(implicit tI:Typ[Int])*/: Event[Int]
   def ExternalEvent[A:Typ](oe: OutputEvent[A])(implicit n: ModuleName): Event[A] // oe possibly null (!)
 

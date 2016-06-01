@@ -7,8 +7,8 @@ trait Counter1App extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
     val mod1 = createModule[Int] { implicit n: ModuleName =>
-      val input1 = TimerEvent(1)
-      val input2 = TimerEvent(1)
+      val input1 = AInputEvent
+      val input2 = AInputEvent
       val negate2 = input2.map( (i: Rep[Int]) => 0-i)
       val merged =
         input1.merge(negate2, (x:Rep[Int],y:Rep[Int]) => x + y)
@@ -29,8 +29,8 @@ trait Counter2App extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
     val mod1 = createModule[Int] { implicit n: ModuleName =>
-      val input1 = TimerEvent(1)
-      val input2 = TimerEvent(1)
+      val input1 = AInputEvent
+      val input2 = AInputEvent
       val filtered1 =
         input1.filter( _ < 10)
       val filtered2 =

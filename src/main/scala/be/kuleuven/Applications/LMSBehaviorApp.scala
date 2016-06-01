@@ -6,7 +6,7 @@ trait LMSBehaviorStartsWith1App extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
     createModule { implicit n:ModuleName =>
-      val t1: Event[Int] = TimerEvent(5) // every 5 sec
+      val t1: Event[Int] = AInputEvent() // every 5 sec
       val m = t1.map[Int]( (i) => 5 )
 
       val b = m.startsWith(1)
@@ -19,7 +19,7 @@ trait LMSBehaviorFoldp1App extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
     createModule { implicit n:ModuleName =>
-      val t1: Event[Int] = TimerEvent(5) // every 5 sec
+      val t1: Event[Int] = AInputEvent() // every 5 sec
       val m = t1.map[Int]((i) => 5)
 
       val b = m.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 1)
@@ -32,12 +32,12 @@ trait LMSBehaviorMap2App extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
     createModule { implicit n:ModuleName =>
-      val t1: Event[Int] = TimerEvent(1) // every 5 sec
+      val t1: Event[Int] = AInputEvent() // every 5 sec
       val m1 = t1.map[Int]((i) => 1)
 
       val b1 = m1.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 1)
 
-      val t2 = TimerEvent(2)
+      val t2 = AInputEvent()
       val m2 = t2.map((i) => 2)
       val b2 = m2.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 1)
 
@@ -51,7 +51,7 @@ trait LMSBehaviorChangesApp extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
     createModule[Int] { implicit m: ModuleName =>
-      val t = TimerEvent(1)
+      val t = AInputEvent()
       val fp = t.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 1)
       val c = fp.changes()
       val fp2 = c.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 10)
@@ -65,10 +65,10 @@ trait LMSBehaviorSnapshotApp extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
     createModule[Int] { implicit n:ModuleName =>
-      val t = TimerEvent(10)
+      val t = AInputEvent()
       val fp1 = t.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 0)
 
-      val t2 = TimerEvent(5)
+      val t2 = AInputEvent()
 
       val ss = fp1.snapshot(t2)
 
@@ -82,10 +82,10 @@ trait LMSBehaviorSnapshot2App extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
     createModule[Int] { implicit n:ModuleName =>
-      val t = TimerEvent(10)
+      val t = AInputEvent()
       val fp1 = t.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 0)
 
-      val t2 = TimerEvent(5)
+      val t2 = AInputEvent()
       val c2 = t2.constant(1)
       val c3 = c2.constant(2)
       val c4 = c3.constant(3) // a long event side
@@ -102,13 +102,13 @@ trait LMSBehaviorSnapshot3App extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
     createModule[Int] { implicit n:ModuleName =>
-      val t = TimerEvent(10)
+      val t = AInputEvent()
       val c1 = t.constant(1)
       val c2 = c1.constant(2)
       val c3 = c2.constant(3) // a long behavior side
       val fp1 = c3.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 0)
 
-      val t2 = TimerEvent(5)
+      val t2 = AInputEvent()
 
       val ss = fp1.snapshot(t2)
 
@@ -122,7 +122,7 @@ trait LMSBehaviorConstantApp extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
     createModule { implicit n:ModuleName =>
-      val t1: Event[Int] = TimerEvent(1)
+      val t1: Event[Int] = AInputEvent()
       val sw = t1.startsWith(0)
       val c = constantB(3)
       val plus = sw.map2(c, (x:Rep[Int],y:Rep[Int]) => x+y )
@@ -135,7 +135,7 @@ trait LMSBehaviorPropagationExampleApp extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
     createModule { implicit n:ModuleName =>
-      val t1: Event[Int] = TimerEvent(1)
+      val t1: Event[Int] = AInputEvent()
       val fp = t1.foldp( (x:Rep[Int],state:Rep[Int]) => state + 1, 2)
       val c = constantB(0)
       val a = fp.map2(c, (x:Rep[Int],y:Rep[Int]) => x+y )
@@ -149,7 +149,7 @@ trait LMSMultiModuleApp extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
     val mod1 = createModule[Int] { implicit n:ModuleName =>
-      val t = TimerEvent(1)
+      val t = AInputEvent()
       val fp = t.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 1)
       val c = fp.changes()
       val fp2 = c.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 10)
