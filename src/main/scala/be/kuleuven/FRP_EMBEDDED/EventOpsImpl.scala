@@ -5,7 +5,7 @@ import be.kuleuven.LMS_extensions.ScalaOpsPkgExpExt
 trait EventOpsImpl extends EventOps_Impl with NodeOpsImpl with ScalaOpsPkgExpExt {
   behaviorImpl: BehaviorOpsImpl =>
 
-  def getEventNodes: List[Event[_]] = {
+  def getEventNodeList: List[Event[_]] = {
     val listbuilder = scala.collection.mutable.ListBuffer.empty[Event[_]]
     getNodeMap.values.foreach( n =>
       getOptionEvent(n) match {

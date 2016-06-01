@@ -58,8 +58,8 @@ SM_DATA(mod1) bool x129;
 SM_DATA(mod1) int x130;
 SM_DATA(mod1) bool x141;
 SM_DATA(mod1) int x142;
-SM_DATA(mod1) int x167;
-SM_DATA(mod1) bool x168;
+SM_DATA(mod1) bool x167;
+SM_DATA(mod1) int x168;
 SM_DATA(mod1) bool x181;
 SM_DATA(mod1) int x182;
 SM_DATA(mod1) bool x193;
@@ -70,21 +70,21 @@ SM_DATA(mod1) bool x218;
 SM_DATA(mod1) int x219;
 SM_DATA(mod1) bool x244;
 SM_DATA(mod1) int x245;
-SM_DATA(mod1) int x262;
-SM_DATA(mod1) bool x263;
+SM_DATA(mod1) bool x262;
+SM_DATA(mod1) int x263;
 SM_DATA(mod1) int x281;
 SM_FUNC(mod1) void x280 () {
 lcd_clear();
-int x277 = x262;
+int x277 = x263;
 pmodcls_set_cursor_position(0,0);
 lcd_printf_int("%d", x277);
 }
-SM_FUNC(mod1) void x303 () {
+SM_FUNC(mod1) void x305 () {
 int x282 = x281;
 bool x283 = x282 == 0;
 if (x283) {
-x167 = 0;
-x262 = 0;
+x168 = 0;
+x263 = 0;
 x280();
 x281 = 1;
 } else {
@@ -101,6 +101,8 @@ x88 = false;
 x205 = false;
 x193 = false;
 x129 = false;
+x262 = false;
+x167 = false;
 }
 SM_FUNC(mod1) void x29 (uint8_t* x3,int x4) {
 int x7 = 0;
@@ -166,20 +168,20 @@ x141 = false;
 SM_FUNC(mod1) void x180 () {
 bool x169 = x141;
 if (x169) {
-x168 = true;
+x167 = true;
 int x171 = x142;
-int x172 = x167;
+int x172 = x168;
 int x173 = x172 + x171;
-x167 = x173;
+x168 = x173;
 } else {
-x168 = false;
+x167 = false;
 }
 }
-SM_INPUT(mod1,x315,x304,x305) { //top1
-x303();
-uint8_t* x306 = x304;
-int x307 = x305;
-x29(x306,x307);
+SM_INPUT(mod1,x317,x306,x307) { //top1
+x305();
+uint8_t* x308 = x306;
+int x309 = x307;
+x29(x308,x309);
 x128();
 x166();
 x180();
@@ -213,7 +215,7 @@ SM_FUNC(mod1) void x192 () {
 bool x183 = x30;
 if (x183) {
 x181 = true;
-int x185 = x167;
+int x185 = x168;
 x182 = x185;
 } else {
 x181 = false;
@@ -275,20 +277,20 @@ x244 = false;
 SM_FUNC(mod1) void x275 () {
 bool x264 = x244;
 if (x264) {
-x263 = true;
+x262 = true;
 int x266 = x245;
-int x267 = x262;
+int x267 = x263;
 int x268 = x267 + x266;
-x262 = x268;
+x263 = x268;
 } else {
-x263 = false;
+x262 = false;
 }
 }
-SM_INPUT(mod1,x331,x317,x318) { //top9
-x303();
-uint8_t* x319 = x317;
-int x320 = x318;
-x58(x319,x320);
+SM_INPUT(mod1,x333,x319,x320) { //top9
+x305();
+uint8_t* x321 = x319;
+int x322 = x320;
+x58(x321,x322);
 x192();
 x217();
 x243();
@@ -325,17 +327,17 @@ SM_FUNC(mod1) void x204 () {
 bool x195 = x59;
 if (x195) {
 x193 = true;
-int x197 = x167;
+int x197 = x168;
 x194 = x197;
 } else {
 x193 = false;
 }
 }
-SM_INPUT(mod1,x346,x333,x334) { //top7
-x303();
-uint8_t* x335 = x333;
-int x336 = x334;
-x87(x335,x336);
+SM_INPUT(mod1,x348,x335,x336) { //top7
+x305();
+uint8_t* x337 = x335;
+int x338 = x336;
+x87(x337,x338);
 x204();
 x243();
 x261();
@@ -377,17 +379,17 @@ x130 = -1;
 x129 = false;
 }
 }
-SM_INPUT(mod1,x359,x348,x349) { //top3
-x303();
-uint8_t* x350 = x348;
-int x351 = x349;
-x116(x350,x351);
+SM_INPUT(mod1,x361,x350,x351) { //top3
+x305();
+uint8_t* x352 = x350;
+int x353 = x351;
+x116(x352,x353);
 x140();
 x166();
 x180();
 }
 DECLARE_SM(mod1, 0x1234);
-static void x416 () {
+static void x418 () {
   //INIT FUNCTION
   WDTCTL = WDTHOLD | WDTPW;
   uart_init();
@@ -396,68 +398,68 @@ static void x416 () {
   buttons_init();
   asm("eint");
 }
-static void x419 () {
+static void x421 () {
   //DEPLOY FUNCTION
   sancus_enable(&mod1);
   sm_register_existing(&mod1);
 
 }
-static void x374 (int x362) {
-bool x363 = x362 == 1;
-if (x363) {
-int x364 = 2;
-int x365 = x364;
-uint8_t x366 = (uint8_t ) x365;
-uint8_t* x367 = &x366;
-size_t x368 = sizeof(x366);
-x331(x367,x368);
+static void x376 (int x364) {
+bool x365 = x364 == 1;
+if (x365) {
+int x366 = 2;
+int x367 = x366;
+uint8_t x368 = (uint8_t ) x367;
+uint8_t* x369 = &x368;
+size_t x370 = sizeof(x368);
+x333(x369,x370);
 } else {
 }
 }
-static void x387 (int x375) {
-bool x376 = x375 == 1;
-if (x376) {
-int x377 = 4;
-int x378 = x377;
-uint8_t x379 = (uint8_t ) x378;
-uint8_t* x380 = &x379;
-size_t x381 = sizeof(x379);
-x359(x380,x381);
+static void x389 (int x377) {
+bool x378 = x377 == 1;
+if (x378) {
+int x379 = 4;
+int x380 = x379;
+uint8_t x381 = (uint8_t ) x380;
+uint8_t* x382 = &x381;
+size_t x383 = sizeof(x381);
+x361(x382,x383);
 } else {
 }
 }
-static void x400 (int x388) {
-bool x389 = x388 == 1;
-if (x389) {
-int x390 = 1;
-int x391 = x390;
-uint8_t x392 = (uint8_t ) x391;
-uint8_t* x393 = &x392;
-size_t x394 = sizeof(x392);
-x346(x393,x394);
+static void x402 (int x390) {
+bool x391 = x390 == 1;
+if (x391) {
+int x392 = 1;
+int x393 = x392;
+uint8_t x394 = (uint8_t ) x393;
+uint8_t* x395 = &x394;
+size_t x396 = sizeof(x394);
+x348(x395,x396);
 } else {
 }
 }
-static void x413 (int x401) {
-bool x402 = x401 == 1;
-if (x402) {
-int x403 = 3;
-int x404 = x403;
-uint8_t x405 = (uint8_t ) x404;
-uint8_t* x406 = &x405;
-size_t x407 = sizeof(x405);
-x315(x406,x407);
+static void x415 (int x403) {
+bool x404 = x403 == 1;
+if (x404) {
+int x405 = 3;
+int x406 = x405;
+uint8_t x407 = (uint8_t ) x406;
+uint8_t* x408 = &x407;
+size_t x409 = sizeof(x407);
+x317(x408,x409);
 } else {
 }
 }
 int main() {
-x416();
+x418();
 puts("main started");
-x419();
-buttons_register_callback(Button2,x374);
-buttons_register_callback(Button4,x387);
-buttons_register_callback(Button1,x400);
-buttons_register_callback(Button3,x413);
+x421();
+buttons_register_callback(Button2,x376);
+buttons_register_callback(Button4,x389);
+buttons_register_callback(Button1,x402);
+buttons_register_callback(Button3,x415);
 while(1) {
   buttons_handle_events();
 }

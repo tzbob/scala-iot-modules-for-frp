@@ -5,6 +5,28 @@ import be.kuleuven.LMS_extensions.ScalaOpsPkgExpExt
 trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
   eventImpl: EventOpsImpl =>
 
+  def getBehaviorNodeList: List[Behavior[_]] = {
+    val listbuilder = scala.collection.mutable.ListBuffer.empty[Behavior[_]]
+    getNodeMap.values.foreach( n =>
+      getOptionBehavior(n) match {
+        case Some(e) => listbuilder += e
+        case None => // do not add it
+      }
+    )
+    listbuilder.toList
+  }
+
+  def getOptionBehavior[X](n: Node[X]): Option[Behavior[X]] = {
+    n match {
+      case bn @ ConcreteConstantBehavior(_) => Some(bn)
+      case bn @ ConcreteMap2Behavior(_,_) => Some(bn)
+      case bn @ ConcreteFoldpBehavior(_,_,_) => Some(bn)
+      case bn @ ConcreteFoldp2Behavior(_,_,_,_,_,_) => Some(bn)
+      case bn @ ConcreteStartsWithBehavior(_,_) => Some(bn)
+      case _ => None
+    }
+  }
+
   implicit def behaviorToBehaviorImpl[X](b: Behavior[X]): BehaviorImpl[X] = {
     b match {
       case bn @ ConcreteConstantBehavior(_) => bn
@@ -37,8 +59,8 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
     }
 
     override def generateNode(): Unit = {
-      value
       fired
+      value
     }
     override def produceFunction() = behaviorfun
     override def useFunction() = behaviorfun( () )
@@ -70,8 +92,8 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
     override def produceFunction() = behaviorfun
     override def useFunction() = behaviorfun( () )
     override def generateNode(): Unit = {
-      value
       fired
+      value
       behaviorfun
     }
 
@@ -101,8 +123,8 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
     override def produceFunction() = behaviorfun
     override def useFunction() = behaviorfun( () )
     override def generateNode(): Unit = {
-      value
       fired
+      value
       behaviorfun
     }
 
@@ -145,8 +167,8 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
     override def produceFunction() = behaviorfun
     override def useFunction() = behaviorfun( () )
     override def generateNode(): Unit = {
-      value
       fired
+      value
       behaviorfun
     }
 
@@ -177,8 +199,8 @@ trait BehaviorOpsImpl extends BehaviorOps_Impl with ScalaOpsPkgExpExt {
     override def produceFunction() = behaviorfun
     override def useFunction() = behaviorfun( () )
     override def generateNode(): Unit = {
-      value
       fired
+      value
       behaviorfun
     }
   }

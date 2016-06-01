@@ -229,7 +229,11 @@ trait FRPDSL_Impl extends FRPDSL with EventOps_Impl with BehaviorOps_Impl {
 trait FRPDSLImpl extends FRPDSL_Impl with EventOpsImpl with BehaviorOpsImpl {
 
   override def generateGlobalFRPInits(module: Module[_]): Unit = {
-    getEventNodes
+    getEventNodeList
+      .filter(e => e.moduleName == module.name)
+      .foreach(e => var_assign(e.getFired, false))
+
+    getBehaviorNodeList
       .filter(e => e.moduleName == module.name)
       .foreach(e => var_assign(e.getFired, false))
   }
