@@ -2,7 +2,7 @@ package be.kuleuven.Applications
 
 import be.kuleuven.FRP_EMBEDDED.{RawSMCFRPDSLApplicationRunner, SMCFRPDSLApplicationRunner, CFRPDSLApplicationRunner}
 import be.kuleuven.FRP_EMBEDDED.OutputGenerator._
-
+/*
 object LMSPointerAppRunner {
 
   def main(args: Array[String]): Unit = {
@@ -101,3 +101,4 @@ object LMSPointerAppRunner {
 
   }
 }
+*/

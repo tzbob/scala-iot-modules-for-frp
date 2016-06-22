@@ -246,7 +246,7 @@ trait Counter7App extends FRPDSLApplication {
 }
 
 import OutputGenerator.withOutFile
-
+/*
 object CounterAppRunner {
   def main(args: Array[String]): Unit = {
 
@@ -296,4 +296,4 @@ object CounterAppRunner {
     }
 
   }
-}
+}*/

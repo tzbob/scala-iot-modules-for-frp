@@ -169,7 +169,7 @@ trait LMSMultiModuleApp extends FRPDSLApplication {
 }
 
 import OutputGenerator.withOutFile
-
+/*
 object LMSBehaviorAppRunner {
   def main(args: Array[String]): Unit = {
 
@@ -224,4 +224,4 @@ object LMSBehaviorAppRunner {
     }
 
   }
-}
+}*/
