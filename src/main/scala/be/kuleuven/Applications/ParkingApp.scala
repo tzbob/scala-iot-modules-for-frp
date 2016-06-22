@@ -13,6 +13,8 @@ trait ParkingApp extends FRPDSLApplication {
     }
 
     def detectModule(b: Buttons.Button)(implicit n: ModuleName): Event[Int] = {
+      val detectionInterval = 3
+
       val sensor = ButtonEvent(b)
       val taken: Behavior[Int] = sensor.foldp( (x,state) => if(state == 0) 1 else 0, 0)
       val takenE = taken.changes()
@@ -24,7 +26,7 @@ trait ParkingApp extends FRPDSLApplication {
 
       val counter: Behavior[Int] = takenF.foldp2(takenT)( (x,state) => 0, (x,state) => state + 1, (x,y,state) => 0, 0)
       val counterE = counter.changes()
-      val detect = counterE.map( (x) => if( x >= 2) 1 else 0)
+      val detect = counterE.map( (x) => if( x >= detectionInterval) 1 else 0)
       detect
     }
 
