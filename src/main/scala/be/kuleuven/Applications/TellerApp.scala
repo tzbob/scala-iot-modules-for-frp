@@ -1,10 +1,12 @@
 package be.kuleuven.Applications
 
 import be.kuleuven.FRP_EMBEDDED._
+import OutputGenerator.withOutFile
 
 trait TellerApp extends FRPDSLApplication {
 
   override def createApplication: List[Module[_]] = {
+
     val mod1 = createModule[Int] { implicit n: ModuleName =>
       val inc = ButtonEvent(Buttons.button3)
       val inc1 = inc.constant(1)
@@ -48,8 +50,6 @@ trait TellerApp extends FRPDSLApplication {
   }
 
 }
-
-import OutputGenerator.withOutFile
 
 object TellerAppRunner {
   def main(args: Array[String]): Unit = {

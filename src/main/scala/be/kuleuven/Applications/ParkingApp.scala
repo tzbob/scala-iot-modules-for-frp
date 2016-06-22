@@ -1,6 +1,7 @@
 package be.kuleuven.Applications
 
 import be.kuleuven.FRP_EMBEDDED._
+import OutputGenerator.withOutFile
 
 trait ParkingApp extends FRPDSLApplication {
 
@@ -56,8 +57,6 @@ trait ParkingApp extends FRPDSLApplication {
   }
 
 }
-
-import OutputGenerator.withOutFile
 
 object ParkingAppRunner {
   def main(args: Array[String]): Unit = {
