@@ -2,7 +2,7 @@ package be.kuleuven.Applications
 
 import be.kuleuven.FRP_EMBEDDED.{RawSMCFRPDSLApplicationRunner, SMCFRPDSLApplicationRunner}
 import be.kuleuven.FRP_EMBEDDED.OutputGenerator._
-/*
+
 object SMCAppsRunner {
 
   def main(args: Array[String]): Unit = {
@@ -42,4 +42,3 @@ object SMCAppsRunner {
 
   }
 }
-*/

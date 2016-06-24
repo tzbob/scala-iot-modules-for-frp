@@ -328,7 +328,7 @@ trait LMSEventDoubleInputApp extends FRPDSLApplication {
 }
 
 import OutputGenerator.withOutFile
-/*
+
 object LMSEventAppRunner {
 
   def main(args: Array[String]): Unit = {
@@ -425,4 +425,3 @@ object LMSEventAppRunner {
 
   }
 }
-*/
