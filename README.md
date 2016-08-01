@@ -24,6 +24,6 @@ The results of this compilation is now present in ```./generated```.
 
 ## Navigating the codebase
 
-The examples: ```src/main/scala/be/kuleuven/Applications```
-The core implementation: ```src/main/scala/be/kuleuven/FRP_EMBEDDED```
-The sancus extensions for LMS: ```src/main/scala/be/kuleuven/LMS_extensions```
+- Examples: ```src/main/scala/be/kuleuven/Applications```
+- Core implementation: ```src/main/scala/be/kuleuven/FRP_EMBEDDED```
+- Sancus extensions for LMS: ```src/main/scala/be/kuleuven/LMS_extensions```
