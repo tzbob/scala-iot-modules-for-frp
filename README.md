@@ -19,6 +19,9 @@ Please follow the install guide on the official [scala-sbt.org](http://www.scala
     cd scala-iot-modules-for-frp
     sbt "run-main be.kuleuven.Applications.SimplifiedParkingAppRunner"
 
+The results of this compilation is now present in ```./generated```.
+    
+
 ## Navigating the codebase
 
 The examples: ```src/main/scala/be/kuleuven/Applications```
