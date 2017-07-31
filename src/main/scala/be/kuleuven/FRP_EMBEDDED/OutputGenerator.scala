@@ -5,10 +5,11 @@ import java.io.{OutputStream, FileOutputStream, PrintStream, File}
 object OutputGenerator {
 
   def withOutFile(name: String)(func: => Unit): Unit = {
-    val home = sys.env("HOME") + "/FRP_embedded/generated/"
+    val home = "./generated/"
 
     val file = new File(home+name)
     file.getParentFile.mkdirs()
+    println(s"Writing output to: $file")
     withOutput(new PrintStream(new FileOutputStream(file)))(func)
   }
 
