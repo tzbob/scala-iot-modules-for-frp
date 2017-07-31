@@ -9,7 +9,7 @@ trait ParkingApp extends FRPDSLApplication {
 
     val timerMod = createModule[Int] {implicit n: ModuleName =>
       val timer = SystemTimerEvent()
-      Some(out("timer", timer))
+      (out("timer", timer))
     }
 
     def detectModule(b: Buttons.Button)(implicit n: ModuleName): Event[Int] = {
@@ -32,12 +32,12 @@ trait ParkingApp extends FRPDSLApplication {
 
     val modA = createModule[Int] { implicit n: ModuleName =>
       val output = detectModule(Buttons.button1)
-      Some(out("outputA",output))
+      (out("outputA",output))
     }
 
     val modB = createModule[Int] { implicit n:ModuleName =>
       val output = detectModule(Buttons.button2)
-      Some(out("outputB",output))
+      (out("outputB",output))
     }
 
     val modDisp= createLCDModule { implicit n: ModuleName =>

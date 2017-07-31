@@ -10,7 +10,7 @@ trait LMSBehaviorStartsWith1App extends FRPDSLApplication {
       val m = t1.map[Int]( (i) => 5 )
 
       val b = m.startsWith(1)
-      Some(out("out", b.changes()))
+      (out("out", b.changes()))
     }::Nil
   }
 }
@@ -23,7 +23,7 @@ trait LMSBehaviorFoldp1App extends FRPDSLApplication {
       val m = t1.map[Int]((i) => 5)
 
       val b = m.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 1)
-      Some(out("out", b.changes()))
+      (out("out", b.changes()))
     }::Nil
   }
 }
@@ -42,7 +42,7 @@ trait LMSBehaviorMap2App extends FRPDSLApplication {
       val b2 = m2.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 1)
 
       val map2 = b1.map2(b2, (x: Rep[Int], y: Rep[Int]) => x + y)
-      Some(out("out", map2.changes()))
+      (out("out", map2.changes()))
     }::Nil
   }
 }
@@ -56,7 +56,7 @@ trait LMSBehaviorChangesApp extends FRPDSLApplication {
       val c = fp.changes()
       val fp2 = c.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 10)
       val c2 = fp2.changes()
-      Some(out("out1", c2))
+      (out("out1", c2))
     }::Nil
   }
 }
@@ -73,7 +73,7 @@ trait LMSBehaviorSnapshotApp extends FRPDSLApplication {
       val ss = fp1.snapshot(t2)
 
       val fp2 = ss.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 0)
-      Some(out("out", fp2.changes()))
+      (out("out", fp2.changes()))
     }::Nil
   }
 }
@@ -93,7 +93,7 @@ trait LMSBehaviorSnapshot2App extends FRPDSLApplication {
       val ss = fp1.snapshot(c4)
 
       val fp2 = ss.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 0)
-      Some(out("out", fp2.changes()))
+      (out("out", fp2.changes()))
     }::Nil
   }
 }
@@ -113,7 +113,7 @@ trait LMSBehaviorSnapshot3App extends FRPDSLApplication {
       val ss = fp1.snapshot(t2)
 
       val fp2 = ss.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 0)
-      Some(out("out", fp2.changes()))
+      (out("out", fp2.changes()))
     }::Nil
   }
 }
@@ -126,7 +126,7 @@ trait LMSBehaviorConstantApp extends FRPDSLApplication {
       val sw = t1.startsWith(0)
       val c = constantB(3)
       val plus = sw.map2(c, (x:Rep[Int],y:Rep[Int]) => x+y )
-      Some(out("out", plus.changes()))
+      (out("out", plus.changes()))
     }::Nil
   }
 }
@@ -140,7 +140,7 @@ trait LMSBehaviorPropagationExampleApp extends FRPDSLApplication {
       val c = constantB(0)
       val a = fp.map2(c, (x:Rep[Int],y:Rep[Int]) => x+y )
       val b = a.map2(fp, (x:Rep[Int],y:Rep[Int]) => x+y )
-      Some(out("out", b.changes()))
+      (out("out", b.changes()))
     }::Nil
   }
 }
@@ -153,7 +153,7 @@ trait LMSMultiModuleApp extends FRPDSLApplication {
       val fp = t.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 1)
       val c = fp.changes()
       val fp2 = c.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 10)
-      Some(out("out1", fp2.changes()))
+      (out("out1", fp2.changes()))
     }
 
     val mod2 = createModule[Int] { implicit n:ModuleName =>
@@ -161,7 +161,7 @@ trait LMSMultiModuleApp extends FRPDSLApplication {
       val fp = t.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 2)
       val c = fp.changes()
       val fp2 = c.foldp((x: Rep[Int], y: Rep[Int]) => x + y, 20)
-      Some(out("out2", fp2.changes()))
+      (out("out2", fp2.changes()))
     }
 
     mod1::mod2::Nil

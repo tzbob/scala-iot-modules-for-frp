@@ -6,7 +6,7 @@ package be.kuleuven.FRP_EMBEDDED
 trait FRPDSLApplication extends FRPDSL {
 
   def createApplication(): List[Module[_]]
-  def createModule[A] (graphfun: (ModuleName)=>Option[OutputEvent[A]] ): Module[A]
+  def createModule[A] (graphfun: (ModuleName)=>OutputEvent[A] ): Module[A]
   def createLCDModule (graphfun: (ModuleName)=>List[(Behavior[Int], String, Int, Int)] ): Module[Nothing]
 }
 
@@ -17,16 +17,11 @@ trait FRPDSLApplication_Impl extends FRPDSLApplication {
     def nextid = {id += 1;id}
   }
 
-  override def createModule[A] (graphfun: (ModuleName)=>Option[OutputEvent[A]] ): Module[A] = {
+  override def createModule[A] (graphfun: (ModuleName)=>OutputEvent[A] ): Module[A] = {
     val name: String = new String("mod").concat(ModuleNumber.nextid.toString)
     val mod = new ModuleName(name)
 
-    val out = graphfun(mod) match {
-      case Some(output) =>
-        output
-      case None =>
-        null
-    }
+    val out = graphfun(mod)
 
     new Module[A] {
       override val name = mod

@@ -16,7 +16,7 @@ trait Counter1App extends FRPDSLApplication {
         merged.filter( x => Math.abs(x) < 10)
       val counter =
         filtered.foldp((x:Rep[Int], state:Rep[Int])=>state + x, 0)
-      Some(out("counterOut", counter.changes()))
+      (out("counterOut", counter.changes()))
 
     }
 
@@ -41,7 +41,7 @@ trait Counter2App extends FRPDSLApplication {
           (y:Rep[Int], state:Rep[Int])=>state - y,
           (x:Rep[Int], y:Rep[Int], state:Rep[Int])=>state + x - y,
           0)
-      Some(out("counterOut", counter.changes()))
+      (out("counterOut", counter.changes()))
 
     }
 
@@ -86,7 +86,7 @@ trait Counter3bApp extends FRPDSLApplication {
       val counter =
         filtered.foldp((x:Rep[Int], state:Rep[Int])=>state + x, 0)
 
-      Some(out("out",counter.changes()))
+      (out("out",counter.changes()))
     }
 
     val mod2 = createLCDModule { implicit n: ModuleName =>
@@ -159,7 +159,7 @@ trait Counter5App extends FRPDSLApplication {
       val counter =
         filtered.foldp((x:Rep[Int], state:Rep[Int])=>state + x, 0)
       val counterEvents = counter.changes
-      Some(out("counterOut", counterEvents))
+      (out("counterOut", counterEvents))
     }
 
     val mod2 = createLCDModule { implicit n: ModuleName =>
@@ -209,7 +209,7 @@ trait Counter7App extends FRPDSLApplication {
       val dec1 = dec.constant(-1)
       val mergeIncDec = inc1.merge(dec1, (x,y)=>x+y)
       val incdecValue = mergeIncDec.foldp( (x,state:Rep[Int]) => state + x, 1)
-      Some(out("amountOut",incdecValue.changes()))
+      (out("amountOut",incdecValue.changes()))
     }
 
     val mod2 = createModule[Int] { implicit n: ModuleName =>
@@ -229,7 +229,7 @@ trait Counter7App extends FRPDSLApplication {
       val counter =
         filtered.foldp((x:Rep[Int], state:Rep[Int])=>state + x, 0)
       val counterEvents = counter.changes
-      Some(out("counterOut", counterEvents))
+      (out("counterOut", counterEvents))
     }
 
     val mod3 = createLCDModule { implicit n: ModuleName =>

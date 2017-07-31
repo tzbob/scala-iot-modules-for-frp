@@ -9,14 +9,14 @@ trait SimplifiedParkingApp extends FRPDSLApplication {
 
     val timerMod = createModule[Int] { implicit n: ModuleName =>
       val timer = SystemTimerEvent()
-      Some(out("timer", timer))
+      (out("timer", timer))
     }
 
     val sensorMod =
       createModule[Boolean] { implicit n: ModuleName =>
         val sensor = ButtonEvent(Buttons.button1)
         val taken: Behavior[Boolean] = sensor.foldp((_,state) => !state, false)
-        Some(out("button1", taken.changes))
+        (out("button1", taken.changes))
       }
 
     def parkingMod(timeout: Int) =
@@ -32,7 +32,7 @@ trait SimplifiedParkingApp extends FRPDSLApplication {
           snapSensor.foldp((taken, state) => if (taken) state + 1 else 0, 0)
 
         val violations = timeTaken.changes().map(_ >= timeout)
-        Some(out("violations", violations))
+        (out("violations", violations))
       }
 
     timerMod :: parkingMod(3) :: sensorMod :: Nil
